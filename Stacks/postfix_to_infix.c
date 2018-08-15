@@ -75,6 +75,8 @@ void postfix_to_infix(char * postfix)
 
 			temp[0] = '\0';
 
+			strcat(temp,")");	
+
 			reverse(top());
 
 			strcat(temp,pop()); // right operand

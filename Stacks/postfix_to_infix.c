@@ -18,7 +18,12 @@ int strarrlen(char *s[]);
 void reverse(char *s[],int len);
 
 void push(char * in)
-{ *++stack_p = in; }
+{
+	++stack_p;
+	char * temp = *stack_p;
+	strcat(
+	*++stack_p = in;
+} //problem: assigns *stack_p the memory address of in, so if in changes anywhere in code so does *stack_p. That's why you get (34+34) 34 for "3 4 +"
 
 char * pop()
 { return *stack_p--; }
@@ -38,16 +43,18 @@ void postfix_to_infix(char * postfix)
 		{
 			static char num[1000];
 
-			static char * num_p = &num[0];
+			char * num_p = &num[0];
 
 			while (isdigit(*postfix) )
 			{ *num_p++ = *postfix++; }
+
+			*num_p = '\0';
 
 			push(num);
 
 		}
 		
-		else
+		else // *postfix is an operator
 		{
 			#if 0
 			
@@ -142,6 +149,7 @@ int main()
 
 	while ( (c = getchar()) != EOF )
 	{	*postfix_input_p++ = c;	}
+
 
 	postfix_to_infix(postfix_input);
 }

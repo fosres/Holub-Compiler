@@ -49,19 +49,19 @@ void postfix_to_infix(char * postfix)
 
 		}
 
-		else if ( isdigit(*postfix) )
+		else if ( isalnum(*postfix) )
 		{
 			static char num[MAX_SIZE]; 
 			
 			#if 0	
 
-			compiler skips this line after initialization, despite iteration
+			compiler skips line 54 after initialization, despite iteration
 
 			#endif
 
 			int i = 0;
 
-			while ( isdigit(*postfix) )
+			while ( isalnum(*postfix) )
 			{ num[i++] = *postfix++; }
 
 			num[i] = '\0';

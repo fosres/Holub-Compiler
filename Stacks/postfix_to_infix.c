@@ -1,156 +1,123 @@
-//sedgewick_4-15.c sedgewick_4-15.c
-
+// sedgewick_4-15.c postfix_to_infix.c
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdbool.h>
 
 #define MAX_SIZE 1000
 
-static char * stack[MAX_SIZE];
+static char stack[MAX_SIZE][MAX_SIZE];
 
-static char **stack_p = (&stack[0]-1);
+static int i = -1;
 
-static char ** stack_zero = &stack[0];
-
-int strarrlen(char *s[]);
-
-void reverse(char *s[],int len);
-
-void push(char * in)
+void reverse(char s[])
 {
-	++stack_p;
-	char * temp = *stack_p;
-	strcat(
-	*++stack_p = in;
-} //problem: assigns *stack_p the memory address of in, so if in changes anywhere in code so does *stack_p. That's why you get (34+34) 34 for "3 4 +"
+	for (int i = 0, j = strlen(s)-1; i < j; i++, j--)
+	{
+		char temp = s[i];
+
+		s[i] = s[j];
+
+		s[j] = temp;
+	}
+}
+
+void push(char * s)
+{
+	i++;
+
+	stack[i][0] = '\0';
+
+	strcat(stack[i],s);
+
+	strcat(stack[i],"\0");
+}
 
 char * pop()
-{ return *stack_p--; }
+{ return stack[i--]; }
+
+char * top()
+{ return stack[i]; }
 
 void postfix_to_infix(char * postfix)
-{ 
-	while (*postfix != '\0')
+{
+	while ( *postfix != '\0' && !iscntrl(*postfix) )
 	{
 		if (isspace(*postfix) )
 		{
-			while (isspace(*postfix))
+			while ( isspace(*postfix) )
 			{ postfix++; }
 
 		}
 
-		else if (isdigit(*postfix) )
+		else if ( isdigit(*postfix) )
 		{
-			static char num[1000];
-
-			char * num_p = &num[0];
-
-			while (isdigit(*postfix) )
-			{ *num_p++ = *postfix++; }
-
-			*num_p = '\0';
-
-			push(num);
-
-		}
-		
-		else // *postfix is an operator
-		{
-			#if 0
+			static char num[MAX_SIZE]; 
 			
-			Has to be an array of pointers to strings to 
-			
-			conserve order of multi-char parenthetical expressions
-			
+			#if 0	
+
+			compiler skips this line after initialization, despite iteration
+
 			#endif
 
-			static char * par_expr[MAX_SIZE];
+			int i = 0;
 
-			static char ** par_expr_p = &par_expr[0];
+			while ( isdigit(*postfix) )
+			{ num[i++] = *postfix++; }
 
-			*par_expr_p++ = ")";
+			num[i] = '\0';
 
-			*par_expr_p++ = pop();
+			push(num);
+		}
+
+		else // *postfix is an operator (+,-,*,/,=)
+		{
+			static char temp[MAX_SIZE];
+
+			temp[0] = '\0';
+
+			reverse(top());
+
+			strcat(temp,pop()); // right operand
 
 			static char op[1];
 
 			op[0] = *postfix++;
 
-			*par_expr_p++ = op;
+			strcat(temp,op);
 
-			*par_expr_p++ = pop(); 
+			reverse(top());
 
-			*par_expr_p++ = "(";
+			strcat(temp,pop()); // left operand
 
-			reverse(par_expr,strarrlen(par_expr));
+			strcat(temp,"(");
 
-			//convert par_expr into a char * so you can push it into stack
-			
-			int i = 0;
+			strcat(temp,"\0");
 
-			static char par_expr_char_arr[MAX_SIZE*MAX_SIZE];
+			reverse(temp);
 
-			while (i < strarrlen(par_expr) )
-			{ 
-				strcat(par_expr_char_arr,par_expr[i]); 
-				
-				i++;
-			}
-
-			push(par_expr_char_arr);
+			push(temp);
 		}
 
-	} // end of while (*postfix != '\0')
-
-	int i = 0;
-
-	while (i < strarrlen(stack))
-	{
-		printf("%s ",stack[i]);
-
-		i++;
 	}
 
-}
-
-int strarrlen(char *s[])
-{
-	int i = 0;
-
-	while (*s != NULL)
-	{i++;s++;}
-
-	return i;
-
-}
-
-void reverse(char *s[], int len)
-{
-	
-	for ( int i = 0, j = len - 1; i < j; i++, j--)
-	{
-		char * temp = s[i];
-
-		s[i] = s[j];
-
-		s[j] = temp;
-
-	}
+	printf("%s\n",stack[0]);
 
 }
 
 int main()
 {
-	static char postfix_input[MAX_SIZE];
+	static char postfix[MAX_SIZE];
 
-	static char * postfix_input_p = &postfix_input[0];
+	static char * postfix_p = &postfix[0];
 
 	char c;
 
-	while ( (c = getchar()) != EOF )
-	{	*postfix_input_p++ = c;	}
+	while ((c = getchar()) != EOF)
+	{ 
+		*postfix_p++ = c;
+	}
 
+	postfix_to_infix(postfix);
 
-	postfix_to_infix(postfix_input);
 }
 

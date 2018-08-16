@@ -113,13 +113,9 @@ void postfix_to_infix(char * postfix)
 
 	}
 
-	#if 0
-
-	printf("%s\n",stack[0]);
-
-	#endif
-
 	int print_index = 0;
+
+	putchar('\n');
 
 	while ( print_index < num_newlines )
 	{ printf("%s\n",stack[print_index++]); }

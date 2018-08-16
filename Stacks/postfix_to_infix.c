@@ -9,6 +9,8 @@ static char stack[MAX_SIZE][MAX_SIZE];
 
 static int i = -1;
 
+static int num_newlines = 0;
+
 void reverse(char s[])
 {
 	for (int i = 0, j = strlen(s)-1; i < j; i++, j--)
@@ -40,9 +42,18 @@ char * top()
 
 void postfix_to_infix(char * postfix)
 {
-	while ( *postfix != '\0' && !iscntrl(*postfix) )
+	while ( *postfix != '\0' )
 	{
-		if (isspace(*postfix) )
+
+		if ( iscntrl(*postfix) && *postfix == '\n' )
+		{
+			num_newlines++;
+
+			postfix++;
+
+		}
+
+		else if (isspace(*postfix) )
 		{
 			while ( isspace(*postfix) )
 			{ postfix++; }
@@ -102,7 +113,16 @@ void postfix_to_infix(char * postfix)
 
 	}
 
+	#if 0
+
 	printf("%s\n",stack[0]);
+
+	#endif
+
+	int print_index = 0;
+
+	while ( print_index < num_newlines )
+	{ printf("%s\n",stack[print_index++]); }
 
 }
 

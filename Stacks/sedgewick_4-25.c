@@ -1,112 +1,130 @@
-#include <stdio.h> //infix evaluation
+#include <stdio.h>
 #include <ctype.h>
 
-static int stack[1000];
+static int operands[1000];
 
-static char postfix[1000];
+static char operators[1000];
 
-static char * postfix_p = &postfix[0]-1;
+static char * op_p = &operators[0]-1;
 
-static int stack_p = &stack[0]-1;
+static int * operands_p = &operands[0]-1;
 
-void push(int in)
+void push_operand(int in)
 {
-	*++stack_p = in;
+  *++operands_p = in;
 }
 
-int pop()
+int pop_operand()
 {
-	return *stack_p--;
+  return *operands_p--;
 }
 
-void infix_to_postfix(char * s)
+void push_operator(char in)
 {
-
-while(*s != '\0')
-{
-		if (*s == '(' || *s == ' ')
-		{ }
-		else if( isdigit(*s) )
-		{
-			while (isdigit(*s)
-			*postfix_p++ = *s; }
-		else if (*s == '*' || *s == '-' || *s == '+' || *s == '/')
-		{ push(*s); }
-		else // *s == ')'
-		{ printf("%c ",pop()); }
-
-	s++;
+  *++op_p = in;
 }
 
+char pop_operator()
+{
+  return *op_p--;
 }
 
-
-int eval_infix_int(char infix[])
+int infix_eval(char * in)
 {
-	char * infix_p = &infix[0];
+  char * in_p = &in[0];
 
-	while (*infix_p != '\0')
-	{
-		if (isdigit(*infix_p) )
-		{
-			push( (*infix_p - '0') ); infix++;
+  while (*in_p != '\0' )
+  {
 
-			while ( isdigit(*infix_p) )
-			{
-				*stack_p *= 10; *stack_p += *infix_p;
+    if (*in_p == '(' || *in_p == ' ' )
+    {
+      in_p++;
+    }
+    else if ( isdigit(*in_p) )
+    {
+      push_operand( (*in_p - '0' ) );
 
-				infix_p++;
-			}
-			// remember stack began @ (&stack[0]-1)
-		}
-		
-		else if ( *infix == '+' )
-		{
-			int op2 = pop();
+      in_p++;
 
-			push(pop() + op2);
+      while ( isdigit(*in_p) ) // can skip over a right parenthesis!!!
+      {
+        *operands_p *= 10;
 
-			infix_p++;
-		}
+        *operands_p += (*in_p - '0' );
 
-		else if ( *infix_p == '-')
-		{
-			int op2 = pop();
+        in_p++;
 
-			push(pop()-op2);
+      }
 
-			infix_p++;
-		}
-		
-		else if ( *infix_p == '*')
-		{
-			int op2 = pop();
+    
+    }
 
-			push(pop() * op2);
+    else if (*in_p == '+' || *in_p == '-' || *in_p == '*' || *in_p == '/')
+    {
 
-			infix_p++;
-		}
+      push_operator(*in_p);
 
-		else // *infix_p == '/'
-		{
-			int op2 = pop();
+      in_p++;
 
-			push(pop()/op2);
+    }
+    
 
-			infix_p++;
-		}
+    else // ( *in_p == ')' )
+    {
+      int op2 = pop_operand();
 
+      char operator = pop_operator();
+      
+      if (operator == '+')
+        {
+          push_operand(pop_operand()+op2);
+        }
+      else if (operator == '-')
+        {
+          push_operand(pop_operand()-op2);
+    
+        }
+      else if (operator == '*')
+        {
+          push_operand(pop_operand()*op2);
+        
+        }
+      else // operator == '/'
+        {
+          push_operand(pop_operand()/op2);
+        
+        }
 
-	}
+        in_p++;
+      }
 
-	// end of while (*infix_p != '\0')
-	
-	return stack[0];
+    }
 
+  
+
+  
+
+  return operands[0];
 }
 
-int main()
-{
+int main(void) {
+  
+  static char s[1000];
 
-	char * s = "
+  static char * s_p = &s[0];
+
+  char c;
+
+  while ( (c = getchar()) != '\n' )
+  {
+    *s_p++ = c;
+  }
+
+  *s_p++ = '\n';
+
+  *s_p = '\0';
+
+  printf("%d\n",infix_eval(s));
+  
+  return 0;
 }

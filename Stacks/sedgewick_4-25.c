@@ -46,7 +46,7 @@ int infix_eval(char * in)
 
       in_p++;
 
-      while ( isdigit(*in_p) ) // can skip over a right parenthesis!!!
+      while ( isdigit(*in_p) ) 
       {
         *operands_p *= 10;
 

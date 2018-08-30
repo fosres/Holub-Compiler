@@ -26,8 +26,20 @@ int remove_node(Node ** rootp, Node * node)
   {
     if ( (*rootp) == node )
     {
-      if ( (*rootp) == first )
-      { (*rootp) = (*(rootp+1)); }
+      if ( (*rootp) == first /* && ( (*rootp)->link != NULL ) */)
+      { 
+        (*rootp)->x = (*(rootp+1))->x; 
+
+        (*rootp)->link = (*(rootp+1))->link;
+        
+      }
+
+      #if 0
+      else if ( ( (*rootp) == first ) && ( (*rootp)->link == NULL ) )
+      {
+        (*rootp)->x = NULL;
+      }
+      #endif
 
       else if ( (*rootp)->link == NULL )
       { (*(rootp - 1))->link = NULL; }
@@ -103,6 +115,15 @@ int main(void) {
 
   Node * first = a;
 
+  #if 0
+  
+  Node * rev = reverse_sll(a);
+
+  
+  printf("%d\n",rev->link->link->link->link->x);
+  
+  #endif
+
   Node * node_arr[1000];
 
   node_arr[0] = a;
@@ -127,7 +148,24 @@ int main(void) {
 #endif
 
 
-remove_node(node_arr,b);
+remove_node(node_arr,a);
 printf("%d\n",a->link->x);
+
+
+Node * alone = (Node *)malloc(sizeof(Node));
+
+alone->x = 125;
+
+alone->link = NULL;
+
+Node * node_arr_two[2];
+
+node_arr_two[0] = alone;
+
+node_arr_two[1] = NULL;
+
+remove_node(node_arr_two,alone);
+
+printf("%p\n",alone);
   
 }

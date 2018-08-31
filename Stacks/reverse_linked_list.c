@@ -1,84 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "sll.h"
 
-
-int sll_len(Node * first)
+typedef struct Node
 {
-  int len = 0;
+  struct Node * link;
+
+  int x;
+} Node;
+
+Node * sll_reverse(Node * first)
+{
   
-  while ( first != NULL )
-  {
-    len++;
+  if ( first == NULL)
+  { return NULL;}
+  
+  
+  Node * first_counter = first;
+  
+  first_counter = first;
 
-    first = first->link;
+  Node * node_arr[1000]; Node ** node_arr_p = node_arr;
+
+  while ( first_counter != NULL )
+  {
+    *node_arr_p++ = first_counter;
+
+    first_counter = first_counter->link;
+
   }
+  
+  *node_arr_p = NULL;
 
-  return len;
-}
+  node_arr_p--; 
+  
+  Node * return_node = *node_arr_p;
 
-int remove_node(Node ** rootp, Node * node)
-{
-
-  Node * first = *rootp;
-
-  while ( (*rootp) != NULL )
+  while ( node_arr_p > &node_arr[0] )
   {
-    if ( (*rootp) == node )
+    
+    if (node_arr_p == &node_arr[0])
     {
-      if ( (*rootp) == first )
-      { 
-        (*rootp)->x = (*(rootp+1))->x; 
-
-        (*rootp)->link = (*(rootp+1))->link;
-        
-      }
-
-      else if ( (*rootp)->link == NULL )
-      { (*(rootp - 1))->link = NULL; }
-      
-      else
-      {
-        (*(rootp - 1))->link =  (*(rootp + 1));
-      }
-
-      return 1;
+      (*node_arr_p)->link = NULL;
     }
 
-    rootp++;
+    else
+    {
+      (*node_arr_p)->link = (*(node_arr_p-1));
+    }
+
+    node_arr_p--;
   }
 
-  return 0;
-
+  return return_node;
 }
-
-#if 0
-Node * reverse_sll(Node * first)
-{
- {
-    
- } Node ** arr_p = &arr[0] - 1;
-
-  while (first != NULL )
-  {
-    *++arr_p = first;
-
-    first = first->link;
-  }
-
-  Node * new_head = *arr_p;
-
-  while (arr_p > &arr[0])
-  {
-    (*arr_p)->link = *(arr_p - 1);
-
-    arr_p--;
-  }
-  (*arr_p)->link = NULL;
-
-  return new_head;
-}
-#endif
 
 int main(void) {
   
@@ -106,42 +80,8 @@ int main(void) {
 
   d->link = NULL;
 
-  Node * first = a;
+  Node * rev = sll_reverse(a);
 
-  #if 0
-  
-  Node * rev = reverse_sll(a);
-
-  
-  printf("%d\n",rev->link->link->link->link->x);
-  
-  #endif
-
-  Node * node_arr[1000];
-
-  node_arr[0] = a;
-
-  node_arr[1] = b;
-
-  node_arr[2] = c;
-
-  node_arr[3] = d;
-
-  node_arr[4] = NULL;
-
-  Node ** node_arr_p = node_arr;
-
-#if 0
-  printf("%d\n",(*node_arr_p++)->x);
-  
-  printf("%d\n",(*node_arr_p++)->x);
-
-  printf("%d\n",(*node_arr_p)->x);
-
-#endif
-
-
-remove_node(node_arr,a);
-printf("%d\n",a->link->x);
+  printf("%d\n",rev->x);
   
 }

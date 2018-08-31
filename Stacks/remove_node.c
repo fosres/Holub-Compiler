@@ -24,68 +24,32 @@ int remove_node(Node ** rootp, Node * node)
 
   while ( (*rootp) != NULL )
   {
-    if ( (*rootp) == node )
+    if ( (*rootp) == node)
     {
-      if ( (*rootp) == first /* && ( (*rootp)->link != NULL ) */)
-      { 
-        (*rootp)->x = (*(rootp+1))->x; 
+      if ( ((*rootp)->link == NULL) && (first->link != NULL) ) // last node in linked list
+      { (*(rootp-1))->link = NULL; }
 
-        (*rootp)->link = (*(rootp+1))->link;
-        
-      }
+      else if (  ((*rootp)->link == NULL) && (first->link == NULL)) // first node AND last node in linked list
+      { (*rootp)->x = 0; }
 
-      #if 0
-      else if ( ( (*rootp) == first ) && ( (*rootp)->link == NULL ) )
+      else // either first node or in between first and last nodes
       {
-        (*rootp)->x = NULL;
-      }
-      #endif
+        ((*rootp)->x) = ((*(rootp+1))->x);
 
-      else if ( (*rootp)->link == NULL )
-      { (*(rootp - 1))->link = NULL; }
-      
-      else
-      {
-        (*(rootp - 1))->link =  (*(rootp + 1));
+        (*rootp)->link = (*(rootp+2));
       }
-
       return 1;
     }
 
     rootp++;
+
   }
 
   return 0;
 
 }
 
-#if 0
-Node * reverse_sll(Node * first)
-{
- {
-    
- } Node ** arr_p = &arr[0] - 1;
 
-  while (first != NULL )
-  {
-    *++arr_p = first;
-
-    first = first->link;
-  }
-
-  Node * new_head = *arr_p;
-
-  while (arr_p > &arr[0])
-  {
-    (*arr_p)->link = *(arr_p - 1);
-
-    arr_p--;
-  }
-  (*arr_p)->link = NULL;
-
-  return new_head;
-}
-#endif
 
 int main(void) {
   
@@ -138,18 +102,6 @@ int main(void) {
 
   Node ** node_arr_p = node_arr;
 
-#if 0
-  printf("%d\n",(*node_arr_p++)->x);
-  
-  printf("%d\n",(*node_arr_p++)->x);
-
-  printf("%d\n",(*node_arr_p)->x);
-
-#endif
-
-
-remove_node(node_arr,a);
-printf("%d\n",a->link->x);
 
 
 Node * alone = (Node *)malloc(sizeof(Node));
@@ -164,8 +116,20 @@ node_arr_two[0] = alone;
 
 node_arr_two[1] = NULL;
 
+remove_node(node_arr,b);
+
+printf("%d\n",a->link->x);
+
 remove_node(node_arr_two,alone);
 
-printf("%p\n",alone);
+printf("%d\n",alone->x);
+
+remove_node(node_arr,a);
+
+printf("%d\n",a->x);
+
+
+
+
   
 }

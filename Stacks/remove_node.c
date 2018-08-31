@@ -19,6 +19,8 @@ int sll_len(Node * first)
 
 int remove_node(Node ** rootp, Node * node)
 {
+  if ( (*rootp) == NULL )
+  { return NULL; }
 
   Node * first = *rootp;
 

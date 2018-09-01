@@ -12,8 +12,7 @@ Node * sll_reverse(Node * first)
 {
   
   if ( first == NULL)
-  { return NULL;}
-  
+  { return NULL;}  
   
   Node * first_counter = first;
   
@@ -35,7 +34,7 @@ Node * sll_reverse(Node * first)
   
   Node * return_node = *node_arr_p;
 
-  while ( node_arr_p > &node_arr[0] )
+  while ( node_arr_p >= &node_arr[0] )
   {
     
     if (node_arr_p == &node_arr[0])
@@ -80,8 +79,22 @@ int main(void) {
 
   d->link = NULL;
 
+
   Node * rev = sll_reverse(a);
 
-  printf("%d\n",rev->x);
+
+  printf("%d\n",rev->link->link->link->x);
+
+
+  Node * alone = (Node *)malloc(sizeof(Node));
+
+  alone->x = 76;
+
+  alone->link = NULL;
+
+  Node * rev_alone = sll_reverse(alone);
+
+  printf("%d\n",rev_alone->x);
+
   
 }

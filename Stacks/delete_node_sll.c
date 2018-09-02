@@ -8,42 +8,42 @@ typedef struct Node
   item x;
 } Node;
 
-int sll_remove(Node * rootp, Node * node)
+int sll_remove(Node ** rootp, Node * node)
 {
-  Node * first = rootp;
+  Node * first = (*rootp);
 
   Node * previous = (Node *)malloc(sizeof(Node));
 
-  while ( rootp != NULL )
+  while ( (*rootp) != NULL )
   {
-    if ( rootp == node )
+    if ( (*rootp) == node )
     {
       
-      if ( rootp == first && first->link == NULL )
+      if ( (*rootp) == first && first->link == NULL )
       {
-      Node ** first_make_NULL = &first;
+      
+        (*rootp) = NULL;
 
-      (*first_make_NULL) = NULL;
       }
     
 
-    else if ( rootp->link == NULL )
+    else if ( (*rootp)->link == NULL )
     {
       previous->link = NULL;
     }
 
     else //node is between first and last nodes
     {
-      rootp->x = rootp->link->x;
+      (*rootp)->x = (*rootp)->link->x;
 
-      rootp->link = rootp->link->link;
+      (*rootp)->link = (*rootp)->link->link;
     }
 
     return 1;
 
     }
 
-    previous = rootp; rootp= rootp->link;
+    previous = (*rootp); (*rootp) = (*rootp)->link;
 
   }
 
@@ -82,13 +82,23 @@ int main(void) {
 
   printf("%d\n",head->link->x);
 
-  #endif
-
   sll_remove(head,c);
 
   printf("%d\n",head->link->x);
 
   printf("%d\n",head->link->link->x);
+
+  #endif
+
+  Node * e = (Node *)malloc(sizeof(Node));
+
+  Node * f = e;
+
+  sll_remove(&e,e);
+
+  printf("%d\n",e->x);
+
+  #endif
 
   return 0;
 }

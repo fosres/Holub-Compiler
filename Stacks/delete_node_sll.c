@@ -25,25 +25,34 @@ int sll_remove(Node ** rootp, Node * node)
         (*rootp) = NULL;
 
       }
-    
 
-    else if ( (*rootp)->link == NULL )
-    {
-      previous->link = NULL;
-    }
+      else if ( (*rootp) == first )
+      {
+        (*rootp) = NULL;
+      }
+      
 
-    else //node is between first and last nodes
-    {
-      (*rootp)->x = (*rootp)->link->x;
+      else if ( (*rootp)->link == NULL )
+      {
+        (*rootp) = NULL;
 
-      (*rootp)->link = (*rootp)->link->link;
-    }
+      }
+
+
+      else //node is between first and last nodes before NULL, inclusive
+      {
+        (*rootp)->x = (*rootp)->link->x;
+
+        (*rootp)->link = (*rootp)->link->link;
+      }
 
     return 1;
 
     }
 
-    previous = (*rootp); (*rootp) = (*rootp)->link;
+    rootp = &((*rootp)->link);
+    
+    
 
   }
 
@@ -52,53 +61,44 @@ int sll_remove(Node ** rootp, Node * node)
 }
 
 int main(void) {
-  Node * head = malloc(sizeof(Node));
+  
+  
+  Node * head = (Node *)malloc(sizeof(Node));
 
   head->x = 3;
 
-  Node * b = malloc(sizeof(Node));
+  Node * b = (Node *)malloc(sizeof(Node));
 
   b->x = 5;
 
-  Node * c = malloc(sizeof(Node));
+  Node * c = (Node *)malloc(sizeof(Node));
 
   c->x = 6;
+
+  Node * d = (Node *)malloc(sizeof(Node));
+
+  d->x = 100;
 
   head->link = b;
 
   b->link = c;
 
-  c->link = NULL;
+  c->link = d;
 
-  #if 0
+  d->link = NULL;
 
-  sll_remove(head,head);
+  
+#if 0
+  
+  sll_remove(&head,head);
 
-  printf("%d\n",head->x);
+  printf("%d\n",b->link->link->link->x);
 
-  printf("%d\n",head->link->x);
+sll_remove(&head,d);
 
-  sll_remove(head,b);
-
-  printf("%d\n",head->link->x);
-
-  sll_remove(head,c);
-
-  printf("%d\n",head->link->x);
-
-  printf("%d\n",head->link->link->x);
-
-  #endif
-
-  Node * e = (Node *)malloc(sizeof(Node));
-
-  Node * f = e;
-
-  sll_remove(&e,e);
-
-  printf("%d\n",e->x);
-
-  #endif
-
+printf("%d\n",c->link->x);
+  
+#endif
+  
   return 0;
 }

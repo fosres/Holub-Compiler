@@ -19,14 +19,7 @@ int sll_remove(Node ** rootp, Node * node)
     if ( (*rootp) == node )
     {
       
-      if ( (*rootp) == first && first->link == NULL )
-      {
-      
-        (*rootp) = NULL;
-
-      }
-
-      else if ( (*rootp) == first )
+      if ( (*rootp) == first )
       {
         (*rootp) = NULL;
       }
@@ -92,13 +85,17 @@ int main(void) {
   
   sll_remove(&head,head);
 
-  printf("%d\n",b->link->link->link->x);
+  printf("%d\n",b->link->x);
 
-sll_remove(&head,d);
+//printf("%d\n",head->x);
+
+  sll_remove(&b,d);
 
 printf("%d\n",c->link->x);
-  
+
 #endif
+  
+
   
   return 0;
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "bst.h"
 
+<<<<<<< HEAD
 void insert_tree(Node * l, item x)
 {
   if (l == NULL)
@@ -19,11 +20,37 @@ void insert_tree(Node * l, item x)
   else if ( x < l->x )
   {
     insert_tree(l->left,x);
+=======
+void insert_tree(Node ** l, item x, Node * parent)
+{
+  if (*l == NULL)
+  {
+    Node * insert = malloc(sizeof(Node));
+    
+    insert->x = x;
+
+    insert->parent = parent;
+    
+    insert->left = insert->right = NULL;
+
+    *l = insert;
+    
+    return;
+  }
+
+  else if ( x < (*l)->x )
+  {
+    insert_tree(&((*l)->left),x,*l);
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
   }
 
   else // x >= l->x
   {
+<<<<<<< HEAD
     insert_tree(l->right,x);
+=======
+    insert_tree(&((*l)->right),x,*l);
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
   }
 
 }
@@ -57,6 +84,13 @@ Node * find_min(Node * superroot)
 
 void in_order_traverse(Node * l)
 {
+<<<<<<< HEAD
+=======
+  if ( l == NULL)
+  {
+    return;
+  }
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
   in_order_traverse(l->left);
 
   print_item(l->x);
@@ -66,6 +100,14 @@ void in_order_traverse(Node * l)
 
 void pre_order_traverse(Node *l)
 {
+<<<<<<< HEAD
+=======
+  if ( l == NULL )
+  {
+    return;
+  }
+  
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
   print_item(l->x);
 
   pre_order_traverse(l->left);
@@ -75,6 +117,14 @@ void pre_order_traverse(Node *l)
 
 void post_order_traverse(Node * l)
 {
+<<<<<<< HEAD
+=======
+
+  if ( l == NULL )
+  {
+    return;
+  }
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
   post_order_traverse(l->left);
 
   post_order_traverse(l->right);
@@ -88,6 +138,7 @@ int main(void)
   
   Node * superroot = malloc(sizeof(Node));
 
+<<<<<<< HEAD
   superroot->x = 1;
 
  insert_tree(superroot,3);
@@ -95,5 +146,40 @@ int main(void)
  Node * hright = superroot->right;
 
  print_item(hright->x);
+=======
+ insert_tree(&superroot,3,NULL);
+
+ insert_tree(&superroot,9,NULL);
+
+ insert_tree(&superroot,12,NULL);
+
+ insert_tree(&superroot,15,NULL);
+
+ #if 0
+
+ print_item(find_max(superroot)->x);
+
+ insert_tree(&superroot,1,NULL);
+
+ print_item(find_min(superroot)->x);
+
+ in_order_traverse(superroot);
+
+ pre_order_traverse(superroot);
+
+ post_order_traverse(superroot);
+
+ #endif
+
+ 
+
+ 
+
+ 
+
+
+ 
+
+>>>>>>> 1eedc0f8c585e92145cfa9b53cdc450a80501282
 
 }

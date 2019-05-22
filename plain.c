@@ -71,3 +71,54 @@ void term()
 
 	term_prime();
 }
+
+void term_prime()
+{
+	/* term' -> TIMES factor term'
+	 * 	| epsilon
+	 */
+
+	if ( match(TIMES) == 1 )
+	{
+		advance();
+
+		factor();
+
+		term_prime();
+	}
+	
+}
+
+void factor()
+{
+	/* factor -> NUM_OR_ID
+	 * 	| LP expression RP
+	 */
+
+	if ( match(NUM_OR_ID) == 1 )
+	{
+		advance();
+	}
+
+	else if ( match(LP) == 1 )
+	{
+		advance();
+
+		expression();
+
+		if ( match(RP) == 1 )
+		{
+			advance();
+		}
+
+		else
+		{
+			fprintf(stderr,"%llu: Mismatched parenthesis\n",yylineno);
+		}
+	}
+
+	else
+	{
+		fprintf(stderr,"%llu: Number or identifier expected\n",yylineno);
+	}
+}

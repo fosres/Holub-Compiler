@@ -103,14 +103,10 @@ bool match(uint8_t token)
 	}
 }
 
-void advance()
+void advance(void)
 {
 	//Advance lookahead to next symbol
 	
 	Lookahead = lex();
 }
 
-int main(void)
-{
-	statements();
-}

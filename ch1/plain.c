@@ -1,16 +1,8 @@
 //Basic parser, shows the structure but no code generation.
 #include <stdio.h>
+#include <stdbool.h>
 #include "lex.h"
 
-void expression(void);
-
-void expr_prime(void);
-
-void term(void);
-
-void term_prime(void);
-
-void factor(void);
 
 void statements(void)
 {
@@ -122,3 +114,4 @@ void factor()
 		fprintf(stderr,"%llu: Number or identifier expected\n",yylineno);
 	}
 }
+

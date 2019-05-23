@@ -27,15 +27,22 @@ void advance(void);
 
 void expression(void);
 
+void expression_improved(void);
+
 void expr_prime(void);
 
 void term(void);
+
+void term_improved(void);
 
 void term_prime(void);
 
 void factor(void);
 
+void factor_improved(void);
+
 void statements(void);
 
+void statements_improved(void);
 
 #endif // __LEX_H__

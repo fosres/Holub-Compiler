@@ -19,6 +19,8 @@ extern uint64_t yyleng;
 
 extern uint64_t yylineno;
 
+static uint8_t Lookahead;
+
 unsigned int lex(void);
 
 bool match(uint8_t token);

@@ -29,6 +29,8 @@ Returns true if there is no error or if we
 recovered from the error, false if we can not
 
 recover.
+
+All expressions must start with NUM_OR_ID or LP
 #endif
 
 bool legal_lookahead(uint64_t first_arg,...)

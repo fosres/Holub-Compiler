@@ -58,6 +58,17 @@ uint8_t * expression_retval(void)
 		freename(tempvar2);
 	}
 
+	while ( match( MINUS ) == 1 )
+	{
+		advance();
+
+		tempvar2 = term();
+
+		printf("%s -= %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+	}
+
 }
 
 uint8_t * term_retval(void)
@@ -73,6 +84,17 @@ uint8_t * term_retval(void)
 		tempvar2 = factor();
 
 		printf("%s *= %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+	}
+
+	while ( match( DIVIDE ) == 1 )
+	{
+		advance();
+
+		tempvar2 = factor();
+
+		printf("%s /= %s\n",tempvar,tempvar2);
 
 		freename(tempvar2);
 	}
@@ -96,7 +118,7 @@ uint8_t * factor_retval(void)
 		 * next argument (yyleng).
 		 */
 		
-		printf("%s = %0.%s\n",tempvar = newname(), yyleng, yytext);
+		printf("%s = %0.*s\n",tempvar = newname(), yyleng, yytext);
 
 		advance();
 	}

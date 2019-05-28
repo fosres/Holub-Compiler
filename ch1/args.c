@@ -15,7 +15,7 @@ void statements(void)
 
 	while ( match(EOI) == 0 )
 	{
-		expression( tempvar = newname() );
+		expression_args( tempvar = newname() );
 
 		freename(tempvar);
 
@@ -31,48 +31,93 @@ void statements(void)
 	}
 }
 
-void expression(uint8_t * tempvar)
+void expression_args(uint8_t * tempvar)
 {
 	/* expression -> term expression'
-	 * expression' -> PLUS term expression' | epsilon
+	 * expression' -> + term expression' | Ɛ
+	 * expression' -> - term expression' | Ɛ
 	 */
 
 	uint8_t * tempvar2 = 0x0;
 
-	term(tempvar);
+	term_args(tempvar);
 
 	while ( match(PLUS) == 1 )
 	{
 		advance();
 
-		term( tempvar2 = newname() );
+		term_args( tempvar2 = newname() );
 
 		printf("%s += %s\n",tempvar,tempvar2);
 
 		freename(tempvar2);
 	}
-}
 
-void term(uint8_t * tempvar)
-{
-	uint8_t * tempvar2 = 0x0;
-
-	factor(tempvar);
-
-	while ( match(TIMES) == 1 )
+	while ( match(MINUS) == 1 )
 	{
 		advance();
 
-		factor( tempvar2 == newname() );
+		term_args(tempvar2 = newname());
 
-		printf("%s *= %s\n",tempvar,tempvar2);
+		printf("%s -= %s\n",tempvar,tempvar2);
 
 		freename(tempvar2);
 	}
 }
 
-void factor(uint8_t * tempvar)
+void term_args(uint8_t * tempvar)
 {
+	/* term	-> factor term'
+	 * term' -> * factor term'
+	 * term' -> / factor term'
+	 * 	| Ɛ
+	 */
+
+	uint8_t * tempvar2 = 0x0;
+
+	factor_args(tempvar);
+
+	while ( match(TIMES) == 1 )
+	{
+		advance();
+
+		factor_args( tempvar2 = newname() );
+
+		printf("%s *= %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+	}
+
+	while ( match(DIVIDE) == 1 )
+	{
+		advance();
+
+		factor_args(tempvar2 = newname() );
+
+		printf("%s /= %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+	}
+
+	while ( match(MODULUS) == 1 )
+	{
+		advance();
+
+		factor_args(tempvar2 = newname() );
+
+		printf("%s %= %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+
+	}
+}
+
+void factor_args(uint8_t * tempvar)
+{
+	/* factor -> num_or_id
+	 * 	| (expression)
+	 */
+
 	if ( match( NUM_OR_ID ) == 1 )
 	{
 		printf("%s = %0.*s\n",tempvar,yyleng,yytext);
@@ -84,7 +129,7 @@ void factor(uint8_t * tempvar)
 	{
 		advance();
 
-		expression(tempvar);
+		expression_args(tempvar);
 
 		if ( match(RP) == 1 )
 		{

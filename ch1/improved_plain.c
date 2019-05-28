@@ -120,6 +120,13 @@ void expression_improved(void)
 		term_improved();
 	}
 
+	while ( match(MINUS) == 1 )
+	{
+		advance();
+
+		term_improved();
+	}
+
 }
 
 void term_improved(void)
@@ -136,6 +143,20 @@ void term_improved(void)
 		advance();
 
 		factor_improved();
+	}
+
+	while ( match(DIVIDE) == 1 )
+	{
+		advance();
+
+		factor_improved();
+	}
+
+	while ( match(MODULUS) == 1 )
+	{
+		advance();
+
+		factor_improved();	
 	}
 	
 }

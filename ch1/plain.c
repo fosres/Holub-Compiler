@@ -53,6 +53,15 @@ void expr_prime(void)
 		expr_prime();
 	}
 
+	else if ( match(MINUS) == 1 )
+	{
+		advance();
+
+		term();
+
+		expr_prime();
+	}
+
 }
 
 void term()
@@ -71,6 +80,15 @@ void term_prime()
 	 */
 
 	if ( match(TIMES) == 1 )
+	{
+		advance();
+
+		factor();
+
+		term_prime();
+	}
+
+	else if ( match(DIVIDE) == 1 )
 	{
 		advance();
 

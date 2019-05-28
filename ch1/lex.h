@@ -3,15 +3,26 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define EOI		0	/* end of input		*/
-#define SEMI		1	/* ;			*/
-#define PLUS		2	/* +			*/
-#define TIMES		3	/* *			*/
-#define LP		4	/* (			*/
-#define RP		5	/* )			*/
-#define NUM_OR_ID	6	/* decimal number or 
+#ifndef __UINT8_T__
+#define __UINT8_T__
+typedef unsigned char uint8_t;
+#endif
 
-				   identifier		*/
+#if 0
+All the hex representations are simply put--the ASCII hex codes
+#endif
+
+#define EOI		0xff	/* end of input		*/
+#define SEMI		0x3b	/* ;			*/
+#define PLUS		0x2b	/* +			*/
+#define MINUS		0x45	/* -			*/
+#define TIMES		0x2a	/* *			*/
+#define DIVIDE		0x2f	/* /			*/	
+#define MODULUS		0x25	/* %			*/
+#define LP		0x28	/* (			*/
+#define RP		0x29	/* )			*/
+#define NUM_OR_ID	0x30	/* decimal number or identifier		*/
+
 
 extern uint8_t *yytext;		/* in lex.c		*/
 
@@ -46,5 +57,9 @@ void factor_improved(void);
 void statements(void);
 
 void statements_improved(void);
+
+uint8_t * newname(void);
+
+void freename(uint8_t * s);
 
 #endif // __LEX_H__

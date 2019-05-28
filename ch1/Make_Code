@@ -1,0 +1,6 @@
+SOURCES = main.c args.c name.c lex.c lex.h
+
+CC = gcc
+
+main.o: $(SOURCES)
+	CC $^ -o $@

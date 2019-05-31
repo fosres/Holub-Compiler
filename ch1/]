@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+
+#if 0
+For reference see 3.7.0 in The Algorithm Design Manual
+#endif
+
+uint8_t char(uint8_t c)
+{
+	const uint8_t map[63];
+
+	size_t i = 0;
+
+	uint8_t digit =  0x30;
+
+	while ( i < 10 )
+	{
+		map[i] = (digit + i);
+
+		i++;			
+	}
+
+	i = 0;
+
+	while ( 
+		
+
+}
+
+void hash(uint8_t * s)
+{
+	uint8_t * s_p = s;
+
+	while ( strnlen_s(s,1024*sizeof(uint8_t) ) )
+	{
+
+
+	}
+}
+int main(void)
+{
+	return 0;	
+}

@@ -12,7 +12,7 @@ extern uint8_t * newname_retval(void);
 
 extern uint8_t * freename_retval(uint8_t *s);
 
-void statements_retval(void)
+void statements(void)
 {
 	/* statements -> expression SEMI | expression SEMI statements */
 
@@ -20,7 +20,7 @@ void statements_retval(void)
 
 	while ( match(EOI) != 1 )
 	{
-		tempvar = expression();
+		tempvar = expression_retval();
 
 		if ( match(SEMI) == 1 )
 		{
@@ -45,13 +45,13 @@ uint8_t * expression_retval(void)
 
 	uint8_t * tempvar = 0x0, * tempvar2 = 0x0;
 
-	tempvar = term();
+	tempvar = term_retval();
 
 	while ( match( PLUS ) == 1 )
 	{
 		advance();
 
-		tempvar2 = term();
+		tempvar2 = term_retval();
 
 		printf("%s += %s\n",tempvar,tempvar2);
 
@@ -62,7 +62,7 @@ uint8_t * expression_retval(void)
 	{
 		advance();
 
-		tempvar2 = term();
+		tempvar2 = term_retval();
 
 		printf("%s -= %s\n",tempvar,tempvar2);
 
@@ -75,13 +75,13 @@ uint8_t * term_retval(void)
 {
 	uint8_t * tempvar = 0x0, *tempvar2 = 0x0;
 
-	tempvar = factor();
+	tempvar = factor_retval();
 
 	while ( match( TIMES ) == 1 )
 	{
 		advance();
 
-		tempvar2 = factor();
+		tempvar2 = factor_retval();
 
 		printf("%s *= %s\n",tempvar,tempvar2);
 
@@ -92,12 +92,24 @@ uint8_t * term_retval(void)
 	{
 		advance();
 
-		tempvar2 = factor();
+		tempvar2 = factor_retval();
 
 		printf("%s /= %s\n",tempvar,tempvar2);
 
 		freename(tempvar2);
 	}
+	
+	while ( match( MODULUS ) == 1 )
+	{
+		advance();
+
+		tempvar2 = factor_retval();
+
+		printf("%s % = %s\n",tempvar,tempvar2);
+
+		freename(tempvar2);
+	}
+
 
 	return tempvar;
 }
@@ -127,7 +139,7 @@ uint8_t * factor_retval(void)
 	{
 		advance();
 
-		tempvar = expression();
+		tempvar = expression_retval();
 
 		if ( match(RP) == 1 )
 		{

@@ -25,8 +25,8 @@ All the hex representations are simply put--the ASCII hex codes
 #define MODULUS		0x25	/* %			*/
 #define LP		0x28	/* (			*/
 #define RP		0x29	/* )			*/
-#define NUM_OR_ID	0x30	/* decimal number or	*/
-				/* identifier name for a variable; it can
+#define NUM		0x30	/* decimal number	*/
+#define ID		0x5f	/* identifier name for a variable; it can
 				   begin with an '_' 	*/	
 
 

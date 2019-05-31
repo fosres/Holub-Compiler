@@ -10,7 +10,7 @@ uint64_t	yylineno	= 0;	/* Input line number		*/
 
 unsigned int lex(void)
 {
-	static uint8_t input_buffer[128];
+	static uint8_t input_buffer[1024];
 	
 	uint8_t * current = 0x0;
 
@@ -26,7 +26,7 @@ unsigned int lex(void)
 
 			current = input_buffer;
 			
-			if ( fgets(input_buffer,128*sizeof(uint8_t),stdin) == NULL )
+			if ( fgets(input_buffer,1024*sizeof(uint8_t),stdin) == NULL )
 			{
 				*current = 0x0;
 				
@@ -52,6 +52,7 @@ unsigned int lex(void)
 			{
 			case 0xff:	return EOI	;
 			case ';':	return SEMI	;
+			case '=':	return EQUALS	;
 			case '+':	return PLUS	;
 			case '-': 	return MINUS	;
 			case '*':	return TIMES	;
@@ -65,21 +66,33 @@ unsigned int lex(void)
 			case ' ' : break;
 
 			default:
-				   if ( !isalnum(*current) )
+				   if ( !isalnum(*current) && (*current != '_' ) )
 				   {
 					   fprintf(stderr,"Ignoring illegal input <%c>\n",*current); 
 				   }
 
-				   else
+				   else if ( isdigit(*current) )
 				   {
-					while ( isalnum(*current) )
+					while ( isdigit(*current) )
+					{
+						current++;	
+					}
+
+					yyleng = current - yytext;
+
+					return NUM;
+				   }
+
+				   else // identifier
+				   {
+					while ( isalnum(*current) || ( *current == '_' ) )
 					{
 						current++;
 					}
 
 					yyleng = current - yytext;
 
-					return NUM_OR_ID;
+					return ID;
 				   }
 
 				   break;
@@ -101,8 +114,9 @@ bool match(uint8_t token)
 	if ( Lookahead == 0xff )
 	{
 		Lookahead = lex();
-	}
+
 		return token == Lookahead;
+	}
 }
 
 void advance(void)

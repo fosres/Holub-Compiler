@@ -18,5 +18,19 @@ int main(void)
 
 	printf("%llu\n",c);
 
+	char * s = (char *)calloc(10,sizeof(char));
+
+	s[6] = 'Z';
+
+	printf("%c\n",s[6]);
+
+	typeof (s) y = NULL;
+
+	char * t = "Testing\0";
+
+	y = t;
+
+	printf("%s\n",y);	
+
 	return 0;
 }

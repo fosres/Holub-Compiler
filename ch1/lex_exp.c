@@ -1,4 +1,4 @@
-#include "lex.h"
+#include "lex_exp.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -114,9 +114,9 @@ bool match(uint8_t token)
 	if ( Lookahead == 0xff )
 	{
 		Lookahead = lex();
-
-		return token == Lookahead;
 	}
+
+	return token == Lookahead;
 }
 
 void advance(void)

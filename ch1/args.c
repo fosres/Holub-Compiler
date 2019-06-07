@@ -70,46 +70,63 @@ void term_args(uint8_t * tempvar)
 	/* term	-> factor term'
 	 * term' -> * factor term'
 	 * term' -> / factor term'
+	 * term' -> % factor term'
 	 * 	| Ɛ
 	 */
 
 	uint8_t * tempvar2 = 0x0;
 
 	factor_args(tempvar);
+			
+			if ( match(TIMES) )
+			{
+			
+			while ( match(TIMES) == 1 )
+			{
+			
+				advance();
 
-	while ( match(TIMES) == 1 )
-	{
-		advance();
+				factor_args( tempvar2 = newname() );
 
-		factor_args( tempvar2 = newname() );
+				printf("%s *= %s\n",tempvar,tempvar2);
 
-		printf("%s *= %s\n",tempvar,tempvar2);
+				freename(tempvar2);
+			}
+			
+			}
 
-		freename(tempvar2);
-	}
+			else if ( match(DIVIDE) )
+			{
 
-	while ( match(DIVIDE) == 1 )
-	{
-		advance();
+				while ( match(DIVIDE) == 1 )
+				{
+				advance();
 
-		factor_args(tempvar2 = newname() );
+				factor_args(tempvar2 = newname() );
 
-		printf("%s /= %s\n",tempvar,tempvar2);
+				printf("%s /= %s\n",tempvar,tempvar2);
 
-		freename(tempvar2);
-	}
+				freename(tempvar2);
+				}
+			}
 
-	while ( match(MODULUS) == 1 )
-	{
-		advance();
+			else if ( match(MODULUS) )
+			{
+	
+			while ( match(MODULUS) == 1 )
+			{
+				advance();
 
-		factor_args(tempvar2 = newname() );
+				factor_args(tempvar2 = newname() );
 
-		printf("%s %= %s\n",tempvar,tempvar2);
+				printf("%s %%= %s\n",tempvar,tempvar2);
 
-		freename(tempvar2);
+				freename(tempvar2);
 
-	}
+			}
+
+			}
+
 }
 
 void factor_args(uint8_t * tempvar)

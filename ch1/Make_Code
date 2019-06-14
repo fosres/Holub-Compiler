@@ -1,4 +1,4 @@
-SOURCES = main.c args.c name_exp.c lex_exp.c lex_exp.h
+SOURCES = main.c args.c name.c lex_exp.c lex_exp.h
 
 CC = gcc
 

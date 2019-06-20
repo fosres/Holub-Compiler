@@ -1,5 +1,6 @@
 #include "lex_exp.h"
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <ctype.h>
@@ -83,7 +84,7 @@ unsigned int lex(void)
 					return NUM;
 				   }
 
-				   else // identifier
+				   else // either its one of the below keywords or an identifier
 				   {
 					while ( isalnum(*current) || ( *current == '_' ) )
 					{
@@ -92,6 +93,94 @@ unsigned int lex(void)
 
 					yyleng = current - yytext;
 
+// Storage-class specifier
+					if ( strcmp(current,"auto\0") == 0 )
+					{
+						return AUTO;
+					}
+	
+					else if ( strcmp(current,"static\0") == 0 )
+					{
+						return STATIC;
+					}
+
+					else if ( strcmp(current,"extern\0") == 0 )
+					{
+						return EXTERN;
+					}
+				
+					else if ( strcmp(current,"typedef\0") == 0 )
+					{
+						return TYPEDEF;
+					}
+					
+					else if ( strcmp(current,"const\0") == 0 )
+					{
+						return CONST;
+					}
+					
+					else if ( strcmp(current,"volatile\0") == 0 )
+					{
+						return VOLATILE;
+					}
+// type-specifiers below			
+		
+					else if ( strcmp(current,"void\0") == 0 )
+					{
+						return VOID;
+					}
+					
+					else if ( strcmp(current,"char\0") == 0 )
+					{
+						return CHAR;
+					}
+					
+					else if ( strcmp(current,"short\0") == 0 )
+					{
+						return SHORT;
+					}
+					
+					else if ( strcmp(current,"int\0") == 0 )
+					{
+						return INT;
+					}
+					
+					else if ( strcmp(current,"long\0") == 0 )
+					{
+						return LONG;
+					}	
+					
+					else if ( strcmp(current,"float\0") == 0 )
+					{
+						return FLOAT;
+					}	
+					
+					else if ( strcmp(current,"double\0") == 0 )
+					{
+						return DOUBLE;
+					}	
+					
+					else if ( strcmp(current,"signed\0") == 0 )
+					{
+						return SIGNED;
+					}	
+					
+					else if ( strcmp(current,"unsigned\0") == 0 )
+					{
+						return UNSIGNED;
+					}	
+
+//type-qualifer
+					else if ( strcmp(current,"const\0") == 0 )
+					{
+						return CONST;
+					}
+
+					else if ( strcmp(current,"volatile\0") == 0 )
+					{
+						return VOLATILE;
+					}
+					
 					return ID;
 				   }
 
@@ -110,7 +199,8 @@ static uint8_t Lookahead = 0xff;
 bool match(uint8_t token)
 {
 	//Return true if "token" matches current lookahead symbol
-	
+
+	va_start 	
 	if ( Lookahead == 0xff )
 	{
 		Lookahead = lex();

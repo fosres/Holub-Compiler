@@ -15,19 +15,48 @@ typedef unsigned char uint8_t;
 All the hex representations are simply put--the ASCII hex codes
 #endif
 
+// Symbols that are part of the ASCII character field (Except ID)
 #define EOI		0xff	/* end of input		*/
 #define SEMI		0x3b	/* ;			*/
 #define EQUALS		0x3d	/* =			*/
 #define PLUS		0x2b	/* +			*/
 #define MINUS		0x45	/* -			*/
 #define TIMES		0x2a	/* *			*/
+#define INDIR		0x2b	/* *			*/
 #define DIVIDE		0x2f	/* /			*/	
 #define MODULUS		0x25	/* %			*/
 #define LP		0x28	/* (			*/
 #define RP		0x29	/* )			*/
 #define NUM		0x30	/* decimal number	*/
+
 #define ID		0x5f	/* identifier name for a variable; it can
 				   begin with an '_' 	*/	
+
+// Storage-class specifiers
+#define AUTO		0x100	
+#define STATIC		0x101
+#define EXTERN		0x102
+#define TYPEDEF		0x103	
+
+// Type-specifiers
+#define VOID		0x104
+#define CHAR		0x105
+#define SHORT		0x106
+#define INT		0x107
+#define LONG		0x108
+#define FLOAT		0x109
+#define DOUBLE		0x10a
+#define SIGNED		0x10b
+#define UNSIGNED	0x10c
+
+// Type-qualifiers
+#define CONST		0x10d
+#define VOLATILE	0x10e
+
+//Structs and unions
+#define STRUCT		0x10f
+#define UNION		0x110
+
 
 
 extern uint8_t *yytext;		/* in lex.c		*/

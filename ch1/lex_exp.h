@@ -31,31 +31,38 @@ All the hex representations are simply put--the ASCII hex codes
 
 #define ID		0x5f	/* identifier name for a variable; it can
 				   begin with an '_' 	*/	
+#if 0
+From this point onward, 
+
+Storage-class specifiers, type-specifiers, and type-qualifiers
+
+#endif
 
 // Storage-class specifiers
-#define AUTO		0x100	
-#define STATIC		0x101
-#define EXTERN		0x102
-#define TYPEDEF		0x103	
+#define AUTO		(  ( ( 0b001 ) << 8 ) | (0x100)  )	
+#define STATIC		(  ( ( 0b010 ) << 8 ) | (0x100)  )
+#define EXTERN		(  ( ( 0b011 ) << 8 ) | (0x100)  )
+#define TYPEDEF		(  ( ( 0b100 ) << 8 ) | (0x100)  )	
 
 // Type-specifiers
-#define VOID		0x104
-#define CHAR		0x105
-#define SHORT		0x106
-#define INT		0x107
-#define LONG		0x108
+#define VOID		(  ( ( 0b0 ) << 12 ) | ( 0x1100 )  )
+#define BOOL		(  ( ( 0b1 ) << 12 ) | ( 0x1100 )  )
+#define CHAR		(  ( ( 0b101 ) << 14 ) | ( ( 0x1100 ) )  )
+#define SHORT		(  ( ( 0b010 ) << 14 ) | ( ( 0x1100 ) )  )
+#define INT		(  ( ( 0b011 ) << 14 ) | ( ( 0x1100 ) )  )
+#define LONG		(  ( ( 0b100 ) << 14 ) | ( ( 0x1100 ) )  )
 #define FLOAT		0x109
 #define DOUBLE		0x10a
-#define SIGNED		0x10b
-#define UNSIGNED	0x10c
+#define SIGNED		(  ( ( 0b1 ) << 13 ) | ( ( 0x1100 ) )  )
+#define UNSIGNED	(  ( ( 0b0 ) << 13 ) | ( ( 0x1100 ) )  )
 
 // Type-qualifiers
-#define CONST		0x10d
-#define VOLATILE	0x10e
+#define CONST		0x10e
+#define VOLATILE	0x10f
 
 //Structs and unions
-#define STRUCT		0x10f
-#define UNION		0x110
+#define STRUCT		0x110
+#define UNION		0x111
 
 
 
@@ -65,7 +72,7 @@ extern uint64_t yyleng;
 
 extern uint64_t yylineno;
 
-static uint8_t Lookahead;
+extern static uint8_t Lookahead;
 
 unsigned int lex(void);
 

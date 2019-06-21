@@ -1,7 +1,12 @@
 #include <stdio.h>
-
+#define THREE ( (0b10) | (0b01) ) 
 int main(void)
 {
+	if ( THREE == 0b11 )
+	{
+		printf("3\n");
+	}
 
-	short float a= -1.0;
+
+	return 0;
 }

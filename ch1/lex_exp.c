@@ -129,6 +129,11 @@ unsigned int lex(void)
 					{
 						return VOID;
 					}
+
+					else if ( strcmp(current,"bool\0") == 0 )
+					{
+						return BOOL;
+					}
 					
 					else if ( strcmp(current,"char\0") == 0 )
 					{

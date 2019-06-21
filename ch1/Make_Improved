@@ -3,4 +3,4 @@ SOURCES = lex.c main.c plain.c lex.h
 IMPROVED_SOURCES = lex.c improved_main.c improved_plain.c name.c retval.c lex.h
 
 main_improved.o:  $(IMPROVED_SOURCES)
-	gcc $(IMPROVED_SOURCES) -o $@
+	gcc-8 $(IMPROVED_SOURCES) -o $@

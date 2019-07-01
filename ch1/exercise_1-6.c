@@ -29,6 +29,8 @@ uint64_t yycharno = 0;
 
 uint64_t Lookahead = 0xff;
 
+static bool is_valid_expression;
+
 bool isendofline(void)
 {
 	return ((*infix_p == 0x0) ^ (*infix_p == 0xa));		
@@ -219,33 +221,125 @@ uint64_t lex(void) //returns next token from stdin
 	lex();
 }
 
-void is_valid_expression(void)
+void expression(void)
 {
+	if ( match(NUM) )
+	{
+		is_valid_expression = 1;
+	}
+
+	else if ( match(LP) )
+	{
+		advance(); expression();
+		
+		if ( match(RP) )
+		{
+			is_valid_expression = 1;
+
+		}
+			if ( isendofline() ) { return; }
+	
+	}
+
+	else // incorrect starting token for expression
+	{
+		fprintf(stderr,"%llu:Error: Expected either an integer-constant or"
+			"left-parenthesis \'(\'\n",yycharno);
+
+		is_valid_expression = 0;
+
+		return;
+	}
+
 	if ( isendofline() )
 	{
-		clear_all();	
-		
-		advance();
-		
-		return 1;
+		return;
 	}
 
-	if ( match(LP) == 0 && match(NUM) == 0 )
-	{
-		fprintf(stderr,"Error: Expected a left-parenthesis \'(\' or a member\n");
+	advance();
 
-		clear_all(); advance();
-		
-		return 0;
+	if ( match(RP) )
+	{ return; }
+	
+	else if ( !isoperator(*infix_p) )
+	{
+		fprintf(stderr,"%llu:Error:Missing operator or right-parenthesis \')\'\n",
+			yycharno);
+
+		is_valid_expression = 0; return;
 	}
 
-	if ( match(LP) == 1 )
+	is_valid_expression = 0;
+
+	if ( isendofline() )
+	{ return; }
+
+	advance();
+
+	expression();
+
+}
+
+void convert_expression(void)
+{
+	infix_p = &infix[strlen(infix)-1]; prefix_p = &prefix[0];
+
+	while ( infix_p >= &infix_p[0] )
 	{
-		advance(); 
+		if ( isoperator(*infix_p) )
+		{ 
+			if ( *infix_p == ')' )	
+			{	push_stack(*infix_p); infix_p--; }
+
+			else if ( *infix_p == '(' )
+			{
+			while ( *stack_p != ')' )
+			{
+				pop_stack(); 
+			}
+			
+			pop_stack();
+
+			infix_p--;
+		
+			}
+
+		else
+		{ push_stack(*infix_p); infix_p--; }	
+		
+		}
+
+		else if ( isdigit(*infix_p) )
+		{
+			while ( isdigit(*infix_p) )
+			{ *prefix_p++ = *infix_p==; }
+
+			*prefix_p++ = 0x20; // space separates integer-constants
+		}
+
+		else // isspace() or isendofline()
+		{ infix_p--; }
+		
+
 	}
 	
+	prefix_p = &prefix[strlen(prefix)-1];
 
+	postfix_expr();
+
+}
+
+void transpiler(void)
+{
+	while (1)
+	{
+		expression();
 		
+		if ( is_valid_expression = 1 )
+		{	convert_expression();	}
+
+		clear_all(); advance(); is_valid_expression = 0;
+	}
 }
 
 int main(void)

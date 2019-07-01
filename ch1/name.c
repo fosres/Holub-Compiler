@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "lex.h"
+#include "lex_exp.h"
 
 uint8_t * Names[] = {"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7" };
 

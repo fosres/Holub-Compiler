@@ -1,6 +1,6 @@
-SOURCES = main.c args.c name.c lex_exp.c lex_exp.h
+SOURCES = main.c args_improved.c name.c lex_exp.c lex_exp.h
 
-CC = gcc
+CC = gcc-8
 
 main.o: $(SOURCES)
-	CC $^ -o $@
+	$(CC) $^ -o $@

@@ -1,12 +1,19 @@
 #include <stdio.h>
-#define THREE ( (0b10) | (0b01) ) 
+
+int func(int a,int b)
+{
+	return a;
+}
+
+int fac(int (*func_p)(int a,int b));
+
 int main(void)
 {
-	if ( THREE == 0b11 )
-	{
-		printf("3\n");
-	}
+	long long int a = 3;
+	
+	a	++;
 
-
+	printf("%llu\n",a);	
+	
 	return 0;
 }

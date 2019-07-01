@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#include "lex.h"
+#include "lex_exp.h"
 
 #define MAXFIRST 16
 #define SYNCH SEMI
@@ -106,7 +106,7 @@ void expression_improved(void)
 	 * expression -> PLUS term expression' | epsilon
 	 */
 
-	if ( legal_lookahead( NUM_OR_ID,LP,0 ) == 0 )
+	if ( legal_lookahead( NUM,ID,LP,0 ) == 0 )
 	{
 		return;
 	}
@@ -131,44 +131,55 @@ void expression_improved(void)
 
 void term_improved(void)
 {
-	if ( legal_lookahead( NUM_OR_ID,LP,0 ) == 0 )
+	if ( legal_lookahead( NUM,ID,LP,0 ) == 0 )
 	{
 		return;
 	}
 
 	factor_improved();
 
-	while ( match(TIMES) == 1 )
+	
+	if ( match(TIMES) )
 	{
-		advance();
+		while ( match(TIMES) == 1 )
+		{
+			advance();
 
-		factor_improved();
+			factor_improved();
+		}
+	
 	}
-
-	while ( match(DIVIDE) == 1 )
+	
+	else if ( match(DIVIDE) )
 	{
-		advance();
+		while ( match(DIVIDE) == 1 )
+		{
+			advance();
 
-		factor_improved();
+			factor_improved();
+		}
 	}
+	
+	else if ( match(MODULUS) )
+	{	
+		while ( match(MODULUS) == 1 )
+		{
+			advance();
 
-	while ( match(MODULUS) == 1 )
-	{
-		advance();
-
-		factor_improved();	
+			factor_improved();	
+		}
 	}
 	
 }
 
 void factor_improved(void)
 {
-	if ( legal_lookahead(NUM_OR_ID,LP,0) == 0 )
+	if ( legal_lookahead(NUM,ID,LP,0) == 0 )
 	{
 		return;
 	}
 
-	if ( match(NUM_OR_ID) == 1 )
+	if ( ( match(NUM) == 1 ) || ( match(ID) == 1 ) )
 	{
 		advance();
 	}

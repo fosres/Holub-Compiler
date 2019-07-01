@@ -111,18 +111,32 @@ ldp = 0b11110
 
 typedef struct var
 {
+	uint8_t name[31];
 	
 	struct var * in_stack;
-
-	struct var * func_addr;
-
-	uint8_t name[31];
+	
+	size_t offset;
 	
 	value val;	
 	
 	typeid type_id;
+#if 0
 
-	uint8_t specs;
+inlcudes info on static, extern, and what index c it is in the *argv[] list
+
+for translation units
+
+7 6 | 5 4 3 2  | 1 | 0
+
+Bits 7-2 for index of c in * argv[] list
+
+Bit 1 for extern
+
+Bit 0 for static
+
+#endif
+
+	uint8_t specs; 
 
 
 } var;

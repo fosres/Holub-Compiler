@@ -83,7 +83,12 @@ int main(int argc, char * argv[])
 	
 	init_data(argv);
 	
-	printf("%llu\n",sizeof(var));
+	printf("%llu\n",sizeof(typeid));
+
+	int (*a)(int,char **) = main;
+
+
+	unsigned long long int abacus;
 		
 	return 0;
 

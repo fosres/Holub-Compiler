@@ -1,0 +1,8 @@
+CC = gcc-8
+
+sources = exercise_1-6.c lex_lisp.c
+
+headers = lex_exp.h lisp.h
+
+exercise_1-6.o: $(sources) $(headers)
+	$(CC) $(sources) $(headers) -o exercise_1-6.o

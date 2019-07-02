@@ -1,3 +1,10 @@
+#ifndef __LISP_H__
+#define __LISP_H__
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#define NL	0xa
 
 bool isendofline(void);
 
@@ -18,4 +25,4 @@ extern uint8_t * infix_p;
 extern uint8_t * stack_p; 
 
 extern uint8_t * prefix_p; 
-
+#endif // __LISP_H__

@@ -5,11 +5,13 @@
 #include <stdint.h>
 #include <ctype.h>
 
+#define NL	0xa	/* Newline character */
 uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
 uint8_t 	*yycurrent	= 0x0;
 uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
 uint64_t	yylineno	= 0;	/* Input line number		*/
 uint64_t 	yycharno 	= 0; 	/* Input char number		*/
+
 uint64_t lex(void)
 {
 	uint8_t input_buffer[1024];
@@ -212,6 +214,7 @@ uint64_t lex(void)
 	}
 
 }
+
 
 uint64_t Lookahead = 0xff;
 

@@ -19,17 +19,115 @@ uint8_t * stack_p = &stack[0] - 1;
 
 uint8_t * prefix_p = &prefix[0];
 
-uint8_t * yytext = 0x0;
+static bool is_valid_expression;
 
-uint8_t * yycurrent = 0x0;
-
-uint64_t yyleng = 0;
-
-uint64_t yycharno = 0;
+uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
+uint8_t 	*yycurrent	= 0x0;
+uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
+uint64_t	yylineno	= 0;	/* Input line number		*/
+uint64_t 	yycharno 	= 0; 	/* Input char number		*/
 
 uint64_t Lookahead = 0xff;
 
-static bool is_valid_expression;
+uint64_t lisp_lex(void)
+{
+	yycurrent = yytext + yyleng;
+	
+	while ( *yycurrent == 0xa ^ *yycurrent == 0x0 )
+	{
+#if 0
+Get new lines, skipping any leading white space on the line, until a nonblank line is found.
+#endif
+	
+	yycurrent = infix;
+
+	if ( fgets(infix,1024,stdin) == NULL )
+	{
+		exit(1); 
+	}
+
+	while ( isspace(*yycurrent) && (*yycurrent != 0xa) )
+		;
+	
+	}
+	
+	while ( isspace(*yycurrent) && (*yycurrent != 0xa) )
+	{	yycurrent++; yycharno++;	}
+
+	while ( *yycurrent != 0x0 )
+	{
+		yytext = yycurrent;
+
+		yyleng = 1;
+
+		switch(*yycurrent)
+		{
+			case 0xff: { exit(1); }
+			case '+': return PLUS;
+			case '-': return MINUS;
+			case '*': return ASTK;
+			case '(': return LP;
+			case ')': return RP;
+			case '\n': return NL;
+			case '\t':
+			case ' ':
+			{ break; }
+			
+			default:
+			{
+				if ( isdigit(*yycurrent) )
+				{
+					while ( isdigit(*yycurrent) )
+					{
+						yycurrent++; yycharno++;
+					}
+
+					yyleng = yycurrent - yytext;
+
+					return NUM;
+				
+				}
+				
+				else
+				{
+					fprintf(stderr,"%llu: Error: Invalid lexeme\n",
+						yycharno
+						);
+
+					yytext = yycurrent = &infix[1023];
+				}
+
+				break;
+			} //end default block
+
+		} // end switch statement
+		
+		yycurrent++;
+	} //end while loop for tokens
+
+	lisp_lex();
+
+}
+
+void advance(void)
+{
+	//Advance lookahead to next symbol
+	
+	Lookahead = lisp_lex();
+}
+
+bool match(uint64_t token)
+{
+	//Return true if "token" matches yycurrent lookahead symbol
+
+	if ( Lookahead == 0xff )
+	{
+		Lookahead = lisp_lex();
+	}
+
+	return token == Lookahead;
+}
+
 
 bool isendofline(void)
 {
@@ -41,18 +139,6 @@ bool isEOI(void)
 	return (*infix_p == 0xff);
 }
 
-void advance(void)
-{
-	Lookahead = lex();
-}
-
-bool match(uint64_t token)
-{
-	if ( Lookahead == 0xff )
-	{ Lookahead = lex(); }
-	
-	return ( Lookahead == token );
-}
 
 bool isoperator(uint8_t in)
 {
@@ -120,106 +206,6 @@ uint8_t stack_top(void)
 	return *stack_p;
 }
 
-uint64_t lex(void) //returns next token from stdin
-{
-	if ( isendofline() )
-	{
-		if ( fgets(infix,1024,stdin) == NULL )
-		{
-			fprintf(stderr,"Error: Failed to get next line\n");
-			
-			exit(1);
-		}
-		
-		yycharno = 0;
-
-		infix_p = &infix[0];
-	}
-	
-
-	if ( *infix_p == 0xff ) { exit(1); }
-
-	if ( *infix_p == 0xa ) { goto newline; }
-
-	while ( !isendofline() && !isEOI() )
-	{
-		while ( isspace(*infix_p) && !isendofline() && !isEOI() )
-		{ infix_p++; yycharno++; }
-
-		if ( isEOI() ) { exit(1); }
-
-		yytext = yycurrent = infix_p;
-
-		if ( isendofline() ) { goto newline; }
-
-//!isspace(*infix_p) && !isendofline() && !isEOI() )
-
-		while ( isdigit(*infix_p) ) 		
-		{ *yycurrent++ = *infix_p++; yycharno++; }
-
-		if ( isEOI() )
-		{ exit(1); }
-
-		yyleng = yycurrent - yytext;
-
-		switch(*yytext)
-		{
-			case 0xff: {exit(1); break; }
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			{
-				return NUM;
-			}
-
-			case '+':
-			{
-				return PLUS;
-			}
-
-			case '-':
-			{
-				return MINUS;
-			}
-			
-			case '*':
-			{
-				return ASTK;
-			}
-
-			case '/':
-			{
-				return DIVIDE;
-			}
-
-			case '%':
-			{
-				return MODULUS;
-			}
-
-			default:
-			{
-				fprintf(stderr,"%llu:Error: Invalid lexeme\n",yycharno);
-				
-				goto newline;
-
-				break;
-
-			}
-
-		}		
-	}
-
-	newline:
-	lex();
-}
 
 void expression(void)
 {
@@ -232,52 +218,108 @@ void expression(void)
 	{
 		advance(); expression();
 		
-		if ( match(RP) )
+		if ( match(RP) && is_valid_expression )
 		{
 			is_valid_expression = 1;
-
 		}
-			if ( isendofline() ) { return; }
-	
+		
+		else
+		{ 
+			fprintf(stderr,"%llu: Missing right-parenthesis \')\'\n",
+				yycharno
+				);
+			
+			is_valid_expression = 0; 
+			
+			return;
+		
+		}	
+			
 	}
+	else if ( match(NL) ) { return; }
 
 	else // incorrect starting token for expression
 	{
 		fprintf(stderr,"%llu:Error: Expected either an integer-constant or"
-			"left-parenthesis \'(\'\n",yycharno);
+			" left-parenthesis \'(\'\n",yycharno);
 
 		is_valid_expression = 0;
 
 		return;
 	}
-
-	if ( isendofline() )
+	
+	advance();
+	
+	if ( match(NL) )
 	{
 		return;
 	}
 
-	advance();
-
-	if ( match(RP) )
+	else if ( match(RP) )
 	{ return; }
-	
-	else if ( !isoperator(*infix_p) )
+
+	else if ( !isoperator(*yytext) )
 	{
-		fprintf(stderr,"%llu:Error:Missing operator or right-parenthesis \')\'\n",
-			yycharno);
+		fprintf(stderr,"%llu: Error: Missing operator or right-parenthesis"
+			" \')\'\n",
+			yycharno
+			);
 
-		is_valid_expression = 0; return;
-	}
+		is_valid_expression = 0;
 
+		return;
+	}	
+	
 	is_valid_expression = 0;
-
-	if ( isendofline() )
-	{ return; }
-
+	
 	advance();
+
+	if ( match(NL) )
+	{ return; }
 
 	expression();
 
+}
+
+void postfix_expr(void)
+{
+	if ( prefix_p < &prefix[0] )
+	{ putchar(0xa); return; }
+
+	if ( isspace(*prefix_p) || ( ( *prefix_p == 0xa ) ^ ( *prefix_p == 0x0 ) ) )
+	{ prefix_p--; }
+
+	else if ( isoperator(*prefix_p) )
+	{
+		printf(" %c ",*prefix_p);
+
+		prefix_p--;
+
+		postfix_expr(); printf(" ) ");
+	}
+
+	else if ( isdigit(*prefix_p) )
+	{
+		while ( isdigit(*prefix_p) )
+		{ putchar(*prefix_p); prefix_p--; }
+	}
+
+	postfix_expr();
+
+}
+
+void pop_stack(void)
+{
+	*prefix_p++ = *stack_p--;
+}
+
+void push_stack(uint8_t in)
+{
+	if ( ( op_prec(*stack_p) > op_prec(in) ) && ( stack_p >= &stack[0] ) )
+	{ pop_stack(); *++stack_p = in; }
+
+	else
+	{ *++stack_p = in; }
 }
 
 void convert_expression(void)
@@ -312,7 +354,7 @@ void convert_expression(void)
 		else if ( isdigit(*infix_p) )
 		{
 			while ( isdigit(*infix_p) )
-			{ *prefix_p++ = *infix_p==; }
+			{ *prefix_p++ = *infix_p--; }
 
 			*prefix_p++ = 0x20; // space separates integer-constants
 		}
@@ -344,5 +386,10 @@ void transpiler(void)
 
 int main(void)
 {
+//	transpiler();
+	
+		expression();
+
+	printf("%s is_valid_expression:%d\n",infix_p,is_valid_expression);
 	return 0;
 }

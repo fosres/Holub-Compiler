@@ -76,6 +76,7 @@ Storage-class specifiers, type-specifiers, and type-qualifiers
 
 extern uint8_t *yytext;		/* in lex.c		*/
 
+extern uint8_t *yycurrent;
 extern uint64_t yyleng;
 
 extern uint64_t yylineno;

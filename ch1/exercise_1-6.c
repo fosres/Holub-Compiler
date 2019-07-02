@@ -267,12 +267,6 @@ void expression(void)
 	
 	if ( match(NL) )
 	{
-#if 0
-		fprintf(stderr,"%llu: Error: Missing integer or operator or"
-				" right-parenthesis \')\'\n",
-			yycharno
-			);
-#endif
 				
 		return;
 	}
@@ -309,7 +303,7 @@ void expression(void)
 
 void postfix_expr(void)
 {
-	if ( prefix_p < &prefix[0] )
+	if ( prefix_p >= &prefix[0] )
 	{ putchar(0xa); return; }
 
 	if ( isspace(*prefix_p) || ( ( *prefix_p == 0xa ) ^ ( *prefix_p == 0x0 ) ) )
@@ -390,6 +384,8 @@ void convert_expression(void)
 		
 
 	}
+
+	printf("%s\n",prefix);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
 
@@ -406,13 +402,21 @@ void transpiler(void)
 		if ( is_valid_expression == 1 )
 		{	convert_expression();	}
 
+		clear_all();
+
 		advance(); is_valid_expression = 0;
 	}
 }
 
 int main(void)
 {
-	transpiler();
+	while ( 1 )
+	{
+		expression();
+		
+//		printf("%s\n",infix[strlen(infix)-1]); This is causing the bug
 	
+		advance();	
+	}	
 	return 0;	
 }

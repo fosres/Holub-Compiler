@@ -207,6 +207,12 @@ void clear_all(void)
 	prefix_p = &prefix[0];
 
 	stack_p = stack - 1;
+
+	yycurrent = &infix[0];
+
+	yytext = &infix[0];
+
+	yyleng = 0;
 	
 }
 
@@ -246,8 +252,6 @@ void expression(void)
 		}	
 			
 	}
-	
-	else if ( match(NL) ) { return; }
 
 	else // incorrect starting token for expression
 	{
@@ -263,6 +267,13 @@ void expression(void)
 	
 	if ( match(NL) )
 	{
+#if 0
+		fprintf(stderr,"%llu: Error: Missing integer or operator or"
+				" right-parenthesis \')\'\n",
+			yycharno
+			);
+#endif
+				
 		return;
 	}
 
@@ -395,17 +406,13 @@ void transpiler(void)
 		if ( is_valid_expression = 1 )
 		{	convert_expression();	}
 
-		clear_all(); advance(); is_valid_expression = 0;
+		advance(); is_valid_expression = 0;
 	}
 }
 
 int main(void)
 {
-//	transpiler();
+	transpiler();
 	
-	expression();
-	
-	printf("is_valid_expression: %llu\n",is_valid_expression);
-		
-	return 0;
+	return 0;	
 }

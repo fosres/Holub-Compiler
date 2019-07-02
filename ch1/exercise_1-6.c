@@ -33,7 +33,7 @@ uint64_t lisp_lex(void)
 {
 	yycurrent = yytext + yyleng;
 	
-	while ( *yycurrent == 0xa ^ *yycurrent == 0x0 )
+	while ( *yycurrent == 0x0 )
 	{
 #if 0
 Get new lines, skipping any leading white space on the line, until a nonblank line is found.
@@ -41,13 +41,17 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 	
 	yycurrent = infix;
 
+	yycharno = 1;
+
 	if ( fgets(infix,1024,stdin) == NULL )
 	{
 		exit(1); 
 	}
 
-	while ( isspace(*yycurrent) && (*yycurrent != 0xa) )
-		;
+	while ( isspace(*yycurrent)  )
+	{	
+		yycurrent++; yycharno++;	
+	}
 	
 	}
 	
@@ -66,6 +70,8 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 			case '+': return PLUS;
 			case '-': return MINUS;
 			case '*': return ASTK;
+			case '/': return DIVIDE;
+			case '%': return MODULUS;
 			case '(': return LP;
 			case ')': return RP;
 			case '\n': return NL;
@@ -142,17 +148,18 @@ bool isEOI(void)
 
 bool isoperator(uint8_t in)
 {
-	switch (Lookahead)
+	switch (in)
 	{
-		case PLUS:
-		case MINUS:
-		case ASTK:
-		case DIVIDE:
-		case MODULUS:
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '%':
 		{
 			return 1;
 		}
 
+		default: {break;}
 	}
 
 	return 0;
@@ -180,6 +187,8 @@ size_t op_prec(uint64_t token)
 		{
 			return 0;
 		}
+		
+		default: {break;}
 
 	}
 
@@ -236,6 +245,7 @@ void expression(void)
 		}	
 			
 	}
+	
 	else if ( match(NL) ) { return; }
 
 	else // incorrect starting token for expression
@@ -388,8 +398,9 @@ int main(void)
 {
 //	transpiler();
 	
-		expression();
-
-	printf("%s is_valid_expression:%d\n",infix_p,is_valid_expression);
+	expression();
+	
+	printf("is_valid_expression: %llu\n",is_valid_expression);
+		
 	return 0;
 }

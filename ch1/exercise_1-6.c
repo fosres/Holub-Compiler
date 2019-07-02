@@ -285,7 +285,11 @@ void expression(void)
 	advance();
 
 	if ( match(NL) )
-	{ return; }
+	{
+		fprintf(stderr,"%llu:Error: Missing integer-constant\n",yycharno);
+		 
+		return; 
+	}
 
 	expression();
 

@@ -108,7 +108,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 
 		} // end switch statement
 		
-		yycurrent++;
+		yycurrent++; yycharno++;
 	} //end while loop for tokens
 
 	lisp_lex();
@@ -234,7 +234,8 @@ void expression(void)
 		
 		else
 		{ 
-			fprintf(stderr,"%llu: Missing right-parenthesis \')\'\n",
+			fprintf(stderr,"%llu: Missing integer constant or "
+					" right-parenthesis \')\'\n",
 				yycharno
 				);
 			

@@ -165,7 +165,7 @@ bool isoperator(uint8_t in)
 	return 0;
 }
 
-size_t op_prec(uint64_t token)
+size_t op_prec(uint8_t token)
 {
 	switch(token)
 	{
@@ -341,7 +341,7 @@ void pop_stack(void)
 
 void push_stack(uint8_t in)
 {
-	if ( ( op_prec(*stack_p) > op_prec(in) ) && ( stack_p >= &stack[0] ) )
+	if ( ( op_prec(stack_top() ) > op_prec(in) ) && ( stack_p >= &stack[0] ) )
 	{ pop_stack(); *++stack_p = in; }
 
 	else
@@ -361,19 +361,19 @@ void convert_expression(void)
 
 			else if ( *infix_p == '(' )
 			{
-			while ( *stack_p != ')' )
-			{
-				pop_stack(); 
-			}
+				while ( *stack_p != ')' )
+				{
+					pop_stack(); 
+				}
 			
-			pop_stack();
+				pop_stack();
 
-			infix_p--;
+				infix_p--;
 		
 			}
 
-		else
-		{ push_stack(*infix_p); infix_p--; }	
+			else
+			{ push_stack(*infix_p); infix_p--; }	
 		
 		}
 
@@ -385,7 +385,7 @@ void convert_expression(void)
 			*prefix_p++ = 0x20; // space separates integer-constants
 		}
 
-		else // isspace() or isendofline()
+		else // isspace() or 0x0
 		{ infix_p--; }
 		
 
@@ -403,7 +403,7 @@ void transpiler(void)
 	{
 		expression();
 		
-		if ( is_valid_expression = 1 )
+		if ( is_valid_expression == 1 )
 		{	convert_expression();	}
 
 		advance(); is_valid_expression = 0;

@@ -12,7 +12,7 @@ bool isEOI(void);
 
 bool isoperator(uint8_t in);
 
-size_t op_prec(uint64_t token);
+size_t op_prec(uint8_t token);
 
 extern uint8_t infix[1025]; 
 

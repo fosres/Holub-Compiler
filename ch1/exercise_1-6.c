@@ -5,8 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "lex_exp.h"
-#include "lisp.h"
-
+#include "lisp.h" 
 uint8_t infix[1025]; 
 
 uint8_t stack[513];
@@ -25,7 +24,6 @@ uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
 uint8_t 	*yycurrent	= 0x0;
 uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
 uint64_t	yylineno	= 0;	/* Input line number		*/
-uint64_t 	yycharno 	= 0; 	/* Input char number		*/
 
 uint64_t Lookahead = 0xff;
 
@@ -41,8 +39,6 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 	
 	yycurrent = infix;
 
-	yycharno = 1;
-
 	if ( fgets(infix,1024,stdin) == NULL )
 	{
 		exit(1); 
@@ -50,13 +46,13 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 
 	while ( isspace(*yycurrent)  )
 	{	
-		yycurrent++; yycharno++;	
+		yycurrent++;	
 	}
 	
 	}
 	
 	while ( isspace(*yycurrent) && (*yycurrent != 0xa) )
-	{	yycurrent++; yycharno++;	}
+	{	yycurrent++; 	}
 
 	while ( *yycurrent != 0x0 )
 	{
@@ -85,7 +81,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 				{
 					while ( isdigit(*yycurrent) )
 					{
-						yycurrent++; yycharno++;
+						yycurrent++; 
 					}
 
 					yyleng = yycurrent - yytext;
@@ -96,8 +92,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 				
 				else
 				{
-					fprintf(stderr,"%llu: Error: Invalid lexeme\n",
-						yycharno
+					fprintf(stderr,"Error: Invalid lexeme\n"
 						);
 
 					yytext = yycurrent = &infix[1023];
@@ -108,7 +103,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 
 		} // end switch statement
 		
-		yycurrent++; yycharno++;
+		yycurrent++; 
 	} //end while loop for tokens
 
 	lisp_lex();
@@ -169,24 +164,25 @@ size_t op_prec(uint8_t token)
 {
 	switch(token)
 	{
+		case ')':
+		case '(':
+		{
+			return 2;
+		}
+
 		case '*':
 		case '/':
 		case '%':
 		{
-			return 2;
+			return 1;
 		}
 		
 		case '+':
 		case '-':
 		{
-			return 1;
-		}
-
-		case ')':
-		case '(':
-		{
 			return 0;
 		}
+
 		
 		default: {break;}
 
@@ -221,6 +217,9 @@ uint8_t stack_top(void)
 	return *stack_p;
 }
 
+bool is_stack_empty(void)
+{	return ( stack_p < &stack[0] );	}
+
 
 void expression(void)
 {
@@ -240,9 +239,7 @@ void expression(void)
 		
 		else
 		{ 
-			fprintf(stderr,"%llu: Missing integer constant or "
-					" right-parenthesis \')\'\n",
-				yycharno
+			fprintf(stderr,"Error: Missing right-parenthesis \')\'\n"
 				);
 			
 			is_valid_expression = 0; 
@@ -255,8 +252,8 @@ void expression(void)
 
 	else // incorrect starting token for expression
 	{
-		fprintf(stderr,"%llu:Error: Expected either an integer-constant or"
-			" left-parenthesis \'(\'\n",yycharno);
+		fprintf(stderr,":Error: Expected either an integer-constant or"
+			" left-parenthesis \'(\'\n");
 
 		is_valid_expression = 0;
 
@@ -276,9 +273,8 @@ void expression(void)
 
 	else if ( !isoperator(*yytext) )
 	{
-		fprintf(stderr,"%llu: Error: Missing operator or right-parenthesis"
-			" \')\'\n",
-			yycharno
+		fprintf(stderr,"Error: Missing operator or right-parenthesis"
+			" \')\'\n"
 			);
 
 		is_valid_expression = 0;
@@ -292,7 +288,7 @@ void expression(void)
 
 	if ( match(NL) )
 	{
-		fprintf(stderr,"%llu:Error: Missing integer-constant\n",yycharno);
+		fprintf(stderr,"Error: Missing integer-constant\n");
 		 
 		return; 
 	}
@@ -315,13 +311,28 @@ void postfix_expr(void)
 
 		prefix_p--;
 
-		postfix_expr(); printf(" ) ");
+		postfix_expr(); 
+		
+		printf(" ) ");
 	}
 
 	else if ( isdigit(*prefix_p) )
 	{
 		while ( isdigit(*prefix_p) )
 		{ putchar(*prefix_p); prefix_p--; }
+		
+		putchar(0x20);
+	
+		while ( isspace(*prefix_p) )
+		{	prefix_p--;	}
+
+		if ( isdigit(*prefix_p) )
+		{
+			while ( isdigit(*prefix_p) )
+			{ putchar(*prefix_p); prefix_p--; }
+		
+			putchar(0x20);
+		}
 	}
 
 	postfix_expr();
@@ -330,12 +341,20 @@ void postfix_expr(void)
 
 void pop_stack(void)
 {
-	*prefix_p++ = *stack_p--;
+	if ( stack_top() != ')' )
+	{
+		*prefix_p++ = *stack_p--;
+	}
+	
+	else
+	{
+		stack_p--;	
+	}
 }
 
 void push_stack(uint8_t in)
 {
-	if ( ( op_prec(stack_top() ) > op_prec(in) ) && ( stack_p >= &stack[0] ) )
+	if ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
 	{ pop_stack(); *++stack_p = in; }
 
 	else
@@ -345,7 +364,7 @@ void push_stack(uint8_t in)
 void convert_expression(void)
 {
 	infix_p = &infix[strlen(infix)-1]; prefix_p = &prefix[0];
-
+	
 	while ( infix_p >= &infix_p[0] )
 	{
 		if ( isoperator(*infix_p) )
@@ -355,12 +374,12 @@ void convert_expression(void)
 
 			else if ( *infix_p == '(' )
 			{
-				while ( *stack_p != ')' )
+				while ( stack_top() != ')' )
 				{
 					pop_stack(); 
 				}
 			
-				pop_stack();
+				pop_stack(); //get rid of the topmost right-parenthesis
 
 				infix_p--;
 		
@@ -384,7 +403,10 @@ void convert_expression(void)
 		
 
 	}
-
+	
+	while ( !is_stack_empty() )
+	{	pop_stack();	}
+	
 	printf("%s\n",prefix);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
@@ -404,19 +426,15 @@ void transpiler(void)
 
 		clear_all();
 
-		advance(); is_valid_expression = 0;
+		advance(); 
+		
+		is_valid_expression = 0;
 	}
 }
 
 int main(void)
 {
-	while ( 1 )
-	{
-		expression();
-		
-//		printf("%s\n",infix[strlen(infix)-1]); This is causing the bug
+	transpiler();
 	
-		advance();	
-	}	
 	return 0;	
 }

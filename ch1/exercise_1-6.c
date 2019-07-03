@@ -366,8 +366,6 @@ void push_stack(uint8_t in)
 void convert_expression(void)
 {
 	infix_p = &infix[strlen(infix)-1]; prefix_p = &prefix[0];
-
-	printf("Made it past infix_p init: %s\n",infix_p);
 	
 	while ( infix_p >= infix )
 	{
@@ -411,11 +409,12 @@ void convert_expression(void)
 	while ( !is_stack_empty() )
 	{	pop_stack();	}
 	
-	printf("%s\n",prefix);	
+	printf("Before: %s\n %s\n",prefix,prefix_p);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
 
 	prefix_expr();
+
 
 }
 

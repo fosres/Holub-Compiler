@@ -301,9 +301,12 @@ void prefix_expr(void)
 {
 	if ( prefix_p >= &prefix[0] )
 	{ putchar(0xa); return; }
-
-	if ( isspace(*prefix_p) || ( ( *prefix_p == 0xa ) ^ ( *prefix_p == 0x0 ) ) )
-	{ prefix_p--; }
+	
+	if ( isspace(*prefix_p) )
+	{
+		while ( isspace(*prefix_p)  )
+		{ prefix_p--; }
+	}
 
 	else if ( isoperator(*prefix_p) )
 	{
@@ -312,6 +315,8 @@ void prefix_expr(void)
 		prefix_p--;
 
 		prefix_expr(); 
+
+		prefix_expr();
 		
 		printf(" ) ");
 	}
@@ -322,22 +327,23 @@ void prefix_expr(void)
 		{ putchar(*prefix_p); prefix_p--; }
 		
 		putchar(0x20);
-	
+#if 0	
 		while ( isspace(*prefix_p) )
 		{	prefix_p--;	}
-
+		
 		if ( isdigit(*prefix_p) )
 		{
 			while ( isdigit(*prefix_p) )
 			{ putchar(*prefix_p); prefix_p--; }
 			
+			putchar(0x20);			
 			return;
 		
 		}
-
+#endif
 	}
 
-	prefix_expr();
+//	prefix_expr(); //unnecessary since second prefix_expr in operator conditional
 
 }
 

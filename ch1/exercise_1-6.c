@@ -363,7 +363,12 @@ void pop_stack(void)
 void push_stack(uint8_t in)
 {
 	if ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
-	{ pop_stack(); *++stack_p = in; }
+	{ 
+		while ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
+		{	pop_stack();	}
+
+		*++stack_p = in; 
+	}
 
 	else
 	{ *++stack_p = in; }
@@ -377,12 +382,10 @@ void convert_expression(void)
 	{
 		if ( isoperator(*infix_p) )
 		{ 
-			if ( *infix_p == ')' )	
-			{	push_stack(*infix_p); infix_p--; }
 
-			else if ( *infix_p == '(' )
+			if ( *infix_p == '(' )
 			{
-				while ( stack_top() != ')' )
+				while ( stack_top() != ')' && !is_stack_empty() )
 				{
 					pop_stack(); 
 				}
@@ -415,11 +418,15 @@ void convert_expression(void)
 	while ( !is_stack_empty() )
 	{	pop_stack();	}
 	
-	printf("Reverse Prefix: %s\n %s\n",prefix,prefix_p);	
+	printf("\nReverse Prefix: %s\n %s\n",prefix,prefix_p);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
 
+	printf("Prefix: ");
+
 	prefix_expr();
+
+	putchar(0xa); putchar(0xa);
 
 
 }

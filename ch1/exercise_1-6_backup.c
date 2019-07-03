@@ -299,19 +299,24 @@ void expression(void)
 
 void prefix_expr(void)
 {
-	if ( prefix_p >= &prefix[0] )
+	if ( prefix_p < &prefix[0] )
 	{ putchar(0xa); return; }
-
-	if ( isspace(*prefix_p) || ( ( *prefix_p == 0xa ) ^ ( *prefix_p == 0x0 ) ) )
-	{ prefix_p--; }
-
-	else if ( isoperator(*prefix_p) )
+	
+	if ( isspace(*prefix_p) )
 	{
-		printf(" %c ",*prefix_p);
+		while ( isspace(*prefix_p)  )
+		{ prefix_p--; }
+	}
+
+	if ( isoperator(*prefix_p) )
+	{
+		printf(" ( %c ",*prefix_p);
 
 		prefix_p--;
 
 		prefix_expr(); 
+
+		prefix_expr();
 		
 		printf(" ) ");
 	}
@@ -322,22 +327,23 @@ void prefix_expr(void)
 		{ putchar(*prefix_p); prefix_p--; }
 		
 		putchar(0x20);
-	
+#if 0	
 		while ( isspace(*prefix_p) )
 		{	prefix_p--;	}
-
+		
 		if ( isdigit(*prefix_p) )
 		{
 			while ( isdigit(*prefix_p) )
 			{ putchar(*prefix_p); prefix_p--; }
 			
+			putchar(0x20);			
 			return;
 		
 		}
-
+#endif
 	}
 
-	prefix_expr();
+//	prefix_expr(); //unnecessary since second prefix_expr in operator conditional
 
 }
 
@@ -357,7 +363,18 @@ void pop_stack(void)
 void push_stack(uint8_t in)
 {
 	if ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
-	{ pop_stack(); *++stack_p = in; }
+	{ 
+		if ( stack_top() != ')' )
+		{
+			while ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
+			{	pop_stack();	}
+		}
+
+		else
+		{	pop_stack();	}
+
+		*++stack_p = in; 
+	}
 
 	else
 	{ *++stack_p = in; }
@@ -366,19 +383,15 @@ void push_stack(uint8_t in)
 void convert_expression(void)
 {
 	infix_p = &infix[strlen(infix)-1]; prefix_p = &prefix[0];
-
-	printf("Made it past infix_p init: %s\n",infix_p);
 	
 	while ( infix_p >= infix )
 	{
 		if ( isoperator(*infix_p) )
 		{ 
-			if ( *infix_p == ')' )	
-			{	push_stack(*infix_p); infix_p--; }
 
-			else if ( *infix_p == '(' )
+			if ( *infix_p == '(' )
 			{
-				while ( stack_top() != ')' )
+				while ( stack_top() != ')' && !is_stack_empty() )
 				{
 					pop_stack(); 
 				}
@@ -411,11 +424,16 @@ void convert_expression(void)
 	while ( !is_stack_empty() )
 	{	pop_stack();	}
 	
-	printf("%s\n",prefix);	
+	printf("\nStack: %s\nReverse Prefix: %s\n",stack,prefix);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
 
+	printf("Prefix: ");
+
 	prefix_expr();
+
+	putchar(0xa); putchar(0xa);
+
 
 }
 

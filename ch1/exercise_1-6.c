@@ -409,7 +409,7 @@ void convert_expression(void)
 	while ( !is_stack_empty() )
 	{	pop_stack();	}
 	
-	printf("Before: %s\n %s\n",prefix,prefix_p);	
+	printf("Reverse Prefix: %s\n %s\n",prefix,prefix_p);	
 	
 	prefix_p = &prefix[strlen(prefix)-1];
 

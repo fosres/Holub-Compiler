@@ -299,7 +299,7 @@ void expression(void)
 
 void prefix_expr(void)
 {
-	if ( prefix_p >= &prefix[0] )
+	if ( prefix_p < &prefix[0] )
 	{ putchar(0xa); return; }
 	
 	if ( isspace(*prefix_p) )
@@ -308,9 +308,9 @@ void prefix_expr(void)
 		{ prefix_p--; }
 	}
 
-	else if ( isoperator(*prefix_p) )
+	if ( isoperator(*prefix_p) )
 	{
-		printf(" %c ",*prefix_p);
+		printf(" ( %c ",*prefix_p);
 
 		prefix_p--;
 

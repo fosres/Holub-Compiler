@@ -107,7 +107,7 @@ uint8_t infix[1025];
 
 uint8_t stack[513];
 
-uint8_t prefix[1025];
+uint8_t prefix[2050];
 
 uint8_t * infix_p = infix;
 

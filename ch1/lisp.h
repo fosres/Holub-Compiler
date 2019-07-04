@@ -18,7 +18,7 @@ extern uint8_t infix[1025];
 
 extern uint8_t stack[513];
 
-extern uint8_t prefix[1025];
+extern uint8_t prefix[2050];
 
 extern uint8_t * infix_p; 
 

@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include "lex_exp.h"
 #include "lisp.h" 
+
 uint8_t infix[1025]; 
 
 uint8_t stack[513];
@@ -150,6 +151,8 @@ bool isoperator(uint8_t in)
 		case '*':
 		case '/':
 		case '%':
+		case ')':
+		case '(':
 		{
 			return 1;
 		}
@@ -354,7 +357,7 @@ void pop_stack(void)
 		*prefix_p++ = *stack_p--;
 	}
 	
-	else
+	else 
 	{
 		stack_p--;	
 	}
@@ -362,22 +365,28 @@ void pop_stack(void)
 
 void push_stack(uint8_t in)
 {
-	if ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
+	if ( 
+		!is_stack_empty() 
+		
+		&& ( stack_top() != ')' ) 
+		
+		&& ( op_prec(stack_top() ) > op_prec(in) ) 
+	
+	)
+	
 	{ 
-		if ( stack_top() != ')' )
-		{
-			while ( !is_stack_empty() && ( op_prec(stack_top() ) > op_prec(in) ) )
+			while ( 
+				
+				!is_stack_empty() 
+				
+				&& ( op_prec(stack_top() ) > op_prec(in) ) 
+
+			)
 			{	pop_stack();	}
-		}
 
-		else
-		{	pop_stack();	}
-
-		*++stack_p = in; 
 	}
 
-	else
-	{ *++stack_p = in; }
+	 *++stack_p = in; 
 }
 
 void convert_expression(void)
@@ -396,12 +405,23 @@ void convert_expression(void)
 					pop_stack(); 
 				}
 			
-				pop_stack(); //get rid of the topmost right-parenthesis
+				if ( stack_p >= &stack[0] )
+				{		
+					pop_stack(); //get rid of the topmost right-parenthesis
+				}
 
 				infix_p--;
 		
 			}
 
+#if 0			
+			else if ( *infix_p == ')' )
+			{
+				*++stack_p = ')';
+				
+				infix_p--;
+			}
+#endif
 			else
 			{ push_stack(*infix_p); infix_p--; }	
 		
@@ -458,18 +478,5 @@ int main(void)
 {
 	transpiler();
 
-#if 0
-	while ( 1 )
-	{
-		expression();
-
-		printf("is_valid_expression:%llu %s\n%s\n",is_valid_expression,infix,prefix);
-		clear_all(); 
-		
-		advance();
-
-		is_valid_expression = 0;
-	}
-#endif	
 	return 0;	
 }

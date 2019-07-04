@@ -1,3 +1,99 @@
+#if 0
+Copyright 2019-INFINITY. Tanveer Salim
+
+Transpiler Grammar:
+
+expression -> NUM |
+		( expression operator_opt expression_opt )
+
+Transpiler Lexicon:
+
+operand ==  NUM -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+operator -> + | - | * | / | ( | )
+
+Infix To Prefix Algorithm:
+
+This transpiler  reads input line by line and for each line outputs the LISP prefix
+
+expression.
+
+Step 1: Read the given infix expression into input buffer ( MAX LENGTH 1024 ).
+
+Step 2: Reading the input string backwards one character at a time:
+
+	If the read character is an operand, then concatenate the operand to
+
+		the prefix string.
+	
+	Else the read character is an operator. You must:
+	
+		1. First check if the stack is empty.
+
+		2. If so, then check if the top operator in the stack has a
+			
+		higher precedence than the read operator.
+
+			A. If so, then while the top operator has higher precedence
+
+			OR 
+
+			while the top operator is NOT a right-parenthesis:
+				
+				1. Pop the stack and concetanate what was just popped
+			
+				to the prefix string.
+
+			B. Else, just push operator into the stack, even for a right
+			
+			parenthesis.
+
+		3. If the read operator is a left-parenthesis:
+
+			A. Pop the stack and concatenate what was just popped
+
+			UNTIL
+
+			the top stack operator is a right-parenthesis.
+
+			B. Now, pop the right-parenthesis off the stack
+
+			BUT
+
+			DO 
+
+			NOT
+
+			concatenate the right-parenthesis to the prefix
+
+			string.
+
+Step 3: Repeat Step 2 until all characters in the infix string are read.
+
+Step 4: If the stack is not empty, then pop the operator from the stack and
+
+add this operator to the prefix string,
+
+UNLESS IT IS A RIGHT PARENTHESIS.
+
+Step 5: Repeat Step 4 until until THE STACK IS EMPTY.
+
+Step 6: While reading the PREFIX string backwards AND skipping whitespace characters:
+	
+	A. 
+		1. If an operator, print " ( operator-here " 
+
+		2. Call two consecutive, recursive calls to 
+
+		the function processing the prefix string.
+
+		3. Print " ) "
+
+	B. Else if an operand, print the entire operand 
+
+#endif
+
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

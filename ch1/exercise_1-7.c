@@ -28,6 +28,8 @@ uint64_t	yylineno	= 0;	/* Input line number		*/
 
 uint64_t Lookahead = 0xff;
 
+void clear_all(void);
+
 uint64_t lisp_lex(void)
 {
 	yycurrent = yytext + yyleng;
@@ -95,8 +97,9 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 				{
 					fprintf(stderr,"Error: Invalid lexeme\n"
 						);
-
-					yytext = yycurrent = &prefix[2048];
+					
+					
+					*yytext = *yycurrent = 0x0;
 				}
 
 				break;
@@ -207,11 +210,51 @@ void prefix_expr(void)
 			is_valid_expression = 0;
 
 			return;
-		}
+ 		}
 
 		if ( isoperator(*yycurrent) )
 		{
 			advance();
+			
+			if ( match(NL) ) 
+			{
+				fprintf(stderr,"%llu: Error: Missing integer-constant"
+						" or right-parenthesis\n",
+						yycurrent - &prefix[0]
+					);
+				
+				is_valid_expression = 0;
+					
+				return;
+			}
+	
+			prefix_expr();
+
+			advance();
+
+			if ( match(NL) ) 
+			{
+				fprintf(stderr,"%llu: Error: Missing integer-constant"
+						" or right-parenthesis\n",
+						yycurrent - &prefix[0]
+					);
+				
+				is_valid_expression = 0;
+					
+				return;
+			}
+			
+			if ( !match(NUM) && !match(LP) )
+			{
+				fprintf(stderr,"%llu: Error: Missing integer-constant"
+						" or right-parenthesis\n",
+						yycurrent - &prefix[0]
+					);
+				
+				is_valid_expression = 0;
+					
+				return;
+			}	
 
 			while ( match(NUM) || match(LP) )
 			{
@@ -234,42 +277,8 @@ void prefix_expr(void)
 			
 			}
 
-#if 0
-			if ( match(NL) )
-			{	
-				is_valid_expression = 0; 
-				
-				fprintf(stderr,"%llu: Error: Expected integer-constant"
-					" or left-parenthesis\n",
-					yycurrent - &prefix[0]
-					);
-				
-				return;	
-			
-			}
-
-			prefix_expr();
-
-			advance();
-
-			if ( match(NL) )
-			{	
-				is_valid_expression = 0; 
-
-				fprintf(stderr,"%llu: Error: Expected integer-constant"
-					" or left-parenthesis\n",
-					yycurrent - &prefix[0]
-					);
-				
-				return;	
-			}
-
-			prefix_expr();
-#endif
 		
 		}
-		
-//		advance();
 
 		if ( !match(RP) || !is_valid_expression )
 		{	
@@ -297,7 +306,7 @@ int main(void)
 	{
 		prefix_expr();
 
-		printf("%llu\n",is_valid_expression);
+		printf("is_valid_expression: %llu\n",is_valid_expression);
 		
 		clear_all(); advance();
 	}

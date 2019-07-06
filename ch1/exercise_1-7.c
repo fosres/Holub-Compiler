@@ -213,6 +213,28 @@ void prefix_expr(void)
 		{
 			advance();
 
+			while ( match(NUM) || match(LP) )
+			{
+				prefix_expr();
+
+				advance();
+
+			}
+			
+			if ( match(NL) )
+			{	
+				is_valid_expression = 0; 
+				
+				fprintf(stderr,"%llu: Error: Expected integer-constant"
+					" or left-parenthesis\n",
+					yycurrent - &prefix[0]
+					);
+				
+				return;	
+			
+			}
+
+#if 0
 			if ( match(NL) )
 			{	
 				is_valid_expression = 0; 
@@ -243,10 +265,11 @@ void prefix_expr(void)
 			}
 
 			prefix_expr();
-
+#endif
+		
 		}
 		
-		advance();
+//		advance();
 
 		if ( !match(RP) || !is_valid_expression )
 		{	

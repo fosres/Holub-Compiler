@@ -192,14 +192,14 @@ void prefix_expr(void)
 			advance();
 
 			if ( match(NL) )
-			{	return;		}
+			{	is_valid_expression = 0; return;	}
 
 			prefix_expr();
 
 			advance();
 
 			if ( match(NL) )
-			{	return;		}
+			{	is_valid_expression = 0; return;	}
 
 			prefix_expr();
 
@@ -223,21 +223,18 @@ void prefix_expr(void)
 
 	}		
 	
-	advance();
-
-	if ( match(NL) )
-	{	is_valid_expression = 1;	}
-
-	else
-	{	is_valid_expression = 0;	}	
+	is_valid_expression = 1;	
+	
 }
 
 int main(void)
 {
+	while ( 1 )
+	{
+		prefix_expr();
 
-	prefix_expr();
-
-	printf("%llu\n",is_valid_expression);
+		printf("%llu\n",is_valid_expression);
+	}
 	
 	return 0;
 }

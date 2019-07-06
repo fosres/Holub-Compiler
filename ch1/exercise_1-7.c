@@ -96,7 +96,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 					fprintf(stderr,"Error: Invalid lexeme\n"
 						);
 
-					yytext = yycurrent = &prefix[1023];
+					yytext = yycurrent = &prefix[2048];
 				}
 
 				break;
@@ -151,11 +151,33 @@ bool isoperator(uint8_t in)
 	return 0;
 }
 
+void clear_all(void)
+{
+	memset(infix,0x0,1025);
+
+	memset(prefix,0x0,2050);
+	
+	memset(stack,0x0,513);
+
+	infix_p = &infix[0];
+
+	prefix_p = &prefix[0];
+
+	stack_p = stack - 1;
+
+	yycurrent = &prefix[0];
+
+	yytext = &prefix[0];
+
+	yyleng = 0;
+	
+}
+
 
 void prefix_expr(void)
 {
 	if ( match(NL) )
-	{	return;	}
+	{	is_valid_expression = 0; return;	}
 
 	if ( !match(LP) && !match(NUM) )
 	{	
@@ -163,7 +185,7 @@ void prefix_expr(void)
 
 		" integer constant\n",
 		
-		prefix_p - &prefix[0]
+		yycurrent - &prefix[0]
 		);
 
 		is_valid_expression = 0;
@@ -176,10 +198,10 @@ void prefix_expr(void)
 	{
 		advance();
 		
-		if ( !isoperator(*prefix_p) )
+		if ( !isoperator(*yycurrent) )
 		{
 			fprintf(stderr,"%llu: Missing operator\n",
-				prefix_p - &prefix[0]
+				yycurrent - &prefix[0]
 				);
 			
 			is_valid_expression = 0;
@@ -187,19 +209,38 @@ void prefix_expr(void)
 			return;
 		}
 
-		if ( isoperator(*prefix_p) )
+		if ( isoperator(*yycurrent) )
 		{
 			advance();
 
 			if ( match(NL) )
-			{	is_valid_expression = 0; return;	}
+			{	
+				is_valid_expression = 0; 
+				
+				fprintf(stderr,"%llu: Error: Expected integer-constant"
+					" or left-parenthesis\n",
+					yycurrent - &prefix[0]
+					);
+				
+				return;	
+			
+			}
 
 			prefix_expr();
 
 			advance();
 
 			if ( match(NL) )
-			{	is_valid_expression = 0; return;	}
+			{	
+				is_valid_expression = 0; 
+
+				fprintf(stderr,"%llu: Error: Expected integer-constant"
+					" or left-parenthesis\n",
+					yycurrent - &prefix[0]
+					);
+				
+				return;	
+			}
 
 			prefix_expr();
 
@@ -214,7 +255,7 @@ void prefix_expr(void)
 			if ( !match(RP) )
 			{
 				fprintf(stderr,"%llu: Error: Missing right parenthesis\n",
-					prefix-&prefix[0]
+					yycurrent - &prefix[0]
 					);
 			}
 
@@ -234,6 +275,8 @@ int main(void)
 		prefix_expr();
 
 		printf("%llu\n",is_valid_expression);
+		
+		clear_all(); advance();
 	}
 	
 	return 0;

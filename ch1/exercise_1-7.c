@@ -176,6 +176,21 @@ void clear_all(void)
 	
 }
 
+uint8_t stack_top(void)
+{
+	return *stack_p;
+}
+
+uint8_t push_stack(uint8_t in)
+{
+	*++stack_p = in;
+}
+
+
+uint8_t pop_stack(void)
+{
+	return *stack_p--;
+}
 
 void prefix_expr(void)
 {
@@ -300,15 +315,88 @@ void prefix_expr(void)
 	
 }
 
+void LISP_to_infix(void)
+{
+	infix_p = &infix[0];
+
+	prefix_p = &prefix[0];
+
+	stack_p = stack - 1;
+
+	yycurrent = &prefix[0];
+
+	yytext = &prefix[0];
+
+	yyleng = 0;
+	
+	yycurrent = yytext = &prefix[0]; yyleng = 1;
+	
+	while ( !match(NL) )
+	{
+		
+		if ( match(LP) )
+		{	
+			printf("( ");	
+
+			advance();
+		}	
+
+		else if ( match(RP) )
+		{	
+			printf(" ) ");				
+
+			putchar(pop_stack());
+
+			putchar(0x20);
+			
+			advance();
+		}
+
+		else if ( isoperator(*yycurrent) )
+		{
+			push_stack(*yycurrent);
+
+			advance();
+		}
+
+		else if (  match(NUM) )
+		{
+			uint8_t * num_p = yytext;
+
+			while ( num_p < yycurrent )
+			{		putchar(*num_p); num_p++;	}
+			
+			
+			putchar(0x20);
+			
+			advance();
+			
+			if ( match(NUM) )
+			{	
+
+				putchar(stack_top());
+
+				putchar(0x20);	
+
+			}
+		}
+		
+	}
+		
+	putchar(0xa);	
+}
+
 int main(void)
 {
 	while ( 1 )
 	{
 		prefix_expr();
 
-		printf("is_valid_expression: %llu\n",is_valid_expression);
+		LISP_to_infix();
+			
+		clear_all(); 
 		
-		clear_all(); advance();
+		advance();
 	}
 	
 	return 0;

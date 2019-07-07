@@ -192,7 +192,7 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 					fprintf(stderr,"Error: Invalid lexeme\n"
 						);
 
-					yytext = yycurrent = &infix[1023];
+					*yytext = *yycurrent = 0x0;
 				}
 
 				break;

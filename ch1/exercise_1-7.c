@@ -30,6 +30,8 @@ uint64_t Lookahead = 0xff;
 
 void clear_all(void);
 
+void carriage_return(void);
+
 uint64_t lisp_lex(void)
 {
 	yycurrent = yytext + yyleng;
@@ -176,6 +178,24 @@ void clear_all(void)
 	
 }
 
+void carriage_return(void)
+{
+	infix_p = &infix[0];
+
+	prefix_p = &prefix[0];
+
+	stack_p = stack - 1;
+
+	memset(stack,0x0,513);
+	
+	yycurrent = &prefix[0];
+
+	yytext = &prefix[0];
+
+	yyleng = 0;
+
+}
+
 uint8_t stack_top(void)
 {
 	return *stack_p;
@@ -244,7 +264,10 @@ void prefix_expr(void)
 			}
 	
 			prefix_expr();
-
+			
+			if ( is_valid_expression == 0 )
+			{ 	return;		}
+	
 			advance();
 
 			if ( match(NL) ) 
@@ -274,7 +297,10 @@ void prefix_expr(void)
 			while ( match(NUM) || match(LP) )
 			{
 				prefix_expr();
-
+				
+				if ( is_valid_expression == 0 )
+				{	return;		}
+	
 				advance();
 
 			}
@@ -315,7 +341,9 @@ void prefix_expr(void)
 	
 }
 
-void LISP_to_infix(void)
+
+
+void iterative_LISP_to_infix(void)
 {
 	infix_p = &infix[0];
 
@@ -323,13 +351,15 @@ void LISP_to_infix(void)
 
 	stack_p = stack - 1;
 
+	memset(stack,0x0,513);
+	
 	yycurrent = &prefix[0];
 
 	yytext = &prefix[0];
 
 	yyleng = 0;
-	
-	yycurrent = yytext = &prefix[0]; yyleng = 1;
+
+	advance();	
 	
 	while ( !match(NL) )
 	{
@@ -342,14 +372,20 @@ void LISP_to_infix(void)
 		}	
 
 		else if ( match(RP) )
-		{	
-			printf(" ) ");				
+		{
+					
+			printf(") ");	
 
-			putchar(pop_stack());
+			advance();
 
+			if ( match(NUM) || match(LP) )
+			{	putchar(stack_top());		}
+
+			else if ( match(RP) )
+			{	pop_stack();	}
+			
 			putchar(0x20);
 			
-			advance();
 		}
 
 		else if ( isoperator(*yycurrent) )
@@ -371,13 +407,18 @@ void LISP_to_infix(void)
 			
 			advance();
 			
-			if ( match(NUM) )
+			if ( match(NUM) || match(LP) )
 			{	
-
 				putchar(stack_top());
 
 				putchar(0x20);	
+			}
 
+			else if ( match(RP) )
+			{
+				pop_stack();
+				
+				// putchar(0x20);
 			}
 		}
 		
@@ -391,8 +432,15 @@ int main(void)
 	while ( 1 )
 	{
 		prefix_expr();
+		
 
-		LISP_to_infix();
+		if ( is_valid_expression )
+		{
+			printf("Infix: ");
+			
+			iterative_LISP_to_infix();
+
+		}
 			
 		clear_all(); 
 		

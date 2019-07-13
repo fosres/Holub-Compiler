@@ -286,6 +286,16 @@ bool infix_expr(void)
 
 	advance();
 
+	if ( !match(NUM) && !match(LP) )
+	{
+		fprintf(stderr,"%llu: Error: Missing integer-constant or left-"
+				"parenthesis\n",
+				yytext - &infix[0]
+		       );
+
+		return 0;
+	}
+
 	infix_expr();
 
 }

@@ -130,9 +130,9 @@ void clear_all(void)
 
 	stack_p = stack - 1;
 
-	yycurrent = &prefix[0];
+	yycurrent = &infix[0];
 
-	yytext = &prefix[0];
+	yytext = &infix[0];
 
 	yyleng = 0;
 	
@@ -178,87 +178,84 @@ bool operator(void)
 
 }
 
-#if 0
-bool infix_expr(void)
+void infix_expr(void)
 {
-	if ( !match(NUM) && !match(LP) )
+	if ( match(NL) )
 	{
-		fprintf(stderr,"%llu:Error: Missing integer-constant of LP\n",
-				yytext-&infix[0]
-		       );
-			
-		return 0;
+		return;
 	}
 	
-	if ( match(NUM) )
-	{	
-		advance();	
-#if 0
-		while ( operator() )
-		{	
-			if (!infix_expr())
-			{ return 0; }
-
-		}
-#endif	
-	}
-
-	else // match(LP)
-	{
-		advance();
-
-		if ( !infix_expr() )
-		{
-			return 0;
-		}
-
-		while ( operator() )
-		{
-			if ( !infix_expr() )
-			{
-				return 0;
-			}
-
-		}
-
-		if ( !match(RP) )
-		{
-			fprintf(stderr,"%llu: Error: Missing right parenthesis\n",
-					yytext - &infix[0]
-			       );
-
-			return 0;
-		}
-
-		advance();		
-
-	}
-
-	return 1;
-}
-#endif
-
-bool infix_expr(void)
-{
-	if ( match(NL) ) { return 1; }
-
 	if ( !match(NUM) && !match(LP) )
 	{
-		fprintf(stderr,"%llu: Error: Missing integer-constant or "
-				"left-parenthesis\n",
+		fprintf(stderr,"%llu: Error: Missing number or left-parenthesis\n",
 				yytext - &infix[0]
 		       );
 
-		return 0;
+		is_valid_expression = 0; return;
 	}
 
 	if ( match(LP) )
 	{
 		advance();
 
-		if ( !infix_expr() )
+		infix_expr();
+
+		if ( !is_valid_expression) { return; }
+
+		advance();
+
+		if ( !match(RP) || !is_valid_expression )
 		{
-			return 0;
+			fprintf(stderr,"%llu: Error: Missing right-parenthesis\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+		}
+
+		advance();
+
+		if (!operator())
+		{
+			fprintf(stderr,"%llu: Error: Missing operator: \'+\', \'-\',"
+					"\'*\', or \'/\'\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+		}
+
+		advance();
+
+		if ( !match(NUM) && !match(LP) )
+		{
+			fprintf(stderr,"%llu: Error: Missing integer-constant"
+					" or left-parenthesis\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+		}
+
+		while ( match(NUM) || match(LP) )
+		{
+			infix_expr();
+
+			advance();
+
+			if (!operator())
+			{
+				fprintf(stderr,"%llu: Error: Missing operator:"
+						"\'+\',\'-\',\'*\', or \'/\'\n",
+						yytext - &infix[0]
+				       );
+
+				is_valid_expression = 0;
+
+				return;
+			}
+
+			advance();
 		}
 
 		if ( !match(RP) )
@@ -266,44 +263,74 @@ bool infix_expr(void)
 			fprintf(stderr,"%llu: Error: Missing right-parenthesis\n",
 					yytext - &infix[0]
 			       );
-			
-			return 0;
+
+			is_valid_expression = 0; return;
 		}
+
 	}
 
-	advance(); // match(NUM) || match(RP)
-
-	if ( match(NL) || match(RP) ) { return 1; }
-
-	if ( !operator() )
+	else // match(NUM)
 	{
-		fprintf(stderr,"%llu: Missing operator: '+', '-', '*', or '/'\n",
-				yytext = &infix[0]
-		       );
+		advance(); is_valid_expression = 1;
 
-		return 0;
+		if ( match(NL) ) { return; }
+
+		if ( !operator() )
+		{
+			fprintf(stderr,"%llu: Error: Missing operator: \'+\'"
+					",\'-\',\'*\', or \'/\'\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+
+		}
+
+		advance();
+
+		if ( !match(NUM) && !match(LP) )
+		{
+			fprintf(stderr,"%llu: Missing integer-constant or left-"
+					"parenthesis\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+		}
+		
+		while (match(NUM)||match(LP))
+		{
+			infix_expr();
+
+			advance();
+
+			if ( !operator() )
+			{
+				fprintf(stderr,"%llu: Missing operator: \'+\',\'-\',"
+						"\'*\', or \'/\'\n",
+						yytext - &infix[0]
+				       );
+
+				is_valid_expression = 0; return;
+			}
+
+			advance();
+		}
+
+		if ( !match(NL) && !match(RP) )
+		{
+			is_valid_expression = 0; return;
+		}
+
 	}
 
-	advance();
-
-	if ( !match(NUM) && !match(LP) )
-	{
-		fprintf(stderr,"%llu: Error: Missing integer-constant or left-"
-				"parenthesis\n",
-				yytext - &infix[0]
-		       );
-
-		return 0;
-	}
-
-	infix_expr();
-
+	is_valid_expression = 1;
 }
 
 void statements(void)
 {
 
-	if ( !infix_expr() ) { return; }
+	infix_expr();
 
 	if ( !match(NL) )
 	{
@@ -314,17 +341,18 @@ void statements(void)
 		return;
 	}
 
-	clear_all();
-
 
 }
 
 int main(void)
 {
+	
+	while (1)
+	{
+		statements();	
 
-	statements();	
-
-//	main();
+		clear_all();	
+	}
 
 }
 

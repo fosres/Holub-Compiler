@@ -168,10 +168,6 @@ bool operator(void)
 		case DIVIDE: {  return 1; }
 		default:
 		{
-			fprintf(stderr,"%llu:Missing operator: '+', '-', '*', or "
-					"'/'\n",
-					yytext - &infix[0]
-			       );
 			return 0;
 		}
 	}
@@ -180,91 +176,72 @@ bool operator(void)
 
 void infix_expr(void)
 {
-	if( match(NL) ) { return; }
-
-	if ( !match(NUM) && !match(LP) )
+	while ( !match(NL) )
 	{
-		fprintf(stderr,"%llu: Error: Missing number or left-parenthesis\n",
-				yytext - &infix[0]
-		       );
+		if ( match(NUM) )
+		{
+			advance(); is_valid_expression = 1;
 
-		is_valid_expression = 0; return;
-	}
-
-	if ( match(NUM) )
-	{
-
-		while ( match(NUM)  )
-		{	
-		
-			advance();
-
-			if ( match(NL) )
-			{
-				return;
-			}
-
+			if ( match(RP) || match(NL) ) { return; }
+			
 			if ( !operator() )
 			{
-				fprintf(stderr,"%llu: Error: Missing operator\n",
-						yytext - &infix[0]
-				       );
-
-				is_valid_expression = 0; 
-
-				return;
+			
+				fprintf(stderr,"%llu:Missing operator: '+', '-', '*', or "
+					"'/'\n",
+					yytext - &infix[0]
+			       );
+					
 			}
 
-			advance();
-			
-
-
-			if ( !is_valid_expression ) { return; }
+			is_valid_expression = 0;
 
 			advance();
-			
+
 		}
 
-		if ( match(RP) || match(NL) )
-		{	is_valid_expression = 1; return;	}
+		else if ( operator() ) // this is causing the error message bug
+		{
+			is_valid_expression = 0; advance();
+		}
+		
+		else if ( match(RP) || match(NL) ) { return; }
 
-	}	
-
-	else if ( match(LP) )
-	{
+		else if ( match(LP) )
+		{
 			advance();
 
-			while ( match(NUM) || match(LP) )
-			{
+			infix_expr();
 
-				infix_expr();
-
-				if ( !is_valid_expression ) { return; }
-
-				advance();
-			}
-
-			if ( !match(RP) || !is_valid_expression )
+			if (!is_valid_expression || !match(RP) )
 			{
 				if ( !match(RP) )
 				{
 					fprintf(stderr,"%llu: Error: Missing "
-						"right-parenthesis\n",
-						yytext - &infix[0]
-				       );
-
+							"right-parenthesis\n",
+							yytext - &infix[0]
+					       );
 				}
-				
-			is_valid_expression = 0; return;
-			
+
+				is_valid_expression = 0; return;
 			}
 
-		is_valid_expression = 1; advance();
+			is_valid_expression = 1; advance();
+		}
 
+		else //illegimate token
+		{
+			fprintf(stderr,"%llu: Error: Illegal lexeme\n",
+					yytext - &infix[0]
+			       );
+
+			is_valid_expression = 0; return;
+			
+		}
 	}
-	
-	is_valid_expression = 1;
+
 }
+
 
 void statements(void)
 {
@@ -277,7 +254,7 @@ void statements(void)
 				yytext - &infix[0]
 		       );
 
-		clear_all();
+		is_valid_expression = 0;
 
 		return;
 	}
@@ -287,15 +264,18 @@ void statements(void)
 
 int main(void)
 {
-	
+
 	while (1)
-	{
+	{	
 		statements();	
 
-		printf("is_valid_expression: %llu\n");
+		printf("is_valid_expression: %llu\n",is_valid_expression);
 
 		clear_all();	
-	}
+		
+		is_valid_expression = 0;
 
+		advance();
+	}
 }
 

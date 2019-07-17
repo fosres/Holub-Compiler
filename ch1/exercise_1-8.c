@@ -180,6 +180,7 @@ void infix_expr(void)
 {
 	while ( !match(NL) )
 	{
+		
 		if ( match(NUM) )
 		{
 			advance(); is_valid_expression = 1;
@@ -193,6 +194,10 @@ void infix_expr(void)
 					"'/'\n",
 					yytext - &infix[0]
 			       );
+
+				is_valid_expression = 0;
+
+				return;
 					
 			}
 

@@ -102,6 +102,8 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 					
 					
 					*yytext = *yycurrent = 0x0;
+					
+					return INV;
 				}
 
 				break;

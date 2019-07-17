@@ -17,6 +17,8 @@ All the hex representations are simply put--the ASCII hex codes
 #endif
 
 // Symbols that are part of the ASCII character field (Except ID)
+
+#define INV		(~0)	/* Invalid input	*/
 #define EOI		0xff	/* end of input		*/
 #define COMMA		0x2c	/* ,			*/
 #define SEMI		0x3b	/* ;			*/

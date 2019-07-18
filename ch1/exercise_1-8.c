@@ -11,13 +11,13 @@ uint8_t infix[1025];
 
 uint8_t stack[513];
 
-uint8_t prefix[2050];
+uint8_t postfix[2050];
 
 uint8_t * infix_p = infix;
 
 uint8_t * stack_p = &stack[0] - 1;
 
-uint8_t * prefix_p = &prefix[0];
+uint8_t * postfix_p = &postfix[0];
 
 static bool is_valid_expression;
 
@@ -122,13 +122,13 @@ void clear_all(void)
 {
 	memset(infix,0x0,1025);
 
-	memset(prefix,0x0,2050);
+	memset(postfix,0x0,2050);
 	
 	memset(stack,0x0,513);
 
 	infix_p = &infix[0];
 
-	prefix_p = &prefix[0];
+	postfix_p = &postfix[0];
 
 	stack_p = stack - 1;
 
@@ -269,9 +269,139 @@ void statements(void)
 
 }
 
+bool is_stack_empty(void)
+{	return ( stack_p < &stack[0] );	}
+
+uint8_t stack_top(void)
+{
+	return *stack_p;
+}
+
+uint8_t push_stack(uint8_t in)
+{
+	*++stack_p = in;
+}
+
+
+uint8_t pop_stack(void)
+{
+	return *stack_p--;
+}
+
+
+size_t op_prec(uint8_t token)
+{
+	switch(token)
+	{
+		case ')':
+		case '(':
+		{
+			return 2;
+		}
+
+		case '*':
+		case '/':
+		case '%':
+		{
+			return 1;
+		}
+		
+		case '+':
+		case '-':
+		{
+			return 0;
+		}
+
+		
+		default: {break;}
+
+	}
+
+}
+
+void infix_to_postfix(void)
+{
+	memset(postfix,0x0,2050);
+	
+	memset(stack,0x0,513);
+
+	infix_p = &infix[0];
+
+	postfix_p = &postfix[0];
+
+	stack_p = stack - 1;
+
+	yycurrent = &infix[0];
+
+	yytext = &infix[0];
+
+	yyleng = 0;
+
+	advance();
+
+	while ( *yycurrent != 0x0 )
+	{
+		if ( operator() || match(RP) || match(LP) )
+		{
+			if ( match(RP) )
+			{
+				while ( stack_top() != '(' )
+				{
+					*postfix_p++ = pop_stack();
+
+					*postfix_p++ = 0x20;	
+				}
+			}	
+			
+			else if ( op_prec(*yycurrent) > stack_top() )
+			{
+				push_stack(*yycurrent);
+			}
+
+			else
+			{
+				*postfix_p++ = pop_stack();
+
+				*postfix_p++ = 0x20;
+			}
+		}
+
+		else
+		{
+			uint8_t * in = yytext;
+
+			while ( in < yycurrent )
+			{
+				*postfix_p++ = *in++;
+			}
+
+			*postfix_p++ = 0x20;
+		}		
+	}
+
+	printf("%s\n",postfix);
+	
+}
+
 int main(void)
 {
+	while (1)
+	{
+		statements();
 
+		if ( is_valid_expression )
+		{
+			infix_to_postfix();
+		}
+		
+		clear_all();	
+		
+		is_valid_expression = 0;
+
+		advance();
+	}
+
+#if 0
 	while (1)
 	{	
 		statements();	
@@ -284,5 +414,7 @@ int main(void)
 
 		advance();
 	}
+#endif
+
 }
 

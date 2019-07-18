@@ -326,7 +326,7 @@ void infix_to_postfix(void)
 
 	infix_p = &infix[0];
 
-	stack_p = stack - 1;
+	stack_p = &stack[0] - 1;
 
 	yycurrent = yytext = &infix[0];
 
@@ -353,17 +353,25 @@ void infix_to_postfix(void)
 				}
 			}	
 			
-			else if (  (op_prec(*yycurrent) > stack_top()) || match(LP) )
+			else if (  ( op_prec(*yycurrent) > stack_top() ) || match(LP) )
 			{
 				push_stack(*yycurrent);
 			}
 
 			else
 			{
-				putchar(pop_stack());
+				while ( ( op_prec(*yycurrent) <= stack_top() )
 
-				putchar(0x20);
+						&&
 
+					!is_stack_empty()
+				      )
+				{
+					putchar(pop_stack());
+
+					putchar(0x20);
+				}
+				
 				push_stack(*yycurrent);
 			}
 		}

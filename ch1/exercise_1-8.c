@@ -207,7 +207,7 @@ void infix_expr(void)
 
 		}
 
-		else if ( operator() ) // this is causing the error message bug
+		else if ( operator() ) 
 		{
 			is_valid_expression = 0; advance();
 		}
@@ -343,6 +343,7 @@ void infix_to_postfix(void)
 				push_stack(*yycurrent);	
 			}
 
+
 			else if ( match(RP) )
 			{
 				while ( stack_top() != '(' )
@@ -351,16 +352,18 @@ void infix_to_postfix(void)
 
 					putchar(0x20);	
 				}
+
+				pop_stack();
 			}	
 			
-			else if (  ( op_prec(*yycurrent) > stack_top() ) || match(LP) )
+			else if (  ( op_prec(*yycurrent) > op_prec(stack_top()) ) || match(LP) )
 			{
 				push_stack(*yycurrent);
 			}
 
 			else
 			{
-				while ( ( op_prec(*yycurrent) <= stack_top() )
+				while ( ( op_prec(*yycurrent) <= op_prec(stack_top()) )
 
 						&&
 

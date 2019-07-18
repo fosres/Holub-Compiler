@@ -321,48 +321,48 @@ size_t op_prec(uint8_t token)
 
 void infix_to_postfix(void)
 {
-	memset(postfix,0x0,2050);
 	
 	memset(stack,0x0,513);
 
 	infix_p = &infix[0];
 
-	postfix_p = &postfix[0];
-
 	stack_p = stack - 1;
 
-	yycurrent = &infix[0];
-
-	yytext = &infix[0];
+	yycurrent = yytext = &infix[0];
 
 	yyleng = 0;
 
 	advance();
 
-	while ( *yycurrent != 0x0 )
+	while ( !match(NL) )
 	{
 		if ( operator() || match(RP) || match(LP) )
 		{
-			if ( match(RP) )
+			if ( is_stack_empty() )
+			{
+				push_stack(*yycurrent);	
+			}
+
+			else if ( match(RP) )
 			{
 				while ( stack_top() != '(' )
 				{
-					*postfix_p++ = pop_stack();
+					putchar(pop_stack());
 
-					*postfix_p++ = 0x20;	
+					putchar(0x20);	
 				}
 			}	
 			
-			else if ( op_prec(*yycurrent) > stack_top() )
+			else if (  (op_prec(*yycurrent) > stack_top()) || match(LP) )
 			{
 				push_stack(*yycurrent);
 			}
 
 			else
 			{
-				*postfix_p++ = pop_stack();
+				putchar(pop_stack());
 
-				*postfix_p++ = 0x20;
+				putchar(0x20);
 			}
 		}
 
@@ -372,14 +372,23 @@ void infix_to_postfix(void)
 
 			while ( in < yycurrent )
 			{
-				*postfix_p++ = *in++;
+				putchar(*in++);
 			}
 
-			*postfix_p++ = 0x20;
-		}		
+			putchar(0x20);
+		}
+		
+		advance();		
 	}
 
-	printf("%s\n",postfix);
+	while ( !is_stack_empty() )
+	{
+		putchar(pop_stack());
+
+		putchar(0x20);
+	}
+
+	putchar(0xa);
 	
 }
 
@@ -388,7 +397,7 @@ int main(void)
 	while (1)
 	{
 		statements();
-
+		
 		if ( is_valid_expression )
 		{
 			infix_to_postfix();
@@ -415,6 +424,6 @@ int main(void)
 		advance();
 	}
 #endif
-
+	return 0;
 }
 

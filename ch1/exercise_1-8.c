@@ -363,6 +363,8 @@ void infix_to_postfix(void)
 				putchar(pop_stack());
 
 				putchar(0x20);
+
+				push_stack(*yycurrent);
 			}
 		}
 

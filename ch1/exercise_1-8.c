@@ -361,6 +361,11 @@ void infix_to_postfix(void)
 				push_stack(*yycurrent);
 			}
 
+			else if ( stack_top() == '(' )
+			{
+				push_stack(*yycurrent);
+			}
+
 			else
 			{
 				while ( ( op_prec(*yycurrent) <= op_prec(stack_top()) )
@@ -368,6 +373,10 @@ void infix_to_postfix(void)
 						&&
 
 					!is_stack_empty()
+
+					&&
+
+					( stack_top() != '(' )
 				      )
 				{
 					putchar(pop_stack());

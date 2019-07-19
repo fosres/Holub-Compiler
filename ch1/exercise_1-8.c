@@ -106,7 +106,8 @@ Get new lines, skipping any leading white space on the line, until a nonblank li
 				
 				else
 				{
-					fprintf(stderr,"Error: Invalid lexeme\n"
+					fprintf(stderr,"%llu: Error: Invalid lexeme\n",
+						yytext - &infix[0]
 						);
 					
 					
@@ -213,7 +214,18 @@ void infix_expr(void)
 			is_valid_expression = 0;
 
 			advance();
+			
+			if ( ( !match(NUM) && !match(LP) )  )
+			{
+				fprintf(stderr,"%llu: Error: Missing integer-constant"
+						" or left-parenthesis\n",
+						yytext - &infix[0]
+				       );
+				is_valid_expression = 0;
 
+				return;
+			}
+		
 		}
 
 		else if ( operator() ) 

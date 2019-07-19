@@ -10,7 +10,6 @@ uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
 uint8_t 	*yycurrent	= 0x0;
 uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
 uint64_t	yylineno	= 0;	/* Input line number		*/
-uint64_t 	yycharno 	= 0; 	/* Input char number		*/
 
 uint64_t lex(void)
 {
@@ -37,17 +36,20 @@ uint64_t lex(void)
 			
 			yylineno++;
 
-			yycharno = 0;
-
 			while ( isspace(*yycurrent) )
 			{
 				yycurrent++;
 				
-				yycharno++;
 			}
 		}
 
-		for ( ; *yycurrent != 0x0 ; yycurrent++,yycharno++ )
+		while ( isspace(*yycurrent) )
+		{
+			yycurrent++;
+				
+		}
+
+		for ( ; *yycurrent != 0x0 ; yycurrent++  )
 		{
 			/* Get the next token	*/
 
@@ -84,7 +86,7 @@ uint64_t lex(void)
 					{
 						yycurrent++;	
 
-						yycharno++;
+						
 					}
 
 					yyleng = yycurrent - yytext;
@@ -98,7 +100,7 @@ uint64_t lex(void)
 					{
 						yycurrent++;
 						
-						yycharno++;
+						
 					}
 
 					yyleng = yycurrent - yytext;

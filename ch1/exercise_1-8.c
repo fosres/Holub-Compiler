@@ -1,3 +1,12 @@
+#if 0
+
+Copyright 2018-INFINITY. Tanveer Salim
+
+Algorithm To Convert Infix to Postfix:
+
+
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

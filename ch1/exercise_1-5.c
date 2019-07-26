@@ -87,7 +87,10 @@ void storage_class_specifier(uint8_t dec_specs)
 {
 	switch(Lookahead)
 	{
-		case AUTO: case REGISTER: case STATIC: case EXTERN: case TYPEDEF:
+		case AUTO: 
+		case STATIC: 
+		case EXTERN: 
+		case TYPEDEF:
 		{
 			dec_specs |= 0b1;
 
@@ -231,6 +234,26 @@ void declaration_specifiers(void)
 
 void init_declarator_list();
 
+void pointer(void)
+{
+	while ( match(ASTK) )
+	{
+		while ( match(ASTK) )
+		{
+			advance();
+		}
+
+		if ( match(CONST)||match(VOLATILE) )
+		{
+			while (match(CONST)||match(VOLATILE))
+			{
+				advance();
+			}
+		}
+
+	}
+}
+
 void declaration(void)
 {
 	while (!match(EOI))
@@ -291,25 +314,81 @@ void declarator(void)
 	pointer(); direct_declarator();
 }
 
-void pointer(void)
+void direct_declarator(void)
 {
-	while ( match(ASTK) )
+	if ( match(ID) )
+	{	advance();	}
+
+	else if ( match(RP) )
 	{
-		while ( match(ASTK) )
+		return;
+	}
+
+	else if ( match(LP) )
+	{
+		advance();
+
+		declarator();
+
+		if ( !match(RP) )
+		{
+			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
+				yylineno,yytext-&input[0]
+			       );
+		}
+
+		advance();
+	}
+
+	else
+	{
+		fprintf(stderr,"%llu:%llu:Error:Missing identifier or (declarator)\n",
+			yylineno,yytext-&input[0]
+		       );
+	}
+
+	if ( match(LB) )
+	{
+		while ( match(LB) )
 		{
 			advance();
-		}
 
-		if ( match(CONST)||match(VOLATILE) )
-		{
-			while (match(CONST)||match(VOLATILE))
+			if ( !match(NUM) )
 			{
-				advance();
+				fprintf(stderr,"%llu:%llu:Error:Missing integer-"
+						"constant in array\n",
+					yylineno,yytext-&input[0]
+				       );
 			}
-		}
 
+			advance();
+
+			if ( !match(RB) )
+			{
+				fprintf(stderr,"%llu:%llu:Missing right-bracket\n",
+					yylineno,yytext-&input[0]
+				       );
+			}
+
+			advance();
+		}
 	}
+
+	else if ( match(LP) ) //parameter_type_list
+	{
+		advance();
+
+		parameter_type_list();
+
+		if ( !match(RP) )
+		{
+			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
+				yylineno,yytext-&input[0]
+			       );
+		}	
+	}	
 }
+
 
 int main(void)
 {

@@ -33,7 +33,8 @@ All the hex representations are simply put--the ASCII hex codes
 #define LP		0x28	/* (			*/
 #define RP		0x29	/* )			*/
 #define NUM		0x30	/* decimal number	*/
-
+#define LB		0x5b	/* [			*/
+#define RB		0x5d	/* ]			*/
 #define ID		0x5f	/* identifier name for a variable; it can
 				   begin with an '_' 	*/	
 #if 0
@@ -86,7 +87,7 @@ extern uint64_t yylineno;
 
 extern uint64_t yycharno;
 
-extern uint8_t input_buffer[1024];
+extern uint8_t input[1024];
 
 extern uint64_t Lookahead;
 

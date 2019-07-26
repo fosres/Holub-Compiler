@@ -10,10 +10,10 @@ uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
 uint8_t 	*yycurrent	= 0x0;
 uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
 uint64_t	yylineno	= 0;	/* Input line number		*/
+uint8_t		input[1024]; /*		stores line input		*/
 
 uint64_t lex(void)
 {
-	uint8_t input_buffer[1024];
 
 	yycurrent = yytext + yyleng;	/* Skip yycurrent lexeme */
 
@@ -68,6 +68,8 @@ uint64_t lex(void)
 			case '%': 	return MODULUS	;
 			case '(':	return LP	;
 			case ')':	return RP	;
+			case '[':	return LB	;
+			case ']':	return RB	;
 
 			case '\n':
 			case '\t':

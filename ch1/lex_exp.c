@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#define NL	0xa	/* Newline character */
 uint8_t 	*yytext		= "";	/*Lexeme (not '\0' terminated	*/
 uint8_t 	*yycurrent	= 0x0;
 uint64_t	yyleng		= 0; 	/* Lexeme length.		*/

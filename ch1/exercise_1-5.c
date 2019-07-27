@@ -85,20 +85,31 @@ Declare a function that accepts argument long that returns a pointer to an array
 
 void storage_class_specifier(uint8_t dec_specs)
 {
-	switch(Lookahead)
+	if ( 
+		( match(AUTO)||match(EXTERN)||match(STATIC)||match(TYPEDEF) )
+	   )
+		
 	{
-		case AUTO: 
-		case STATIC: 
-		case EXTERN: 
-		case TYPEDEF:
-		{
+
+		if ( dec_specs & 0b1 != 1 )
+		{	
+
 			dec_specs |= 0b1;
 
-			advance();
 		}
 
-		default: {break;}
-	}
+		else
+		{
+			fprintf(stderr,"%llu:%llu:Error:Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+		}
+
+		advance();
+
+	}	
+	
 }
 
 void declaration_specifiers(void)

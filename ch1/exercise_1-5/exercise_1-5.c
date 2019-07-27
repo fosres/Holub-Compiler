@@ -402,6 +402,82 @@ void direct_declarator(void)
 	}	
 }
 
+void parameter_declaration(void);
+
+void parameter_type_list(void)
+{
+	if ( 
+		!( Lookahead > ( 0b1 << 8 ) )
+			
+		|| 
+		
+		!(Lookahead < ( 0b1 << 24 ) ) 
+		
+	   )
+
+
+	{
+		fprintf(stderr,"%llu:%llu:Error:Missing declaration-specifier\n",
+			yylineno,yytext-&input[0]
+		       );
+	}
+		while (
+			( Lookahead > ( 0b1 << 8 ) )
+
+			&&
+
+			( Lookahead < ( 0b1 << 24 ) )
+
+		      )
+
+		{
+			parameter_declaration();
+
+			if ( match(COMMA) )
+			{
+				advance();
+
+				if (
+					!( Lookahead > ( 0b1 << 8 ) )
+
+					||
+
+					!(Lookahead < ( 0b1 << 24 ) )
+
+				   )
+
+				{
+					fprintf(stderr,"%llu:%llu:Error:Missing"
+							" declaration-specifier\n",
+						yylineno,yytext-&input[0]
+					       );
+				}
+			}
+
+		}
+
+}
+
+void parameter_declaration(void)
+{
+	declaration_specifiers();
+
+	if ( match(COMMA) || match(RP) )
+	{
+		return;
+	}	
+
+	else
+	{
+		fprintf(stderr,"%llu:%llu:Error:Missing comma or right"
+				"-parenthesis\n",
+			yylineno,yytext-&input[0]
+		       );
+	}
+
+	declarator();
+}
+
 
 int main(void)
 {

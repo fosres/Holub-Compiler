@@ -7,6 +7,8 @@
 
 bool is_valid_expression = 0;
 
+uint8_t dec_specs = 0;
+
 #if 0
 
 	int * (*(*a[4])(int,int,int))(int,int);
@@ -114,7 +116,7 @@ void storage_class_specifier(uint8_t dec_specs)
 
 void declaration_specifiers(void)
 {
-	uint8_t dec_specs = 0;
+	dec_specs = 0;
 
 	while ( 
 		( Lookahead > ( 0b1 << 8 ) )
@@ -271,7 +273,7 @@ void declaration(void)
 	{
 		declaration_specifiers();
 
-		if(!is_valid_expression)
+		if( (dec_specs >> 1) == 0 )
 		{
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
 					" type-specifier\n",
@@ -481,5 +483,6 @@ void parameter_declaration(void)
 
 int main(void)
 {
+	declaration();
 	return 0;
 }

@@ -25,9 +25,9 @@ uint64_t lex(void)
 			 * until a nonblank line is found.
 			 */
 
-			yycurrent = input_buffer;
+			yycurrent = input;
 			
-			if ( fgets(input_buffer,1024*sizeof(uint8_t),stdin) == NULL )
+			if ( fgets(input,1024*sizeof(uint8_t),stdin) == NULL )
 			{
 				*yycurrent = 0x0;
 				

@@ -325,6 +325,8 @@ void declarator(void)
 	pointer(); direct_declarator();
 }
 
+void parameter_type_list(void);
+
 void direct_declarator(void)
 {
 	if ( match(ID) )

@@ -45,14 +45,14 @@ Storage-class specifiers, type-specifiers, and type-qualifiers
 #endif
 
 // Storage-class specifiers
-#define AUTO		(  ( ( 0b010 ) << 8 ) | (0x100)  )	
-#define STATIC		(  ( ( 0b011 ) << 8 ) | (0x100)  )
+#define AUTO		(  ( ( 0b10 ) << 8 ) | (0x100)  )	
+#define STATIC		(  (AUTO) + (1)  )
 #define EXTERN		(  ( ( 0b100 ) << 8 ) | (0x100)  )
-#define TYPEDEF		(  ( ( 0b101 ) << 8 ) | (0x100)  )	
+#define TYPEDEF		(  (EXTERN) + (1)  )	
 
 // Type-specifiers
 #define VOID		(  ( ( 0b0 ) << 12 ) | ( 0x1100 )  )
-#define BOOL		(  ( ( 0b1 ) << 12 ) | ( 0x1100 )  )
+#define BOOL		(  (VOID) + (1)  )
 #define CHAR		(  ( ( 0b101 ) << 14 ) | ( ( 0x1100 ) )  )
 #define SHORT		(  ( ( 0b010 ) << 14 ) | ( ( 0x1100 ) )  )
 #define INT		(  ( ( 0b011 ) << 14 ) | ( ( 0x1100 ) )  )
@@ -60,7 +60,7 @@ Storage-class specifiers, type-specifiers, and type-qualifiers
 #define FLOAT		(  ( ( 0b1100 ) << 14 ) | ( ( 0x1100 ) )  )
 #define DOUBLE		(  ( ( 0b1101 ) << 14 ) | ( ( 0x1100 ) )  )
 #define SIGNED		(  ( ( 0b1 ) << 13 ) | ( ( 0x1100 ) )  )
-#define UNSIGNED	(  ( ( 0b0 ) << 13 ) | ( ( 0x1100 ) )  )
+#define UNSIGNED	(  (SIGNED) + 1  )
 
 #define BARRIERS	(  ( 0b1 << 21 ) | ( 0x1100 ) )
 // Type-qualifiers

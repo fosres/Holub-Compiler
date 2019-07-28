@@ -485,7 +485,7 @@ void parameter_declaration(void)
 	declarator();
 }
 
-void test_specifiers(void)
+void test_specifiers_and_qualifiers(void)
 {
 	if (	
 			( INT > ( 0b1 << 8 ) )
@@ -496,7 +496,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("INT worked\n");			
+		printf("INT worked and its value is:\n%llu\n\n",INT);			
 	}
 
 	if (	
@@ -508,7 +508,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("LONG worked\n");			
+		printf("LONG worked and its value is:\n%llu\n\n",LONG);			
 	}
 		
 	if (	
@@ -520,7 +520,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("UNSIGNED worked\n");			
+		printf("UNSIGNED worked and its value is:\n%llu\n\n",UNSIGNED);			
 	}
 	
 	if (	
@@ -532,7 +532,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("SIGNED worked\n");			
+		printf("SIGNED worked and its value is:\n%llu\n\n",SIGNED);			
 	}
 
 	if (	
@@ -544,7 +544,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("SHORT worked\n");			
+		printf("SHORT worked and its value is:\n%llu\n\n",SHORT);			
 	}
 	
 	if (	
@@ -556,10 +556,8 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("CHAR worked\n");			
+		printf("CHAR worked and its value is:\n%llu\n\n",CHAR);	
 	}
-
-// AUTO is not working
 
 	if (	
 			( AUTO > ( 0b1 << 8 ) )
@@ -570,7 +568,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("AUTO worked\n");			
+		printf("AUTO worked and its value is:\n%llu\n\n",AUTO);	
 	}
 
 	if (	
@@ -582,7 +580,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("STATIC worked\n");			
+		printf("STATIC worked and its value is:\n%llu\n\n",STATIC);	
 	}
 
 	if (	
@@ -594,7 +592,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("EXTERN worked\n");			
+		printf("EXTERN worked and its value is:\n%llu\n\n",EXTERN);	
 	}
 
 	if (	
@@ -606,7 +604,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("TYPEDEF worked\n");			
+		printf("TYPEDEF worked and its value is:\n%llu\n\n",TYPEDEF);	
 	}
 
 	if (	
@@ -618,7 +616,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("VOID worked\n");			
+		printf("VOID worked and its value is:\n%llu\n\n",VOID);	
 	}
 
 	if (	
@@ -630,7 +628,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("BOOL worked\n");			
+		printf("BOOL worked and its value is:\n%llu\n\n",BOOL);	
 	}
 
 	if (	
@@ -642,7 +640,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("FLOAT worked\n");			
+		printf("FLOAT worked and its value is:\n%llu\n\n",FLOAT);	
 	}
 
 	if (	
@@ -654,7 +652,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("DOUBLE worked\n");			
+		printf("DOUBLE worked and its value is:\n%llu\n\n",DOUBLE);	
 	}
 
 	if (	
@@ -666,7 +664,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("CONST worked\n");			
+		printf("CONST worked and its value is:\n%llu\n\n",CONST);	
 	}
 
 	if (	
@@ -678,7 +676,7 @@ void test_specifiers(void)
 
 	   )
 	{
-		printf("VOLATILE worked\n");			
+		printf("VOLATILE worked and its value is:\n%llu\n\n",VOLATILE);	
 	}
 
 }
@@ -701,7 +699,7 @@ int main(int argc, char ** argv)
 	declaration();
 #endif
 	
-	test_specifiers();
+	test_specifiers_and_qualifiers();
 
 	return 0;
 }

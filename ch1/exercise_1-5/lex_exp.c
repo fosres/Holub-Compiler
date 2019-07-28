@@ -11,6 +11,7 @@ uint64_t	yyleng		= 0; 	/* Lexeme length.		*/
 uint64_t	yylineno	= 0;	/* Input line number		*/
 uint8_t		input[1024]; /*		stores line input		*/
 uint64_t 	Lookahead 	= 0xff;
+FILE 	*	input_file	= 0x0;
 
 uint64_t lex(void)
 {
@@ -27,13 +28,26 @@ uint64_t lex(void)
 
 			yycurrent = input;
 			
+		if ( input_file == NULL )
+		{		
 			if ( fgets(input,1024*sizeof(uint8_t),stdin) == NULL )
 			{
 				*yycurrent = 0x0;
 				
 				return EOI;
 			}
-			
+		}
+
+		else
+		{
+			if ( fgets(input,1024*sizeof(uint8_t),input_file) == NULL )
+			{
+				*yycurrent = 0x0;
+				
+				return EOI;
+			}
+
+		}	
 			yylineno++;
 
 			while ( isspace(*yycurrent) )

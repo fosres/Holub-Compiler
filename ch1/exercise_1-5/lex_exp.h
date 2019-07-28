@@ -89,6 +89,8 @@ extern uint64_t yycharno;
 
 extern uint8_t input[1024];
 
+extern FILE * input_file;
+
 extern uint64_t Lookahead;
 
 uint64_t lex(void);

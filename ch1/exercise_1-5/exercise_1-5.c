@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include "lex_exp.h"
+
 
 bool is_valid_expression = 0;
 
@@ -241,6 +243,7 @@ void declaration_specifiers(void)
 		}
 		
 		advance();		
+
 	} //end while loop for declaration_specifiers
 
 }
@@ -273,7 +276,7 @@ void declaration(void)
 	{
 		declaration_specifiers();
 
-		if( (dec_specs >> 1) == 0 )
+		if( ( (dec_specs >> 1) & ~0b0 ) == 0 )
 		{
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
 					" type-specifier\n",
@@ -289,6 +292,8 @@ void declaration(void)
 				yylineno,yytext-&input[0]
 			       );
 		}
+
+		advance();
 	}
 }
 
@@ -481,8 +486,144 @@ void parameter_declaration(void)
 }
 
 
-int main(void)
+int main(int argc, char ** argv)
 {
+
+#if 0
+	if ( argv[1] != NULL )
+	{
+		if ( ( input_file = fopen(argv[1],"r+") ) == NULL )
+		{
+			fprintf(stderr,"Error: Failed to open %s\n",argv[1]);
+
+			exit(1);	
+		}
+
+	}
+
 	declaration();
+#endif
+	
+	if (	
+			( INT > ( 0b1 << 8 ) )
+
+			&&
+
+			( INT < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("INT worked\n");			
+	}
+
+	if (	
+			( LONG > ( 0b1 << 8 ) )
+
+			&&
+
+			( LONG < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("LONG worked\n");			
+	}
+		
+	if (	
+			( UNSIGNED > ( 0b1 << 8 ) )
+
+			&&
+
+			( UNSIGNED < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("UNSIGNED worked\n");			
+	}
+	
+	if (	
+			( SIGNED > ( 0b1 << 8 ) )
+
+			&&
+
+			( SIGNED < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("SIGNED worked\n");			
+	}
+
+	if (	
+			( SHORT > ( 0b1 << 8 ) )
+
+			&&
+
+			( SHORT < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("SHORT worked\n");			
+	}
+	
+	if (	
+			( CHAR > ( 0b1 << 8 ) )
+
+			&&
+
+			( CHAR < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("CHAR worked\n");			
+	}
+
+	if (	
+			( AUTO > ( 0b1 << 8 ) )
+
+			&&
+
+			( AUTO < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("AUTO worked\n");			
+	}
+
+	if (	
+			( STATIC > ( 0b1 << 8 ) )
+
+			&&
+
+			( STATIC < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("STATIC worked\n");			
+	}
+
+	if (	
+			( EXTERN > ( 0b1 << 8 ) )
+
+			&&
+
+			( EXTERN < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("EXTERN worked\n");			
+	}
+
+	if (	
+			( TYPEDEF > ( 0b1 << 8 ) )
+
+			&&
+
+			( TYPEDEF < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("TYPEDEF worked\n");			
+	}
+
+
 	return 0;
 }

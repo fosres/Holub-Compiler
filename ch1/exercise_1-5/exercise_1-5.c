@@ -485,25 +485,8 @@ void parameter_declaration(void)
 	declarator();
 }
 
-
-int main(int argc, char ** argv)
+void test_specifiers(void)
 {
-
-#if 0
-	if ( argv[1] != NULL )
-	{
-		if ( ( input_file = fopen(argv[1],"r+") ) == NULL )
-		{
-			fprintf(stderr,"Error: Failed to open %s\n",argv[1]);
-
-			exit(1);	
-		}
-
-	}
-
-	declaration();
-#endif
-	
 	if (	
 			( INT > ( 0b1 << 8 ) )
 
@@ -576,6 +559,8 @@ int main(int argc, char ** argv)
 		printf("CHAR worked\n");			
 	}
 
+// AUTO is not working
+
 	if (	
 			( AUTO > ( 0b1 << 8 ) )
 
@@ -624,6 +609,99 @@ int main(int argc, char ** argv)
 		printf("TYPEDEF worked\n");			
 	}
 
+	if (	
+			( VOID > ( 0b1 << 8 ) )
+
+			&&
+
+			( VOID < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("VOID worked\n");			
+	}
+
+	if (	
+			( BOOL > ( 0b1 << 8 ) )
+
+			&&
+
+			( BOOL < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("BOOL worked\n");			
+	}
+
+	if (	
+			( FLOAT > ( 0b1 << 8 ) )
+
+			&&
+
+			( FLOAT < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("FLOAT worked\n");			
+	}
+
+	if (	
+			( DOUBLE > ( 0b1 << 8 ) )
+
+			&&
+
+			( DOUBLE < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("DOUBLE worked\n");			
+	}
+
+	if (	
+			( CONST > ( 0b1 << 8 ) )
+
+			&&
+
+			( CONST < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("CONST worked\n");			
+	}
+
+	if (	
+			( VOLATILE > ( 0b1 << 8 ) )
+
+			&&
+
+			( VOLATILE < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("VOLATILE worked\n");			
+	}
+
+}
+
+int main(int argc, char ** argv)
+{
+
+#if 0
+	if ( argv[1] != NULL )
+	{
+		if ( ( input_file = fopen(argv[1],"r+") ) == NULL )
+		{
+			fprintf(stderr,"Error: Failed to open %s\n",argv[1]);
+
+			exit(1);	
+		}
+
+	}
+
+	declaration();
+#endif
+	
+	test_specifiers();
 
 	return 0;
 }

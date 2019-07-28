@@ -45,10 +45,10 @@ Storage-class specifiers, type-specifiers, and type-qualifiers
 #endif
 
 // Storage-class specifiers
-#define AUTO		(  ( ( 0b001 ) << 8 ) | (0x100)  )	
-#define STATIC		(  ( ( 0b010 ) << 8 ) | (0x100)  )
-#define EXTERN		(  ( ( 0b011 ) << 8 ) | (0x100)  )
-#define TYPEDEF		(  ( ( 0b100 ) << 8 ) | (0x100)  )	
+#define AUTO		(  ( ( 0b010 ) << 8 ) | (0x100)  )	
+#define STATIC		(  ( ( 0b011 ) << 8 ) | (0x100)  )
+#define EXTERN		(  ( ( 0b100 ) << 8 ) | (0x100)  )
+#define TYPEDEF		(  ( ( 0b101 ) << 8 ) | (0x100)  )	
 
 // Type-specifiers
 #define VOID		(  ( ( 0b0 ) << 12 ) | ( 0x1100 )  )

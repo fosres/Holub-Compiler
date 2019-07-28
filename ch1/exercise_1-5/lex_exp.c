@@ -123,7 +123,9 @@ uint64_t lex(void)
 						
 					}
 
+
 					yyleng = yycurrent - yytext;
+					
 
 					if ( strcmp(yytext,"...\0") == 0 )
 					{
@@ -212,7 +214,6 @@ uint64_t lex(void)
 						return UNSIGNED;
 					}	
 
-//type-qualifer
 					else if ( strcmp(yytext,"const\0") == 0 )
 					{
 						return CONST;
@@ -225,15 +226,9 @@ uint64_t lex(void)
 
 					else
 					{
-						fprintf(stderr,"%llu:%llu:Error:"
-								"Invalid lexeme\n",
-							yylineno,yytext-&input[0]
-						       );
-
-						return INV;
+						return ID;
 					}
 					
-					return ID;
 				   }
 
 				   break;

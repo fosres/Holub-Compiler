@@ -4,7 +4,7 @@ int main(void)
 {
 	uint8_t bin_specs = 0b11;
 
-	printf("%d\n",bin_specs);
+	printf("%d\n",(0b1 << 25) );
 	
 
 	return 0;

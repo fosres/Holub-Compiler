@@ -121,7 +121,9 @@ void type_qualifier(void)
 	if ( match(CONST) || match(VOLATILE) )
 	{
 		dec_specs |= 0b1000000;	
-	}	
+
+		advance();
+	}
 
 }
 
@@ -156,6 +158,7 @@ void declaration_specifiers(void)
 
 		else if ( match(INT) )
 		{
+
 			if ( 
 				( ( dec_specs >> 5 ) & 0b1 )
 			   )
@@ -284,9 +287,13 @@ void declaration(void)
 {
 	while (!match(EOI))
 	{
-		declaration_specifiers();
+		printf("%llu\n",Lookahead);
 
-		if( ( (dec_specs >> 1) & ~0b0 ) == 0 )
+		declaration_specifiers();
+		
+		printf("%llu\n",Lookahead);
+
+		if( ( ( dec_specs >> 1 ) & (~0b0) ) == 0 )
 		{
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
 					" type-specifier\n",
@@ -375,6 +382,7 @@ void direct_declarator(void)
 		fprintf(stderr,"%llu:%llu:Error:Missing identifier or (declarator)\n",
 			yylineno,yytext-&input[0]
 		       );
+
 	}
 
 	if ( match(LB) )
@@ -705,7 +713,16 @@ int main(int argc, char ** argv)
 
 	}
 
-	declaration();
+	declaration(); 
+
+#if 0
+when input is "int a;" the lex() thinks the first token is for ID!
+
+All strcmp comparisions are FAILING!
+
+Try strstr(yytext,substr) == yytext
+#endif
+	
 	
 
 	return 0;

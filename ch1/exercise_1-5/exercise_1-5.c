@@ -684,7 +684,6 @@ void test_specifiers_and_qualifiers(void)
 int main(int argc, char ** argv)
 {
 
-#if 0
 	if ( argv[1] != NULL )
 	{
 		if ( ( input_file = fopen(argv[1],"r+") ) == NULL )
@@ -697,9 +696,7 @@ int main(int argc, char ** argv)
 	}
 
 	declaration();
-#endif
 	
-	test_specifiers_and_qualifiers();
 
 	return 0;
 }

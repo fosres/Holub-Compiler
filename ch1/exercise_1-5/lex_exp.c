@@ -93,7 +93,11 @@ uint64_t lex(void)
 			{
 				   if ( !isalnum(*yycurrent) && (*yycurrent != '_' ) )
 				   {
-					   fprintf(stderr,"Ignoring illegal input <%c>\n",*yycurrent); 
+					  fprintf(stderr,"%llu:%llu:Error:Invalid lexeme: Neither starts with an alphanumeric character nor \'_\'\n",
+						  yylineno,yytext-&input[0]
+						 ); 
+					   
+					   return INV;
 				   }
 
 				   else if ( isdigit(*yycurrent) )
@@ -121,102 +125,112 @@ uint64_t lex(void)
 
 					yyleng = yycurrent - yytext;
 
-					if ( strcmp(yycurrent,"...\0") == 0 )
+					if ( strcmp(yytext,"...\0") == 0 )
 					{
 						return ELLIPSIS;
 					}
 
 // Storage-class specifier
-					else if ( strcmp(yycurrent,"auto\0") == 0 )
+					else if ( strcmp(yytext,"auto\0") == 0 )
 					{
 						return AUTO;
 					}
 	
-					else if ( strcmp(yycurrent,"static\0") == 0 )
+					else if ( strcmp(yytext,"static\0") == 0 )
 					{
 						return STATIC;
 					}
 
-					else if ( strcmp(yycurrent,"extern\0") == 0 )
+					else if ( strcmp(yytext,"extern\0") == 0 )
 					{
 						return EXTERN;
 					}
 				
-					else if ( strcmp(yycurrent,"typedef\0") == 0 )
+					else if ( strcmp(yytext,"typedef\0") == 0 )
 					{
 						return TYPEDEF;
 					}
 					
-					else if ( strcmp(yycurrent,"const\0") == 0 )
+					else if ( strcmp(yytext,"const\0") == 0 )
 					{
 						return CONST;
 					}
 					
-					else if ( strcmp(yycurrent,"volatile\0") == 0 )
+					else if ( strcmp(yytext,"volatile\0") == 0 )
 					{
 						return VOLATILE;
 					}
 // type-specifiers below			
 		
-					else if ( strcmp(yycurrent,"void\0") == 0 )
+					else if ( strcmp(yytext,"void\0") == 0 )
 					{
 						return VOID;
 					}
 
-					else if ( strcmp(yycurrent,"bool\0") == 0 )
+					else if ( strcmp(yytext,"bool\0") == 0 )
 					{
 						return BOOL;
 					}
 					
-					else if ( strcmp(yycurrent,"char\0") == 0 )
+					else if ( strcmp(yytext,"char\0") == 0 )
 					{
 						return CHAR;
 					}
 					
-					else if ( strcmp(yycurrent,"short\0") == 0 )
+					else if ( strcmp(yytext,"short\0") == 0 )
 					{
 						return SHORT;
 					}
 					
-					else if ( strcmp(yycurrent,"int\0") == 0 )
+					else if ( strcmp(yytext,"int\0") == 0 )
 					{
 						return INT;
 					}
 					
-					else if ( strcmp(yycurrent,"long\0") == 0 )
+					else if ( strcmp(yytext,"long\0") == 0 )
 					{
 						return LONG;
 					}	
 					
-					else if ( strcmp(yycurrent,"float\0") == 0 )
+					else if ( strcmp(yytext,"float\0") == 0 )
 					{
 						return FLOAT;
 					}	
 					
-					else if ( strcmp(yycurrent,"double\0") == 0 )
+					else if ( strcmp(yytext,"double\0") == 0 )
 					{
 						return DOUBLE;
 					}	
 					
-					else if ( strcmp(yycurrent,"signed\0") == 0 )
+					else if ( strcmp(yytext,"signed\0") == 0 )
 					{
 						return SIGNED;
 					}	
 					
-					else if ( strcmp(yycurrent,"unsigned\0") == 0 )
+					else if ( strcmp(yytext,"unsigned\0") == 0 )
 					{
 						return UNSIGNED;
 					}	
 
 //type-qualifer
-					else if ( strcmp(yycurrent,"const\0") == 0 )
+					else if ( strcmp(yytext,"const\0") == 0 )
 					{
 						return CONST;
 					}
 
-					else if ( strcmp(yycurrent,"volatile\0") == 0 )
+					else if ( strcmp(yytext,"volatile\0") == 0 )
 					{
 						return VOLATILE;
+					}
+
+					else
+					{
+						fprintf(stderr,"%llu:%llu:Error:"
+								"Invalid lexeme\n",
+							yylineno,yytext-&input[0]
+						       );
+
+						return INV;
 					}
 					
 					return ID;

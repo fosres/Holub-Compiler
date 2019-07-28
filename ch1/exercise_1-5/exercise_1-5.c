@@ -87,7 +87,7 @@ Declare a function that accepts argument long that returns a pointer to an array
 	int (*buf[45])(unsigned long long, unsigned long);
 #endif		
 
-void storage_class_specifier(uint8_t dec_specs)
+void storage_class_specifier(void)
 {
 	if ( 
 		( match(AUTO)||match(EXTERN)||match(STATIC)||match(TYPEDEF) )
@@ -95,7 +95,7 @@ void storage_class_specifier(uint8_t dec_specs)
 		
 	{
 
-		if ( dec_specs & 0b1 != 1 )
+		if ( ( dec_specs & 0b1 ) != 1 )
 		{	
 
 			dec_specs |= 0b1;
@@ -116,6 +116,15 @@ void storage_class_specifier(uint8_t dec_specs)
 	
 }
 
+void type_qualifier(void)
+{
+	if ( match(CONST) || match(VOLATILE) )
+	{
+		dec_specs |= 0b1000000;	
+	}	
+
+}
+
 void declaration_specifiers(void)
 {
 	dec_specs = 0;
@@ -129,11 +138,13 @@ void declaration_specifiers(void)
 
 	      )
 	{
-		storage_class_specifier(dec_specs);
+		storage_class_specifier();
+
+		type_qualifier();
 
 		if ( match(UNSIGNED) || match(SIGNED) )
 		{
-			if ( ( dec_specs >> 2 ) & 0b1 )
+			if ( ( dec_specs >> 1 ) & 0b1 )
 			{
 				fprintf(stderr,"%llu:%llu:Error: Unsigned/signed collision with float, double, or void\n",
 					yylineno,yytext-&input[0]
@@ -208,7 +219,7 @@ void declaration_specifiers(void)
 				   )
 				{
 					fprintf(stderr,"%llu:%llu:Error:Too many"
-							" \'long\' type-specifier\n",
+							" \'long\' type-specifiers\n",
 						yylineno,yytext-&input[0]
 					       );
 				}
@@ -227,14 +238,13 @@ void declaration_specifiers(void)
 		else if ( match(SHORT) )
 		{
 			if (
-				( ( dec_specs >> 2 ) & 0b1 )
+				( ( dec_specs >> 3 ) & 0b1 )
 			   )
 				{
 					fprintf(stderr,"%llu:%llu:Error:Collision of"
 							" short type specifier with"
-							"another type-specifier with"
-							"another short, char, or"
-							"long\n",
+							" another short, char, or"
+							" long\n",
 						yylineno,yytext-&input[0]
 						);						
 				}

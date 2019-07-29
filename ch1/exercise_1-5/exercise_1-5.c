@@ -167,7 +167,7 @@ void type_qualifier(void)
 {
 	if ( match(CONST) || match(VOLATILE) )
 	{
-		dec_specs |= 0b1000000;	
+		dec_specs |= 0b10;	
 
 		advance();
 	}
@@ -207,13 +207,13 @@ void declaration_specifiers(void)
 					yylineno,yytext-&input[0]
 				       );
 #endif
-				error_msg("Unsigned/signed collision with float, double, or void\n",
+				error_msg("Unsigned/signed collision with float, double, void, or bool\n",
 					yylineno,yytext-&input[0]
 				       );
 
 			}
 
-			dec_specs |= 0b100; is_valid_expression = 1;
+			dec_specs |= 0b100; 
 		}
 
 		else if ( match(INT) )
@@ -252,7 +252,7 @@ void declaration_specifiers(void)
 					yylineno,yytext-&input[0]
 				       );
 #endif
-				error_msg("Collision with float, double, or void\n",yylineno,yytext-&input[0]);
+				error_msg("Collision with float, double, void, or bool\n",yylineno,yytext-&input[0]);
 			}
 
 			if (
@@ -315,23 +315,6 @@ void declaration_specifiers(void)
 
 		else if ( match(LONG) )
 		{
-			if (
-				( ( dec_specs >> 2 ) & 0b1 )
-
-			   )
-			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collision with float"
-						" double, or void specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
-				error_msg("Collision with float"
-						" double, or void specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-	
-			}
 
 			if (
 				( 
@@ -364,13 +347,12 @@ void declaration_specifiers(void)
 				dec_specs |= 0b1000;
 			}
 
-			is_valid_expression = 1;
 		}
 
-		else if ( match(SHORT) || match(CHAR) || match(BOOL) )
+		else if ( match(SHORT) || match(CHAR) )
 		{
 			if (
-				( ( dec_specs >> 3 ) & 0b1 )
+				( ( dec_specs >> 5 ) & 0b1 )
 			   )
 				{
 #if 0
@@ -383,16 +365,14 @@ void declaration_specifiers(void)
 #endif
 					error_msg("Collision of"
 							" short type specifier with"
-							" another short, char, or"
-							" long\n",
+							" another short or char\n",
 						yylineno,yytext-&input[0]
 						);
 					
 				}
 				
-				is_valid_expression = 1;
 
-				dec_specs |= 0b1000;
+				dec_specs |= 0b100000;
 		}
 		
 		advance();		

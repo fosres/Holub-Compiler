@@ -238,7 +238,7 @@ void declaration_specifiers(void)
 			is_valid_expression = 1;
 		}
 
-		else if ( match(SHORT) )
+		else if ( match(SHORT) || match(CHAR) || match(BOOL) )
 		{
 			if (
 				( ( dec_specs >> 3 ) & 0b1 )
@@ -253,6 +253,8 @@ void declaration_specifiers(void)
 				}
 				
 				is_valid_expression = 1;
+
+				dec_specs |= 0b1000;
 		}
 		
 		advance();		
@@ -287,12 +289,9 @@ void declaration(void)
 {
 	while (!match(EOI))
 	{
-		printf("%llu\n",Lookahead);
 
 		declaration_specifiers();
 		
-		printf("%llu\n",Lookahead);
-
 		if( ( ( dec_specs >> 1 ) & (~0b0) ) == 0 )
 		{
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"

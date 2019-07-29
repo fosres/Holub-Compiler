@@ -127,99 +127,99 @@ uint64_t lex(void)
 					yyleng = yycurrent - yytext;
 					
 
-					if ( strcmp(yytext,"...\0") == 0 )
+					if ( strstr(yytext,"...\0") == (char *)yytext )
 					{
 						return ELLIPSIS;
 					}
 
 // Storage-class specifier
-					else if ( strcmp(yytext,"auto\0") == 0 )
+					else if ( strstr(yytext,"auto\0") == (char *)yytext )
 					{
 						return AUTO;
 					}
 	
-					else if ( strcmp(yytext,"static\0") == 0 )
+					else if ( strstr(yytext,"static\0") == (char *)yytext )
 					{
 						return STATIC;
 					}
 
-					else if ( strcmp(yytext,"extern\0") == 0 )
+					else if ( strstr(yytext,"extern\0") == (char *)yytext )
 					{
 						return EXTERN;
 					}
 				
-					else if ( strcmp(yytext,"typedef\0") == 0 )
+					else if ( strstr(yytext,"typedef\0") == (char *)yytext )
 					{
 						return TYPEDEF;
 					}
 					
-					else if ( strcmp(yytext,"const\0") == 0 )
+					else if ( strstr(yytext,"const\0") == (char *)yytext )
 					{
 						return CONST;
 					}
 					
-					else if ( strcmp(yytext,"volatile\0") == 0 )
+					else if ( strstr(yytext,"volatile\0") == (char *)yytext )
 					{
 						return VOLATILE;
 					}
 // type-specifiers below			
 		
-					else if ( strcmp(yytext,"void\0") == 0 )
+					else if ( strstr(yytext,"void\0") == (char *)yytext )
 					{
 						return VOID;
 					}
 
-					else if ( strcmp(yytext,"bool\0") == 0 )
+					else if ( strstr(yytext,"bool\0") == (char *)yytext )
 					{
 						return BOOL;
 					}
 					
-					else if ( strcmp(yytext,"char\0") == 0 )
+					else if ( strstr(yytext,"char\0") == (char *)yytext )
 					{
 						return CHAR;
 					}
 					
-					else if ( strcmp(yytext,"short\0") == 0 )
+					else if ( strstr(yytext,"short\0") == (char *)yytext )
 					{
 						return SHORT;
 					}
 					
-					else if ( strcmp(yytext,"int\0") == 0 )
+					else if ( strstr(yytext,"int\0") == (char *)yytext )
 					{
 						return INT;
 					}
 					
-					else if ( strcmp(yytext,"long\0") == 0 )
+					else if ( strstr(yytext,"long\0") == (char *)yytext )
 					{
 						return LONG;
 					}	
 					
-					else if ( strcmp(yytext,"float\0") == 0 )
+					else if ( strstr(yytext,"float\0") == (char *)yytext )
 					{
 						return FLOAT;
 					}	
 					
-					else if ( strcmp(yytext,"double\0") == 0 )
+					else if ( strstr(yytext,"double\0") == (char *)yytext )
 					{
 						return DOUBLE;
 					}	
 					
-					else if ( strcmp(yytext,"signed\0") == 0 )
+					else if ( strstr(yytext,"signed\0") == (char *)yytext )
 					{
 						return SIGNED;
 					}	
 					
-					else if ( strcmp(yytext,"unsigned\0") == 0 )
+					else if ( strstr(yytext,"unsigned\0") == (char *)yytext )
 					{
 						return UNSIGNED;
 					}	
 
-					else if ( strcmp(yytext,"const\0") == 0 )
+					else if ( strstr(yytext,"const\0") == (char *)yytext )
 					{
 						return CONST;
 					}
 
-					else if ( strcmp(yytext,"volatile\0") == 0 )
+					else if ( strstr(yytext,"volatile\0") == (char *)yytext )
 					{
 						return VOLATILE;
 					}

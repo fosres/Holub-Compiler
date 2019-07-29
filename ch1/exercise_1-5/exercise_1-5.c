@@ -93,18 +93,38 @@ void error_msg(char * error_msg,uint64_t lineno,uint64_t charno)
 
 	printf("\e[38;5;201m"); //Purple					
 	
-	printf("%s\n",input);
+	printf("%s",input); //no need for newline char, already at end of line!
 	
-	uint64_t c = 0;
-	
-	while ( c <  ( yytext - &input[0] ) )
+	printf("\e[0m");
+
+	uint8_t * char_p = input;
+
+	printf("\e[38;5;208m"); //Orange	
+
+	while ( char_p <  yytext )
+	{
+		putchar(0x20);
+
+		char_p++;
+	}
+
+	putchar('^');
+
+	char_p++;
+
+	while ( char_p < yycurrent )
 	{
 		putchar('~');
 
-		c++;
+		char_p++;
 	}
 
+	putchar(0xa);
+
+	putchar(0xa);
+	
 	printf("\e[0m");
+
 }
 
 void storage_class_specifier(void)
@@ -216,10 +236,13 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 2 ) & 0b1 )
 			   )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Error:Collsion with"
 						" float,double, or void\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Collision with float, double, or void",yylineno,yytext-&input[0]);
 			}
 
 			dec_specs |= 0b100; is_valid_expression = 1;

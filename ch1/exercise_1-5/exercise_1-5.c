@@ -194,7 +194,7 @@ void declaration_specifiers(void)
 		if ( match(UNSIGNED) || match(SIGNED) )
 		{
 			if ( 
-					( ( dec_specs & 0b1000000 ) >> 1 ) 
+					( ( dec_specs & 0b10000000 ) >> 7 ) 
 					
 					& 
 					
@@ -213,14 +213,14 @@ void declaration_specifiers(void)
 
 			}
 
-			dec_specs |= 0b10; is_valid_expression = 1;
+			dec_specs |= 0b100; is_valid_expression = 1;
 		}
 
 		else if ( match(INT) )
 		{
 
 			if ( 
-				( ( dec_specs >> 5 ) & 0b1 )
+				( ( dec_specs >> 6 ) & 0b1 )
 			   )
 			{
 #if 0 
@@ -228,21 +228,74 @@ void declaration_specifiers(void)
 					yylineno,yytext-&input[0]
 				       );
 #endif
-				error_msg("Error:Extra int\n",
+				error_msg("Extra int\n",
 					yylineno,yytext-&input[0]
 				       );
 
 			}
 
-			dec_specs |= 0b100000;
+			dec_specs |= 0b1000000;
 
 			is_valid_expression = 1;
 		}
 
-		else if ( match(FLOAT) || match(DOUBLE) || match(VOID) )
+		else if ( match(FLOAT) || match(DOUBLE) || match(VOID) || match(BOOL) )
 		{
+
+			if (
+				( ( dec_specs >> 7 ) & 0b1 )
+			   )
+			{
+#if 0
+				fprintf(stderr,"%llu:%llu:Error:Collsion with"
+						" float,double, or void\n",
+					yylineno,yytext-&input[0]
+				       );
+#endif
+				error_msg("Collision with float, double, or void\n",yylineno,yytext-&input[0]);
+			}
+
+			if (
+				( ( dec_specs >> 6 ) & 0b1 )
+			   )
+			{
+#if 0
+				fprintf(stderr,"%llu:%llu:Error:Collsion with"
+						" float,double, or void\n",
+					yylineno,yytext-&input[0]
+				       );
+#endif
+				error_msg("Collision with int\n",yylineno,yytext-&input[0]);
+			}
+
+			if (
+				( ( dec_specs >> 5 ) & 0b1 )
+			   )
+			{
+#if 0
+				fprintf(stderr,"%llu:%llu:Error:Collsion with"
+						" float,double, or void\n",
+					yylineno,yytext-&input[0]
+				       );
+#endif
+				error_msg("Collision with short\n",yylineno,yytext-&input[0]);
+			}
+
+			if (
+				( ( dec_specs >> 3 ) & 0b1 )
+			   )
+			{
+#if 0
+				fprintf(stderr,"%llu:%llu:Error:Collsion with"
+						" float,double, or void\n",
+					yylineno,yytext-&input[0]
+				       );
+#endif
+				error_msg("Collision with long\n",yylineno,yytext-&input[0]);
+			}
+
 			if ( 
-				( ( dec_specs >> 1 ) & 0b1 )	
+				( ( dec_specs >> 2 ) & 0b1 )	
 
 			   )
 			{
@@ -257,20 +310,7 @@ void declaration_specifiers(void)
 
 			}
 
-			if (
-				( ( dec_specs >> 2 ) & 0b1 )
-			   )
-			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collsion with"
-						" float,double, or void\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
-				error_msg("Collision with float, double, or void\n",yylineno,yytext-&input[0]);
-			}
-
-			dec_specs |= 0b100; is_valid_expression = 1;
+			dec_specs |= 0b10000000; is_valid_expression = 1;
 		}
 
 		else if ( match(LONG) )

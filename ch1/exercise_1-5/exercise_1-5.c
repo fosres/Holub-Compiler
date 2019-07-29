@@ -87,6 +87,26 @@ Declare a function that accepts argument long that returns a pointer to an array
 	int (*buf[45])(unsigned long long, unsigned long);
 #endif		
 
+void error_msg(char * error_msg,uint64_t lineno,uint64_t charno)
+{
+	fprintf(stderr,"%llu:%llu:Error:%s\n",lineno,charno,error_msg);
+
+	printf("\e[38;5;201m"); //Purple					
+	
+	printf("%s\n",input);
+	
+	uint64_t c = 0;
+	
+	while ( c <  ( yytext - &input[0] ) )
+	{
+		putchar('~');
+
+		c++;
+	}
+
+	printf("\e[0m");
+}
+
 void storage_class_specifier(void)
 {
 	if ( 

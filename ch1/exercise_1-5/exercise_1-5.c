@@ -144,10 +144,17 @@ void storage_class_specifier(void)
 
 		else
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Error:Duplicate storage-class"
 					" specifier\n",
 				yylineno,yytext-&input[0]
 			       );	
+#endif
+			error_msg("Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+
 		}
 
 		advance();
@@ -195,9 +202,15 @@ void declaration_specifiers(void)
 					
 			   )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Error: Unsigned/signed collision with float, double, or void\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Unsigned/signed collision with float, double, or void\n",
+					yylineno,yytext-&input[0]
+				       );
+
 			}
 
 			dec_specs |= 0b10; is_valid_expression = 1;
@@ -210,9 +223,15 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 5 ) & 0b1 )
 			   )
 			{
+#if 0 
 				fprintf(stderr,"%llu:%llu:Error:Extra int\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Error:Extra int\n",
+					yylineno,yytext-&input[0]
+				       );
+
 			}
 
 			dec_specs |= 0b100000;
@@ -227,9 +246,15 @@ void declaration_specifiers(void)
 
 			   )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Error: Collision with signed/unsigned keyword\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Collision with signed/unsigned keyword\n",
+					yylineno,yytext-&input[0]
+				       );
+
 			}
 
 			if (
@@ -242,7 +267,7 @@ void declaration_specifiers(void)
 					yylineno,yytext-&input[0]
 				       );
 #endif
-				error_msg("Collision with float, double, or void",yylineno,yytext-&input[0]);
+				error_msg("Collision with float, double, or void\n",yylineno,yytext-&input[0]);
 			}
 
 			dec_specs |= 0b100; is_valid_expression = 1;
@@ -255,10 +280,17 @@ void declaration_specifiers(void)
 
 			   )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Error:Collision with float"
 						" double, or void specifier\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Collision with float"
+						" double, or void specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+	
 			}
 
 			if (
@@ -271,10 +303,17 @@ void declaration_specifiers(void)
 					( ( dec_specs >> 4 ) & 0b1 )
 				   )
 				{
+#if 0
 					fprintf(stderr,"%llu:%llu:Error:Too many"
 							" \'long\' type-specifiers\n",
 						yylineno,yytext-&input[0]
 					       );
+#endif
+					error_msg("Too many"
+							" \'long\' type-specifiers\n",
+						yylineno,yytext-&input[0]
+					       );
+
 				}
 
 				dec_specs |= 0b10000;
@@ -294,12 +333,21 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 3 ) & 0b1 )
 			   )
 				{
+#if 0
 					fprintf(stderr,"%llu:%llu:Error:Collision of"
 							" short type specifier with"
 							" another short, char, or"
 							" long\n",
 						yylineno,yytext-&input[0]
-						);						
+						);
+#endif
+					error_msg("Collision of"
+							" short type specifier with"
+							" another short, char, or"
+							" long\n",
+						yylineno,yytext-&input[0]
+						);
+					
 				}
 				
 				is_valid_expression = 1;
@@ -344,19 +392,33 @@ void declaration(void)
 		
 		if( ( ( dec_specs >> 1 ) & (~0b0) ) == 0 )
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
 					" type-specifier\n",
 				yylineno,yytext-&input[0]
 			       );
+#endif
+			
+			error_msg("Missing at least one"
+					" type-specifier\n",
+				yylineno,yytext-&input[0]
+			       );
+
 		}
 
 		init_declarator_list();
 
 		if (!match(SEMI))
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Missing semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
+#endif
+			error_msg("Missing semicolon\n",
+				yylineno,yytext-&input[0]
+			       );
+
 		}
 
 		advance();
@@ -373,9 +435,15 @@ void init_declarator_list(void)
 
 		if (!match(COMMA) && !match(SEMI))
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing comma or semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
+#endif
+			error_msg("Missing comma or semicolon\n",
+				yylineno,yytext-&input[0]
+			       );
+
 		}
 
 		if (match(COMMA)) { advance(); }
@@ -418,9 +486,15 @@ void direct_declarator(void)
 
 		if ( !match(RP) )
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
 				yylineno,yytext-&input[0]
 			       );
+#endif
+			error_msg("Missing right-parenthesis\n",
+				yylineno,yytext-&input[0]
+			       );
+
 		}
 
 		advance();
@@ -428,9 +502,15 @@ void direct_declarator(void)
 
 	else
 	{
+#if 0
 		fprintf(stderr,"%llu:%llu:Error:Missing identifier or (declarator)\n",
 			yylineno,yytext-&input[0]
 		       );
+#endif
+		error_msg("Missing identifier or (declarator)\n",
+			yylineno,yytext-&input[0]
+		       );
+
 
 	}
 
@@ -442,19 +522,32 @@ void direct_declarator(void)
 
 			if ( !match(NUM) )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Error:Missing integer-"
 						"constant in array\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Missing integer-"
+						"constant in array\n",
+					yylineno,yytext-&input[0]
+				       );
+
 			}
 
 			advance();
 
 			if ( !match(RB) )
 			{
+#if 0
 				fprintf(stderr,"%llu:%llu:Missing right-bracket\n",
 					yylineno,yytext-&input[0]
 				       );
+#endif
+				error_msg("Missing right-bracket\n",
+					yylineno,yytext-&input[0]
+				       );
+
 			}
 
 			advance();
@@ -469,9 +562,15 @@ void direct_declarator(void)
 
 		if ( !match(RP) )
 		{
+#if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
 				yylineno,yytext-&input[0]
 			       );
+#endif
+			error_msg("Missing right-parenthesis\n",
+				yylineno,yytext-&input[0]
+			       );
+
 		}	
 	}	
 }
@@ -491,9 +590,15 @@ void parameter_type_list(void)
 
 
 	{
+#if 0
 		fprintf(stderr,"%llu:%llu:Error:Missing declaration-specifier\n",
 			yylineno,yytext-&input[0]
 		       );
+#endif
+		error_msg("Missing declaration-specifier\n",
+			yylineno,yytext-&input[0]
+		       );
+
 	}
 		while (
 			( Lookahead > ( 0b1 << 8 ) )
@@ -521,10 +626,17 @@ void parameter_type_list(void)
 				   )
 
 				{
+#if 0
 					fprintf(stderr,"%llu:%llu:Error:Missing"
 							" declaration-specifier\n",
 						yylineno,yytext-&input[0]
 					       );
+#endif
+					error_msg("Missing"
+							" declaration-specifier\n",
+						yylineno,yytext-&input[0]
+					       );
+
 				}
 			}
 
@@ -543,10 +655,17 @@ void parameter_declaration(void)
 
 	else
 	{
+#if 0
 		fprintf(stderr,"%llu:%llu:Error:Missing comma or right"
 				"-parenthesis\n",
 			yylineno,yytext-&input[0]
 		       );
+#endif
+		error_msg("Missing comma or right"
+				"-parenthesis\n",
+			yylineno,yytext-&input[0]
+		       );
+
 	}
 
 	declarator();
@@ -763,16 +882,6 @@ int main(int argc, char ** argv)
 	}
 
 	declaration(); 
-
-#if 0
-when input is "int a;" the lex() thinks the first token is for ID!
-
-All strcmp comparisions are FAILING!
-
-Try strstr(yytext,substr) == yytext
-#endif
-	
-	
 
 	return 0;
 }

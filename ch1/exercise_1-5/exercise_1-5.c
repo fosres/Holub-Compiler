@@ -146,7 +146,14 @@ void declaration_specifiers(void)
 
 		if ( match(UNSIGNED) || match(SIGNED) )
 		{
-			if ( ( dec_specs >> 1 ) & 0b1 )
+			if ( 
+					( ( dec_specs & 0b1000000 ) >> 1 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
 			{
 				fprintf(stderr,"%llu:%llu:Error: Unsigned/signed collision with float, double, or void\n",
 					yylineno,yytext-&input[0]

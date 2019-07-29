@@ -6,6 +6,6 @@ int main(void)
 
 	printf("%d\n",(0b1 << 25) );
 	
-
+	int char a;
 	return 0;
 }

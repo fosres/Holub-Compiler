@@ -49,6 +49,7 @@ Storage-class specifiers, type-specifiers, and type-qualifiers
 #define STATIC		(  (AUTO) + (1)  )
 #define EXTERN		(  ( ( 0b100 ) << 8 ) | (0x100)  )
 #define TYPEDEF		(  (EXTERN) + (1)  )	
+#define REGISTER	(  (TYPEDEF) + (1)  )	
 
 // Type-specifiers
 #define VOID		(  ( ( 0b0 ) << 12 ) | ( 0x1100 )  )

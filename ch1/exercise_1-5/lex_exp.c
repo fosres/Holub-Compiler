@@ -154,6 +154,11 @@ uint64_t lex(void)
 						return TYPEDEF;
 					}
 					
+					else if ( strstr(yytext,"register\0") == (char *)yytext )
+					{
+						return REGISTER;
+					}
+
 					else if ( strstr(yytext,"const\0") == (char *)yytext )
 					{
 						return CONST;

@@ -358,7 +358,7 @@ void declaration_specifiers(void)
 			}
 
 			if ( 
-					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					( ( dec_specs ) >> 15 ) 
 					
 					& 
 					
@@ -1323,7 +1323,7 @@ void declaration(void)
 
 		declaration_specifiers();
 		
-		if( ( ( dec_specs >> 2 ) & (~0b0) ) == 0 )
+		if( ( ( dec_specs >> 7 ) & (~0b0) ) == 0 )
 		{
 #if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
@@ -1795,6 +1795,19 @@ void test_specifiers_and_qualifiers(void)
 	{
 		printf("VOLATILE worked and its value is:\n%llu\n\n",VOLATILE);	
 	}
+
+	if (	
+			( REGISTER > ( 0b1 << 8 ) )
+
+			&&
+
+			( REGISTER < ( 0b1 << 24 ) )		
+
+	   )
+	{
+		printf("REGISTER worked and its value is:\n%llu\n\n",REGISTER);	
+	}
+
 
 }
 

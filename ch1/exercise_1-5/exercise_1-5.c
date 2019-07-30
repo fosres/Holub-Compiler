@@ -165,6 +165,7 @@ void storage_class_specifier(void)
 			match(STATIC) 	   	
 		)
 	{
+		printf("Found match(STATIC)\n");
 
 		if ( ( ( dec_specs >> 1 ) & 0b1 ) != 1 )
 		{	
@@ -176,7 +177,7 @@ void storage_class_specifier(void)
 		else
 		{
 			error_msg("Duplicate storage-class"
-					" specifier\n",
+					" specifier:static\n",
 				yylineno,yytext-&input[0]
 			       );	
 
@@ -258,12 +259,12 @@ void storage_class_specifier(void)
 		
 		advance();
 	}
-	
+
 }
 
 void type_qualifier(void)
 {
-	if ( match(CONST) || match(VOLATILE) )
+	while ( match(CONST) || match(VOLATILE) )
 	{
 		advance();
 	}
@@ -286,9 +287,12 @@ void declaration_specifiers(void)
 
 		storage_class_specifier();
 
-		type_qualifier();
+		if ( match(CONST)||match(VOLATILE) )
+		{
+			advance();
+		}	
 
-		if ( match(UNSIGNED) )
+		else if ( match(UNSIGNED) )
 		{
 			if ( 
 					( ( dec_specs & 0b100000 ) >> 5 ) 

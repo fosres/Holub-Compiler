@@ -157,6 +157,8 @@ void storage_class_specifier(void)
 
 		}
 
+		advance();
+
 	}	
 	
 	else if ( 
@@ -179,6 +181,8 @@ void storage_class_specifier(void)
 			       );	
 
 		}
+
+		advance();
 
 	}
 	
@@ -203,6 +207,8 @@ void storage_class_specifier(void)
 
 		}
 
+		advance();
+
 	}
 	
 	else if ( 
@@ -225,7 +231,8 @@ void storage_class_specifier(void)
 			       );	
 
 		}
-
+		
+		advance();
 	}
 	
 	else if ( 
@@ -248,10 +255,10 @@ void storage_class_specifier(void)
 			       );	
 
 		}
-
+		
+		advance();
 	}
 	
-	advance();	
 }
 
 void type_qualifier(void)
@@ -276,6 +283,7 @@ void declaration_specifiers(void)
 
 	      )
 	{
+
 		storage_class_specifier();
 
 		type_qualifier();
@@ -306,7 +314,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned type-specifier with another signed type-specifier\n",
+				error_msg("Collision of unsigned type-specifier with signed type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -547,7 +555,7 @@ void declaration_specifiers(void)
 
 		}
 
-		else if ( match(FLOAT) ) //|| match(DOUBLE) || match(VOID) || match(BOOL) )
+		else if ( match(FLOAT) ) 
 		{
 
 
@@ -885,7 +893,6 @@ void declaration_specifiers(void)
 		else if ( match(BOOL) )
 		{
 
-
 			if ( ( dec_specs >> 5 ) & 0b1 )
 			{
 				error_msg("Collision of bool type-specifier with unsigned type-specifier\n",
@@ -998,8 +1005,6 @@ void declaration_specifiers(void)
 
 		else if ( match(LONG) )
 		{
-
-
 
 			if ( ( dec_specs >> 9 ) & 0b1 )
 			{
@@ -1322,15 +1327,11 @@ void declaration(void)
 	{
 
 		declaration_specifiers();
+
 		
-		if( ( ( dec_specs >> 7 ) & (~0b0) ) == 0 )
+		if( ( ( dec_specs >> 5 ) & (~0b0) ) == 0 )
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
-					" type-specifier before identifier\n",
-				yylineno,yytext-&input[0]
-			       );
-#endif
+
 			
 			error_msg("Missing at least one"
 					" type-specifier before identifier\n",
@@ -1343,11 +1344,6 @@ void declaration(void)
 
 		if (!match(SEMI))
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Missing semicolon\n",
-				yylineno,yytext-&input[0]
-			       );
-#endif
 			error_msg("Missing semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
@@ -1586,12 +1582,6 @@ void parameter_declaration(void)
 
 	else
 	{
-#if 0
-		fprintf(stderr,"%llu:%llu:Error:Missing comma or right"
-				"-parenthesis\n",
-			yylineno,yytext-&input[0]
-		       );
-#endif
 		error_msg("Missing comma or right"
 				"-parenthesis\n",
 			yylineno,yytext-&input[0]
@@ -1813,7 +1803,6 @@ void test_specifiers_and_qualifiers(void)
 
 int main(int argc, char ** argv)
 {
-
 	if ( argv[1] != NULL )
 	{
 		if ( ( input_file = fopen(argv[1],"r+") ) == NULL )

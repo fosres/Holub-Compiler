@@ -291,7 +291,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with another unsigned keyword\n",
+				error_msg("Collision of unsigned type-specifier with another unsigned type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -306,7 +306,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with another signed keyword\n",
+				error_msg("Collision of unsigned type-specifier with another signed type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -321,7 +321,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with float type-specifier\n",
+				error_msg("Collision of unsigned type-specifier with float type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -336,7 +336,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with double type-specifier\n",
+				error_msg("Collision of unsigned type-specifier with double type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -351,7 +351,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with void type-specifier\n",
+				error_msg("Collision of unsigned type-specifier with void type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -366,7 +366,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of unsigned keyword with bool type-specifier\n",
+				error_msg("Collision of unsigned type-specifier with bool type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -378,7 +378,7 @@ void declaration_specifiers(void)
 		else if ( match(SIGNED) )
 		{
 			if ( 
-					( ( dec_specs & 0b10000000 ) >> 7 ) 
+					( ( dec_specs & 0b100000 ) >> 5 ) 
 					
 					& 
 					
@@ -386,14 +386,14 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Unsigned/signed collision with float, double, void, or bool\n",
+				error_msg("Collision of signed type-specifier with another unsigned type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
 			}
 			
 			if ( 
-					( ( dec_specs & 0b100 ) >> 2 ) 
+					( ( dec_specs & 0b1000000 ) >> 6 ) 
 					
 					& 
 					
@@ -401,19 +401,80 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Unsigned/signed collision with another unsigned or signed type-specifier\n",
+				error_msg("Collision of signed type-specifier with another signed type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
 			}
 
-			dec_specs |= 0b100; 
+			if ( 
+					( ( dec_specs & 0b1000000000000 ) >> 12 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with float type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+			
+			if ( 
+					( ( dec_specs & 0b10000000000000 ) >> 13 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with double type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b100000000000000 ) >> 14 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with void type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with bool type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			dec_specs |= 0b1000000; 
 		}
+
 		else if ( match(INT) )
 		{
 
 			if ( 
-				( ( dec_specs >> 6 ) & 0b1 )
+				( ( dec_specs >> 11 ) & 0b1 )
 			   )
 			{
 				error_msg("Extra int\n",
@@ -422,9 +483,68 @@ void declaration_specifiers(void)
 
 			}
 
-			dec_specs |= 0b1000000;
+			if ( 
+					( ( dec_specs & 0b1000000000000 ) >> 12 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with float type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
 
-			is_valid_expression = 1;
+			}
+			
+			if ( 
+					( ( dec_specs & 0b10000000000000 ) >> 13 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with double type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b100000000000000 ) >> 14 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with void type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of signed type-specifier with bool type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			dec_specs |= 0b100000000000;
+
 		}
 
 		else if ( match(FLOAT) || match(DOUBLE) || match(VOID) || match(BOOL) )
@@ -467,7 +587,7 @@ void declaration_specifiers(void)
 
 			   )
 			{
-				error_msg("Collision with signed/unsigned keyword\n",
+				error_msg("Collision with signed/unsigned type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 

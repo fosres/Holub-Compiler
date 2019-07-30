@@ -999,26 +999,7 @@ void declaration_specifiers(void)
 		else if ( match(LONG) )
 		{
 
-			if ( ( dec_specs >> 5 ) & 0b1 )
-			{
-				error_msg("Collision of long type-specifier with unsigned type-specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-			}
 
-			if ( ( dec_specs >> 6 ) & 0b1 )
-			{
-				error_msg("Collision of long type-specifier with signed type-specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-			}
-
-			if ( ( dec_specs >> 7 ) & 0b1 )
-			{
-				error_msg("Collision of long type-specifier with long type-specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-			}
 
 			if ( ( dec_specs >> 9 ) & 0b1 )
 			{
@@ -1034,16 +1015,6 @@ void declaration_specifiers(void)
 				       );
 			}	
 
-
-			if ( 
-				( ( dec_specs >> 11 ) & 0b1 )
-			   )
-			{
-				error_msg("Collision of long type-specifier with  int type-specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-
-			}
 
 			if ( 
 					( ( dec_specs & 0b1000000000000 ) >> 12 ) 
@@ -1089,7 +1060,22 @@ void declaration_specifiers(void)
 				       );
 
 			}
-			
+
+
+			if ( 
+					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of long type-specifier with bool type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
 
 			if (
 				( 

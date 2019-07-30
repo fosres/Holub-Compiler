@@ -9,7 +9,7 @@
 
 bool is_valid_expression = 0;
 
-uint8_t dec_specs = 0;
+uint16_t dec_specs = 0;
 
 #if 0
 
@@ -134,8 +134,9 @@ void error_msg(char * error_msg,uint64_t lineno,uint64_t charno)
 
 void storage_class_specifier(void)
 {
+	
 	if ( 
-		( match(AUTO)||match(EXTERN)||match(STATIC)||match(TYPEDEF) )
+		match(AUTO) 	   
 	   )
 		
 	{
@@ -149,12 +150,6 @@ void storage_class_specifier(void)
 
 		else
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Error:Duplicate storage-class"
-					" specifier\n",
-				yylineno,yytext-&input[0]
-			       );	
-#endif
 			error_msg("Duplicate storage-class"
 					" specifier\n",
 				yylineno,yytext-&input[0]
@@ -162,18 +157,107 @@ void storage_class_specifier(void)
 
 		}
 
-		advance();
-
 	}	
 	
+	else if ( 
+			match(STATIC) 	   	
+		)
+	{
+
+		if ( ( ( dec_specs >> 1 ) & 0b1 ) != 1 )
+		{	
+
+			dec_specs |= 0b10;
+
+		}
+
+		else
+		{
+			error_msg("Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+
+		}
+
+	}
+	
+	else if ( 
+			match(EXTERN) 	   	
+		)
+	{
+
+		if ( ( ( dec_specs >> 2 ) & 0b1 ) != 1 )
+		{	
+
+			dec_specs |= 0b100;
+
+		}
+
+		else
+		{
+			error_msg("Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+
+		}
+
+	}
+	
+	else if ( 
+			match(TYPEDEF) 	   	
+		)
+	{
+
+		if ( ( ( dec_specs >> 3 ) & 0b1 ) != 1 )
+		{	
+
+			dec_specs |= 0b1000;
+
+		}
+
+		else
+		{
+			error_msg("Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+
+		}
+
+	}
+	
+	else if ( 
+			match(REGISTER) 	   	
+		)
+	{
+
+		if ( ( ( dec_specs >> 4 ) & 0b1 ) != 1 )
+		{	
+
+			dec_specs |= 0b10000;
+
+		}
+
+		else
+		{
+			error_msg("Duplicate storage-class"
+					" specifier\n",
+				yylineno,yytext-&input[0]
+			       );	
+
+		}
+
+	}
+	
+	advance();	
 }
 
 void type_qualifier(void)
 {
 	if ( match(CONST) || match(VOLATILE) )
 	{
-		dec_specs |= 0b10;	
-
 		advance();
 	}
 
@@ -196,7 +280,102 @@ void declaration_specifiers(void)
 
 		type_qualifier();
 
-		if ( match(UNSIGNED) || match(SIGNED) )
+		if ( match(UNSIGNED) )
+		{
+			if ( 
+					( ( dec_specs & 0b100000 ) >> 5 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with another unsigned keyword\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+			
+			if ( 
+					( ( dec_specs & 0b1000000 ) >> 6 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with another signed keyword\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000 ) >> 12 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with float type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+			
+			if ( 
+					( ( dec_specs & 0b10000000000000 ) >> 13 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with double type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b100000000000000 ) >> 14 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with void type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of unsigned keyword with bool type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			dec_specs |= 0b100000; 
+		}
+
+		else if ( match(SIGNED) )
 		{
 			if ( 
 					( ( dec_specs & 0b10000000 ) >> 7 ) 
@@ -230,7 +409,6 @@ void declaration_specifiers(void)
 
 			dec_specs |= 0b100; 
 		}
-
 		else if ( match(INT) )
 		{
 

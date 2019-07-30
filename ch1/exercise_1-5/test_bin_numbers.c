@@ -9,6 +9,8 @@ int main(void)
 
 	double long id = 0;
 	
+	long char a = 0x30;
+
 	void * try_void;
 	return 0;
 }

@@ -89,7 +89,11 @@ Declare a function that accepts argument long that returns a pointer to an array
 
 void error_msg(char * error_msg,uint64_t lineno,uint64_t charno)
 {
+	printf("\e[38;5;208m"); //Orange	
+	
 	fprintf(stderr,"%llu:%llu:Error:%s\n",lineno,charno,error_msg);
+
+	printf("\e[0m");
 
 	printf("\e[38;5;201m"); //Purple					
 	
@@ -119,11 +123,12 @@ void error_msg(char * error_msg,uint64_t lineno,uint64_t charno)
 		char_p++;
 	}
 
+	printf("\e[0m");
+
 	putchar(0xa);
 
 	putchar(0xa);
 	
-	printf("\e[0m");
 
 }
 
@@ -202,12 +207,22 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error: Unsigned/signed collision with float, double, or void\n",
+				error_msg("Unsigned/signed collision with float, double, void, or bool\n",
 					yylineno,yytext-&input[0]
 				       );
-#endif
-				error_msg("Unsigned/signed collision with float, double, void, or bool\n",
+
+			}
+			
+			if ( 
+					( ( dec_specs & 0b100 ) >> 2 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Unsigned/signed collision with another unsigned or signed type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -223,11 +238,6 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 6 ) & 0b1 )
 			   )
 			{
-#if 0 
-				fprintf(stderr,"%llu:%llu:Error:Extra int\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Extra int\n",
 					yylineno,yytext-&input[0]
 				       );
@@ -246,12 +256,6 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 7 ) & 0b1 )
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collsion with"
-						" float,double, or void\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Collision with float, double, void, or bool\n",yylineno,yytext-&input[0]);
 			}
 
@@ -259,12 +263,6 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 6 ) & 0b1 )
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collsion with"
-						" float,double, or void\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Collision with int\n",yylineno,yytext-&input[0]);
 			}
 
@@ -272,25 +270,17 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 5 ) & 0b1 )
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collsion with"
-						" float,double, or void\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Collision with short\n",yylineno,yytext-&input[0]);
 			}
 
 			if (
 				( ( dec_specs >> 3 ) & 0b1 )
+
+				&&
+
+				!match(DOUBLE)
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Collsion with"
-						" float,double, or void\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Collision with long\n",yylineno,yytext-&input[0]);
 			}
 
@@ -299,11 +289,6 @@ void declaration_specifiers(void)
 
 			   )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error: Collision with signed/unsigned keyword\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Collision with signed/unsigned keyword\n",
 					yylineno,yytext-&input[0]
 				       );
@@ -326,12 +311,6 @@ void declaration_specifiers(void)
 					( ( dec_specs >> 4 ) & 0b1 )
 				   )
 				{
-#if 0
-					fprintf(stderr,"%llu:%llu:Error:Too many"
-							" \'long\' type-specifiers\n",
-						yylineno,yytext-&input[0]
-					       );
-#endif
 					error_msg("Too many"
 							" \'long\' type-specifiers\n",
 						yylineno,yytext-&input[0]
@@ -355,14 +334,6 @@ void declaration_specifiers(void)
 				( ( dec_specs >> 5 ) & 0b1 )
 			   )
 				{
-#if 0
-					fprintf(stderr,"%llu:%llu:Error:Collision of"
-							" short type specifier with"
-							" another short, char, or"
-							" long\n",
-						yylineno,yytext-&input[0]
-						);
-#endif
 					error_msg("Collision of"
 							" short type specifier with"
 							" another short or char\n",
@@ -410,17 +381,17 @@ void declaration(void)
 
 		declaration_specifiers();
 		
-		if( ( ( dec_specs >> 1 ) & (~0b0) ) == 0 )
+		if( ( ( dec_specs >> 2 ) & (~0b0) ) == 0 )
 		{
 #if 0
 			fprintf(stderr,"%llu:%llu:Error:Missing at least one"
-					" type-specifier\n",
+					" type-specifier before identifier\n",
 				yylineno,yytext-&input[0]
 			       );
 #endif
 			
 			error_msg("Missing at least one"
-					" type-specifier\n",
+					" type-specifier before identifier\n",
 				yylineno,yytext-&input[0]
 			       );
 
@@ -453,20 +424,18 @@ void init_declarator_list(void)
 	{
 		init_declarator();
 
+
 		if (!match(COMMA) && !match(SEMI))
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Error:Missing comma or semicolon\n",
-				yylineno,yytext-&input[0]
-			       );
-#endif
 			error_msg("Missing comma or semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
-
 		}
 
-		if (match(COMMA)) { advance(); }
+		if (match(COMMA)) 
+		{
+			advance(); 
+		}
 	}
 }
 

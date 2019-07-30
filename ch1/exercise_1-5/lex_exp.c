@@ -74,6 +74,7 @@ uint64_t lex(void)
 			{
 			case 0xff:	return EOI	;
 			case ';':	return SEMI	;
+			case ',':	return COMMA	;
 			case '=':	return EQUALS	;
 			case '+':	return PLUS	;
 			case '-': 	return MINUS	;

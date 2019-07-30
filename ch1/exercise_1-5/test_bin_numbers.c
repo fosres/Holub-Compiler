@@ -1,11 +1,14 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 int main(void)
 {
-	uint8_t bin_specs = 0b11;
-
-	printf("%d\n",(0b1 << 25) );
+	bool *** volatile const volatile *** volatile a;	
 	
-	int char a;
+	unsigned ******* volatile **** const volatile const volatile volatile **** e;
+
+	double long id = 0;
+	
+	void * try_void;
 	return 0;
 }

@@ -875,6 +875,113 @@ void declaration_specifiers(void)
 			dec_specs |= 0b100000000000000; 		
 		}
 
+		else if ( match(BOOL) )
+		{
+
+
+			if ( ( dec_specs >> 5 ) & 0b1 )
+			{
+				error_msg("Collision of bool type-specifier with unsigned type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+			}
+
+			if ( ( dec_specs >> 6 ) & 0b1 )
+			{
+				error_msg("Collision of bool type-specifier with signed type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+			}
+
+			if ( ( dec_specs >> 9 ) & 0b1 )
+			{
+				error_msg("Collision of bool type-specifier with  short type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+			}
+
+			if ( ( dec_specs >> 10 ) & 0b1 )
+			{
+				error_msg("Collision of bool type-specifier with  char type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+			}	
+
+
+			if ( 
+				( ( dec_specs >> 11 ) & 0b1 )
+			   )
+			{
+				error_msg("Collision of bool type-specifier with  int type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000 ) >> 12 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of bool type-specifier with float type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+			
+			if ( 
+					( ( dec_specs & 0b10000000000000 ) >> 13 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of bool type-specifier with double type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b100000000000000 ) >> 14 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of bool type-specifier with void type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+			if ( 
+					( ( dec_specs & 0b1000000000000000 ) >> 15 ) 
+					
+					& 
+					
+					0b1 
+					
+			   )
+			{
+				error_msg("Collision of bool type-specifier with bool type-specifier\n",
+					yylineno,yytext-&input[0]
+				       );
+
+			}
+
+
+			dec_specs |= 0b1000000000000000; 		
+		}
+
 		else if ( match(LONG) )
 		{
 

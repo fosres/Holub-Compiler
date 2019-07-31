@@ -1626,11 +1626,6 @@ void direct_declarator(void)
 
 		if ( !match(RP) )
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
-				yylineno,yytext-&input[0]
-			       );
-#endif
 			error_msg("Missing right-parenthesis\n",
 				yylineno,yytext-&input[0]
 			       );
@@ -1698,15 +1693,11 @@ void direct_declarator(void)
 
 		if ( !match(RP) )
 		{
-#if 0
-			fprintf(stderr,"%llu:%llu:Error:Missing right-parenthesis\n",
-				yylineno,yytext-&input[0]
-			       );
-#endif
 			error_msg("Missing right-parenthesis\n",
 				yylineno,yytext-&input[0]
 			       );
-
+			
+			advance();
 		}	
 	}	
 }

@@ -7,10 +7,10 @@ int main(void)
 	
 	unsigned ******* volatile **** const volatile const volatile volatile **** e;
 
-	double long id = 0;
+	double long long id = 0;
 	
 	long char a = 0x30;
 
-	void * try_void;
+	void try_void;
 	return 0;
 }

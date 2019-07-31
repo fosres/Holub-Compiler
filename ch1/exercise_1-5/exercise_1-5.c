@@ -1235,21 +1235,6 @@ void declaration_specifiers(void)
 			}
 			
 			if ( 
-					( ( dec_specs & 0b10000000000000 ) >> 13 ) 
-					
-					& 
-					
-					0b1 
-					
-			   )
-			{
-				error_msg("Collision of long type-specifier with double type-specifier\n",
-					yylineno,yytext-&input[0]
-				       );
-
-			}
-
-			if ( 
 					( ( dec_specs & 0b100000000000000 ) >> 14 ) 
 					
 					& 
@@ -1295,6 +1280,16 @@ void declaration_specifiers(void)
 						yylineno,yytext-&input[0]
 					       );
 
+				}
+
+				if (
+					( ( dec_specs >> 13 ) & 0b1 )
+				   )
+				{
+					error_msg("Second long type-specifier"
+						" with double type-specifier\n",
+						yylineno,yytext-&input[0]
+					       );
 				}
 
 				dec_specs |= 0b100000000;
@@ -1501,6 +1496,9 @@ void init_declarator_list();
 
 void pointer(void)
 {
+
+if ( match(ASTK) )
+{	
 	while ( match(ASTK) )
 	{
 	
@@ -1518,6 +1516,22 @@ void pointer(void)
 		}
 
 	}
+}
+
+else
+{
+	if ( ( dec_specs >> 14 ) & 0b1 )
+	{
+		error_msg("void used in declaration without a pointer\n",
+			
+			yylineno,yytext-&input[0]
+			);
+	}
+
+}
+
+
+
 }
 
 void declaration(void)

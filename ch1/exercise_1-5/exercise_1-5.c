@@ -1557,16 +1557,12 @@ void direct_declarator(void)
 
 	else
 	{
-#if 0
-		fprintf(stderr,"%llu:%llu:Error:Missing identifier or (declarator)\n",
-			yylineno,yytext-&input[0]
-		       );
-#endif
 		error_msg("Missing identifier or (declarator)\n",
 			yylineno,yytext-&input[0]
 		       );
 
-
+		
+		advance();
 	}
 
 	if ( match(LB) )

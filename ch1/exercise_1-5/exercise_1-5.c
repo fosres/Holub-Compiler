@@ -1557,7 +1557,7 @@ void direct_declarator(void)
 
 	else
 	{
-		error_msg("Missing identifier or (declarator)\n",
+		error_msg("Missing identifier or declarator starting with a \'(\' and ending with a \')\'\n",
 			yylineno,yytext-&input[0]
 		       );
 

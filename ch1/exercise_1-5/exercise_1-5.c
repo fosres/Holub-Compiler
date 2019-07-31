@@ -286,8 +286,11 @@ x  x  x  x  |   x   |	x   x |  x  x | x  x | 	x   x  x  x   x
 The following type-specifiers collide with unsigned/signed type-specifiers:
 
 15 - bool
+
 14 - void
+
 13 - double
+
 12 - float
 
 --------------
@@ -303,14 +306,40 @@ The following type-specifier is legal with short,char,long,unsigned, and signed:
 
 --------------
 
-The "extra long" is for the second legal type-specifier in a legal declaration:
+The "extra long" is for the SECOND legal type-specifier in a legal declaration:
 
 8  - extra long
 
 7  - long
 
+--------------
+
+The following type-specifiers are legal with long (including with the extra long),
+
+short, char, and int
+
+6  - signed
+
+5  - unsigned
+
+--------------
+
+The following are storage-class specifiers and only ONE of these are permitted
+
+in a declaration of any kind.
+
+4  - register
+
+3  - typedef
+
+2  - extern
+
+1  - static
+
+0  - auto
 
 #endif
+
 void declaration_specifiers(void)
 {
 	dec_specs = 0;

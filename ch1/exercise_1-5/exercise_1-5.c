@@ -151,7 +151,7 @@ void storage_class_specifier(void)
 		else
 		{
 			error_msg("Duplicate storage-class"
-					" specifier\n",
+					" specifier:auto\n",
 				yylineno,yytext-&input[0]
 			       );	
 
@@ -165,7 +165,6 @@ void storage_class_specifier(void)
 			match(STATIC) 	   	
 		)
 	{
-		printf("Found match(STATIC)\n");
 
 		if ( ( ( dec_specs >> 1 ) & 0b1 ) != 1 )
 		{	
@@ -202,7 +201,7 @@ void storage_class_specifier(void)
 		else
 		{
 			error_msg("Duplicate storage-class"
-					" specifier\n",
+					" specifier:extern\n",
 				yylineno,yytext-&input[0]
 			       );	
 
@@ -227,7 +226,7 @@ void storage_class_specifier(void)
 		else
 		{
 			error_msg("Duplicate storage-class"
-					" specifier\n",
+					" specifier:typedef\n",
 				yylineno,yytext-&input[0]
 			       );	
 
@@ -251,7 +250,7 @@ void storage_class_specifier(void)
 		else
 		{
 			error_msg("Duplicate storage-class"
-					" specifier\n",
+					" specifier:register\n",
 				yylineno,yytext-&input[0]
 			       );	
 
@@ -284,10 +283,127 @@ void declaration_specifiers(void)
 
 	      )
 	{
+	
+		if ( 
+			match(AUTO) 	   
+		   )
+		
+		{
 
-		storage_class_specifier();
+			if ( ( dec_specs & 0b1 ) != 1 )
+			{	
 
-		if ( match(CONST)||match(VOLATILE) )
+				dec_specs |= 0b1;
+
+			}
+
+			else
+			{
+				error_msg("Duplicate storage-class"
+					" specifier:auto\n",
+				yylineno,yytext-&input[0]
+			       		);	
+
+			}
+
+
+		}	
+	
+		else if ( 
+				match(STATIC) 	   	
+			)
+		{
+
+			if ( ( ( dec_specs >> 1 ) & 0b1 ) != 1 )
+			{	
+
+				dec_specs |= 0b10;
+
+			}
+
+			else
+			{
+				error_msg("Duplicate storage-class"
+					" specifier:static\n",
+				yylineno,yytext-&input[0]
+			       		);	
+
+			}
+
+
+		}
+	
+		else if ( 
+				match(EXTERN) 	   	
+			)
+		{
+
+			if ( ( ( dec_specs >> 2 ) & 0b1 ) != 1 )
+			{		
+
+				dec_specs |= 0b100;
+
+			}
+
+			else
+			{
+				error_msg("Duplicate storage-class"
+					" specifier:extern\n",
+				yylineno,yytext-&input[0]
+			       		);	
+
+			}
+
+
+		}
+	
+		else if ( 
+				match(TYPEDEF) 	   	
+			)
+		{
+
+			if ( ( ( dec_specs >> 3 ) & 0b1 ) != 1 )
+			{	
+
+				dec_specs |= 0b1000;
+
+			}
+
+			else
+			{
+				error_msg("Duplicate storage-class"
+					" specifier:typedef\n",
+				yylineno,yytext-&input[0]
+			       		);	
+
+			}
+		
+		}
+	
+		else if ( 
+				match(REGISTER) 	   	
+			)
+		{
+
+			if ( ( ( dec_specs >> 4 ) & 0b1 ) != 1 )
+			{	
+
+				dec_specs |= 0b10000;
+
+			}
+
+			else
+			{
+				error_msg("Duplicate storage-class"
+					" specifier:register\n",
+				yylineno,yytext-&input[0]
+			       		);	
+
+			}
+		
+		}
+	
+		else if ( match(CONST)||match(VOLATILE) )
 		{
 			advance();
 		}	

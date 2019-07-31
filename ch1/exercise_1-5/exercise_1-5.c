@@ -270,6 +270,21 @@ void type_qualifier(void)
 
 }
 
+#if 0
+
+A uint16_t global variable named dec_specs stores information on what
+
+type_specifiers have been written for the variable type-specification
+
+so far.
+
+The bitmap for uint16_t is as follows:
+
+x  x  x  x  |   x   |	x    x  x  x | 	x  x | 	x   x  x  x   x
+15 14 13 12     11	10   9  8  7 	6  5   	4   3  2  1   0  	  
+
+
+#endif
 void declaration_specifiers(void)
 {
 	dec_specs = 0;
@@ -1433,6 +1448,7 @@ void pointer(void)
 {
 	while ( match(ASTK) )
 	{
+	
 		while ( match(ASTK) )
 		{
 			advance();

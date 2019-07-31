@@ -290,7 +290,7 @@ void declaration_specifiers(void)
 		
 		{
 
-			if ( ( dec_specs & 0b1 ) != 1 )
+			if ( ( dec_specs & 0b11111 ) == 0 )
 			{	
 
 				dec_specs |= 0b1;
@@ -300,7 +300,7 @@ void declaration_specifiers(void)
 			else
 			{
 				error_msg("Duplicate storage-class"
-					" specifier:auto\n",
+					" specifier: auto\n",
 				yylineno,yytext-&input[0]
 			       		);	
 
@@ -314,7 +314,7 @@ void declaration_specifiers(void)
 			)
 		{
 
-			if ( ( ( dec_specs >> 1 ) & 0b1 ) != 1 )
+			if ( ( dec_specs & 0b11111 )  == 0 )
 			{	
 
 				dec_specs |= 0b10;
@@ -324,10 +324,9 @@ void declaration_specifiers(void)
 			else
 			{
 				error_msg("Duplicate storage-class"
-					" specifier:static\n",
+					" specifier: static\n",
 				yylineno,yytext-&input[0]
 			       		);	
-
 			}
 
 
@@ -338,7 +337,7 @@ void declaration_specifiers(void)
 			)
 		{
 
-			if ( ( ( dec_specs >> 2 ) & 0b1 ) != 1 )
+			if ( ( dec_specs & 0b11111 ) == 0 )
 			{		
 
 				dec_specs |= 0b100;
@@ -348,7 +347,7 @@ void declaration_specifiers(void)
 			else
 			{
 				error_msg("Duplicate storage-class"
-					" specifier:extern\n",
+					" specifier: extern\n",
 				yylineno,yytext-&input[0]
 			       		);	
 
@@ -362,7 +361,7 @@ void declaration_specifiers(void)
 			)
 		{
 
-			if ( ( ( dec_specs >> 3 ) & 0b1 ) != 1 )
+			if ( dec_specs & 0b11111 == 0 )
 			{	
 
 				dec_specs |= 0b1000;
@@ -372,7 +371,7 @@ void declaration_specifiers(void)
 			else
 			{
 				error_msg("Duplicate storage-class"
-					" specifier:typedef\n",
+					" specifier: typedef\n",
 				yylineno,yytext-&input[0]
 			       		);	
 
@@ -385,7 +384,7 @@ void declaration_specifiers(void)
 			)
 		{
 
-			if ( ( ( dec_specs >> 4 ) & 0b1 ) != 1 )
+			if ( ( dec_specs & 0b11111 ) == 0 )
 			{	
 
 				dec_specs |= 0b10000;
@@ -395,7 +394,7 @@ void declaration_specifiers(void)
 			else
 			{
 				error_msg("Duplicate storage-class"
-					" specifier:register\n",
+					" specifier: register\n",
 				yylineno,yytext-&input[0]
 			       		);	
 
@@ -620,7 +619,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of signed type-specifier with float type-specifier\n",
+				error_msg("Collision of int type-specifier with float type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -635,7 +634,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of signed type-specifier with double type-specifier\n",
+				error_msg("Collision of int type-specifier with double type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -650,7 +649,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of signed type-specifier with void type-specifier\n",
+				error_msg("Collision of int type-specifier with void type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -665,7 +664,7 @@ void declaration_specifiers(void)
 					
 			   )
 			{
-				error_msg("Collision of signed type-specifier with bool type-specifier\n",
+				error_msg("Collision of int type-specifier with bool type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
 
@@ -805,6 +804,15 @@ void declaration_specifiers(void)
 				error_msg("Collision of double type-specifier with signed type-specifier\n",
 					yylineno,yytext-&input[0]
 				       );
+			}
+
+			if ( ( dec_specs >> 8 ) & 0b1 )
+			{
+				error_msg("Collision of double type-specifier with long long type-specifiers\n",
+					yylineno,yytext-&input[0]
+				       );
+
+
 			}
 
 			if ( ( dec_specs >> 9 ) & 0b1 )
@@ -1204,12 +1212,12 @@ void declaration_specifiers(void)
 
 			if (
 				( 
-				 ( ( dec_specs >> 3 ) & 0b1 )
+				 ( ( dec_specs >> 7 ) & 0b1 )
 				)	
 			   )
 			{
 				if (
-					( ( dec_specs >> 4 ) & 0b1 )
+					( ( dec_specs >> 8 ) & 0b1 )
 				   )
 				{
 					error_msg("Too many"
@@ -1219,12 +1227,12 @@ void declaration_specifiers(void)
 
 				}
 
-				dec_specs |= 0b10000;
+				dec_specs |= 0b100000000;
 			}
 
 			else
 			{
-				dec_specs |= 0b1000;
+				dec_specs |= 0b10000000;
 			}
 
 		}

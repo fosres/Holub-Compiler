@@ -280,8 +280,8 @@ so far.
 
 The bitmap for uint16_t is as follows:
 
-x  x  x  x  |   x   |	x    x  x  x | 	x  x | 	x   x  x  x   x
-15 14 13 12     11	10   9  8  7 	6  5   	4   3  2  1   0
+x  x  x  x  |   x   |	x   x |  x  x | x  x | 	x   x  x  x   x
+15 14 13 12     11	10  9  	 8  7 	6  5   	4   3  2  1   0
 
 The following type-specifiers collide with unsigned/signed type-specifiers:
 
@@ -292,16 +292,22 @@ The following type-specifiers collide with unsigned/signed type-specifiers:
 
 --------------
 
-The following type-specifiers is legal with short,char,long,unsigned, and signed:
+The following type-specifier is legal with short,char,long,unsigned, and signed:
 
 11 - int
 
 --------------
 
-
 10 - char
 9  - short
 
+--------------
+
+The "extra long" is for the second legal type-specifier in a legal declaration:
+
+8  - extra long
+
+7  - long
 
 
 #endif

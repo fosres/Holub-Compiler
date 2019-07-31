@@ -281,7 +281,27 @@ so far.
 The bitmap for uint16_t is as follows:
 
 x  x  x  x  |   x   |	x    x  x  x | 	x  x | 	x   x  x  x   x
-15 14 13 12     11	10   9  8  7 	6  5   	4   3  2  1   0  	  
+15 14 13 12     11	10   9  8  7 	6  5   	4   3  2  1   0
+
+The following type-specifiers collide with unsigned/signed type-specifiers:
+
+15 - bool
+14 - void
+13 - double
+12 - float
+
+--------------
+
+The following type-specifiers is legal with short,char,long,unsigned, and signed:
+
+11 - int
+
+--------------
+
+
+10 - char
+9  - short
+
 
 
 #endif

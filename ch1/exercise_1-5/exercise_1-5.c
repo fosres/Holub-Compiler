@@ -1582,11 +1582,14 @@ void init_declarator_list(void)
 				yylineno,yytext-&input[0]
 			       );
 		}
-
+		
+		advance();
+#if 0
 		if (match(COMMA)) 
 		{
 			advance(); 
 		}
+#endif
 	}
 }
 
@@ -1653,28 +1656,16 @@ void direct_declarator(void)
 
 			if ( !match(NUM) )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Error:Missing integer-"
-						"constant in array\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Missing integer-"
 						"constant in array\n",
 					yylineno,yytext-&input[0]
 				       );
-
 			}
 
 			advance();
 
 			if ( !match(RB) )
 			{
-#if 0
-				fprintf(stderr,"%llu:%llu:Missing right-bracket\n",
-					yylineno,yytext-&input[0]
-				       );
-#endif
 				error_msg("Missing right-bracket\n",
 					yylineno,yytext-&input[0]
 				       );
@@ -1779,7 +1770,7 @@ void parameter_declaration(void)
 	{
 		return;
 	}	
-
+#if 0
 	else
 	{
 		error_msg("Missing comma or right"
@@ -1788,6 +1779,7 @@ void parameter_declaration(void)
 		       );
 
 	}
+#endif
 
 	declarator();
 }

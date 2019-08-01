@@ -1581,6 +1581,23 @@ void init_declarator_list(void)
 			error_msg("Missing comma or semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
+
+			if ( match(LP) )
+			{
+			
+				error_msg("Declaration of array of functions\n",
+				yylineno,yytext-&input[0]
+			       		);
+
+			}
+
+			else if ( match(LB) )
+			{
+				error_msg("Declaration of function returning array\n",
+				yylineno,yytext-&input[0]
+			       		);
+
+			}
 		}
 		
 		if ( match(COMMA) )

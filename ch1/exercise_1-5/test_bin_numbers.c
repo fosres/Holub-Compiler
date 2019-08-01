@@ -3,15 +3,8 @@
 
 int main(void)
 {
-	bool *** volatile const volatile *** volatile a;	
-	
-	unsigned ******* volatile **** const volatile const volatile volatile **** e;
+	int (*czar_third)(long)[10];
 
-	double long long id = 0;
-	
-	long char a = 0x30;
-
-	bool (*func[54][63])(int,int,long);
-
+	int (*czar_third)[10](long);
 	return 0;
 }

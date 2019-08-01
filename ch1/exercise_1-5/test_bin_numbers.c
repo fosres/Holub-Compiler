@@ -11,6 +11,7 @@ int main(void)
 	
 	long char a = 0x30;
 
-	void try_void;
+	bool (*func[54][63])(int,int,long);
+
 	return 0;
 }

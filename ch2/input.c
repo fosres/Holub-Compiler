@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 
@@ -68,13 +69,12 @@ true and for characters to
 still be in the input buffer.
 #endif
 
-extern int open(), close(), read();
 
-int (*openp)(void) = open; /* Pointer to open function */
+int (*openp)(const char *,int,...) = open; /* Pointer to open function */
 
-int (*closep)(void) = close; /* Pointer to close function */
+int (*closep)(int) = close; /* Pointer to close function */
 
-int (*readp)(void) = read; /* pointer to read function */
+int (*readp)(int,void *,size_t) = read; /* pointer to read function */
 
 
 

@@ -422,6 +422,122 @@ int ii_look(uint64_t n)
 	return ( p < start_buf || p >= end_buf ) ? 0 : *p ;	
 }
 
+#if 0
+Push n characters back into the input. You cannot push past the current
+
+smark. You can, however, push back characters after end of file has been
+
+encountered.
+
+#endif
+
+int ii_pushback( uint64_t n)
+{
+	while ( --n >= 0 && next > smark )
+	{
+		if ( *--next == 0xa || !*next )
+		{
+			--lineno;
+		}
+
+	}
+
+	if ( next < emark )
+	{
+		emark = next;
+
+		mline = lineno;
+	}
+
+	return ( next > smark );	
+}
+
+void ii_term(void)
+{
+	termchar = *next;
+
+	*next = 0;
+}
+
+void ii_term(void)
+{
+	if (termchar)
+	{
+		*next = termchar;
+
+		termchar = 0;	
+	}
+
+}
+
+void ii_unterm(void);
+
+int ii_input(void)
+{
+i	int rval = 0;
+
+	if ( termchar )
+	{
+		ii_unterm();
+
+		rval = ii_advance();
+
+		ii_mark_end();
+
+		ii_term();
+
+	}
+
+	else
+	{
+		rval = ii_advance();
+
+		ii_mark_end();
+	}
+
+	return rval;	
+}
+
+void ii_unput(uint8_t c)
+{
+	if ( termchar )
+	{
+		ii_unterm();
+
+		if ( ii_pushback(1) )
+		{
+			*next = c;
+		}
+
+		ii_term();
+
+	}
+
+	else
+	{
+		if ( ii_pushback(1) )
+		{
+			*next = c;
+		}
+	}
+	
+}
+
+int ii_lookahead(uint64_t n)
+{
+	return (n==1 && termchar) ? termchar : ii_look(n);
+}
+
+int ii_flushbuf(void)
+{
+	if ( termchar )
+	{
+		ii_unterm();
+	}
+
+	return ii_flush(1);
+}
+
 int main(void)
 {
 

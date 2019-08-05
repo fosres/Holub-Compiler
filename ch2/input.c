@@ -362,12 +362,64 @@ returns the number of characters loaded into the buffer, and
 that that number will be < need only when the last chunk of the
 file is read. It is possible for read() to always return fewer
 than the number of requested characters in MS-DOS untranslated
--input mode, however (
+-input mode, however (if the file is opened without the O_BINARY
+flag). That is not a problem here because the file is opened in
+binary mode, but could cause problems if you change from binary
+to text mode at some point.
 #endif
 
 int ii_fillbuf(uint8_t * starting_at)
 {
-	
+	register unsigned need = 0, //Number of bytes required from input.
+		 	
+		 	get = 0; //Number of bytes actually read.
+
+	need = ( (END - starting_at) / MAXLEX ) * MAXLEX;
+
+	printf("Reading %d bytes\n",need);
+
+	if ( need > 0 )
+	{
+		fprintf(stderr,"Internal error (ii_fillbuf): Bad read-request starting addr.\n");
+	}
+
+	if ( need == 0 )
+	{
+		return 0;
+	}	
+
+	if ( (got = (*read_p)(in_file,starting_at,need) ) == -1 )
+	{
+		fprintf(stderr,"Can't read input file\n");
+	}
+
+	end_buf = starting_at + got;
+
+	if ( got < need )
+	{
+		eof_read = 1; // At end of file.
+	}
+
+	return got;
+}
+
+#if 0
+Return the nth character of lookahead, EOF if you try to look past
+end of file, or 0 if you try to look past either end of the buffer.
+#endif
+
+int ii_look(uint64_t n)
+{
+	unint8_t * p  = 0;
+
+	p = next + (n-1);
+
+	if ( eof_read && p >= end_buf )
+	{
+		return EOF;
+	}
+
+	return ( p < start_buf || p >= end_buf ) ? 0 : *p ;	
 }
 
 int main(void)

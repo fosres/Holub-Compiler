@@ -242,6 +242,8 @@ full. In this case you can call ii_flush(1) to do a buffer flash but you
 will loose the current lexeme as a consequence.
 #endif
 
+int ii_flush(int force);
+
 uint8_t ii_advance(void)
 {
 	static bool been_called = 0;
@@ -275,6 +277,97 @@ will work on the first input line.
 	}
 
 	return *next++;
+
+}
+
+#if 0
+
+#endif
+uint8_t min(uint8_t * left,uint8_t * right)
+{
+	return strcmp(left,right) < 0 ? left : right;
+}
+
+int ii_fillbuf(uint8_t * starting_at );
+
+int ii_flush(int force)
+{
+	int copy_amt = 0, shift_amt = 0;
+
+	uint8_t * left_edge = 0;
+
+	if ( NO_MORE_CHARS() )
+	{
+		return 0;
+	}	
+
+	if (eof_read)
+	{ return 1;}
+
+	if ( next >= DANGER || force )
+	{
+		left_edge = pmark ? min(smark,pmark) : smark;
+
+		shift_amt = left_edge - start_buf;
+
+		if ( shift_amt < MAXLEX ) //if there is not enough room
+		{
+			if (!force)
+			{
+				return -1;
+			}
+
+			left_edge = ii_mark_start(); //reset start to current character
+
+			ii_mark_prev();
+				
+			shift_amt = left_edge - start_buf;
+		}
+
+		copy_amt = end_buf - left_edge;
+
+		COPY(start_buf,left_edge,copy_amt);
+
+		if ( !ii_fillbuf(start_buf + copy_amt) )
+		{
+			fprintf(stderr,"Internal Error, ii_flush: Buffer full, can't read.\n");
+		}
+
+		if ( pmark )
+		{
+			pmark -= shift_amt;
+		}
+
+		smark -= shift_amt;
+
+		emark -= shift_amt;
+
+		next -= shift_amt;
+	}
+
+	return 1;
+}
+
+#if 0
+Fill the input buffer from starting_at to the end of the buffer.
+The input file is not closed when EOF is reached. Buffers are
+read in units of MAXLEX characters;it's an error if that many
+characters cannot be read (0 is returned in this case). For
+example, if MAXLEX is 1024, then 1024 characters will be read
+at a time. The number of characters read is returned. eof_read
+is true as soon as the last buffer is read.
+
+Portability note: I'm assuming that the read function actually
+returns the number of characters loaded into the buffer, and
+that that number will be < need only when the last chunk of the
+file is read. It is possible for read() to always return fewer
+than the number of requested characters in MS-DOS untranslated
+-input mode, however (
+#endif
+
+int ii_fillbuf(uint8_t * starting_at)
+{
+	
 }
 
 int main(void)

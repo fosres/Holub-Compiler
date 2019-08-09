@@ -53,7 +53,7 @@ else
 			case GT: return GEQ;
 			case NOT: return NEQ;
 		}
-
-		return ERROR; //discardboth characters
 	}
+		return ERROR; //discardboth characters
+}	
 

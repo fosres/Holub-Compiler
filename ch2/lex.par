@@ -1,0 +1,23 @@
+/* YY_TYPE is used for the DFA transition table: Yy_nxt[], declared below.
+*  YYF marks failure transitions in the DFA transition table. There's no
+*  failure state in the table itself, these transitions must be handled
+*  by the driver program. This The DFA start date is State 0. YYPRIVATE
+*  is only defined here only if it hasn't been #defined earlier. I'm
+*  assuming that if NULL is undefined, <stdio.h> hasn't been included.
+*/
+
+#ifndef NULL
+#	include <stdio.h>
+#endif
+
+#ifdef YYDEBUG
+	int yydebug = 0;
+#	define YY_D(x) if (yydebug){ x; }else
+#else
+#	define YY_D(x)
+#endif
+typedef unsigned char YY_TYPE;
+#define YYF	((YY_TYPE)(-1))
+
+unsigned char * iit_text();	
+

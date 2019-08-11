@@ -21,3 +21,106 @@ typedef unsigned char YY_TYPE;
 
 unsigned char * iit_text();	
 
+#if 0
+Global variables used by the parser.
+#endif
+
+char*yytext;
+
+int yyleng;
+
+int yylineno;
+
+FILE *yyout = stdout;
+
+#if 0
+Macros that duplicate functions in UNIX lex.
+#endif
+
+#define output(c) putc(c,yyout)
+#define ECHO fprintf(yyout,"%s",yytext)
+#ifndef YYERROR
+#define YYERROR(t) fprintf(stderr,"%s",t)
+#endif
+
+#define yymor() yymoreflg = 1
+
+#define unput(c) (ii_unput(c),--yyleng)
+
+#define yyless(n) (	ii_unterm(), \
+			(yyleng -= ii_pushback(n) ? n : yyleng ), \
+			ii_term() \
+		  )	
+
+int input()
+{
+	int c = 0;
+
+	if ( (c = ii_input()) && (c != -1) )
+	{
+		yytext = ii_text();a
+
+		yylineno = ii_lineno();
+
+		++yyleng;	
+	}
+
+	return c;
+}
+
+yylex()
+{
+	size_t yymoreflg; //Set when yymore() is executed
+	
+	static size_t yystate = -1; //Current state
+
+	size_t yylastaccept; //Most recenlty seen accept state
+
+	size_t yyprev; // Sate before yylast accept
+
+	size_t yylook // Lookahead character
+
+	size_t yyanchor // Anchor point for most recently seen accepting state
+	
+	if ( yystate == -1 )
+	{
+		yy_init_lex(); // One-time initialization
+
+		ii_advance();
+
+		ii_pushback(1);
+	}
+
+	yystate = 0;
+
+	yylastaccept = 0;
+
+	yymoreflg = 0;
+
+	ii_unterm();
+
+	ii_mark_start();
+
+#if 0
+Check end of file. If there's an unprocessed accepting state,
+yylastaccept will be nonzero. In this case, ignore EOF for
+now so that you can do the accepting action; otherwise, try
+to open another file andreutrn if you can't.
+#endif
+	while(1)
+	{
+		if ( (yylook=ii_look(1)) != EOF)
+		{
+			yynstate = yy_next(yystate,yylook);
+
+			break;
+		}
+
+		else
+		{
+			if (yylast
+
+		}
+	
+	}
+}

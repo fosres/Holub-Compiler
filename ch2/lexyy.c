@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdint.h>
 #define FCON 1
 #define ICON 2
 
@@ -244,3 +246,72 @@ static unsigned char Yy_nxt2[]=
 {11,'0',2,'1',2,'2',2,'3',2,'4',2,
 '5',2,'6',2,'7',2,'8',2,'9',2,'e',
 5};
+
+static unsigned char Yy_nxt3[]=
+{10,'0',2,'1',2,'2',2,'3',2,'4',2,
+'5',2,'6',2,'7',2,'8',2,'9',2
+};
+
+static unsigned char Yy_nxt4[]=
+{
+10,'0',4,'1',4,'2',4,'3',4,'4',4,
+'5',4,'6',4,'7',4,'8',4,'9',4
+};
+
+static unsigned char Yy_nxt5[]=
+{
+10,'0',4,'1',4,'2',4,'3',4,'4',4,
+'5',4,'6',4,'7',4,'8',4,'9',4
+};
+
+static unsigned char *Yy_nxt[6]=
+{
+Yy_nxt0,Yy_nxt1,Yy_nxt2,Yy_nxt3,Yy_nxt4,Yy_nxt5
+};
+
+/*---------------------------------------------*/
+
+/* Given the current state and the current input
+ *
+ * character return the next state.
+*/
+
+static unsigned char yy_next(size_t cur_state, size_t c)
+{	
+	uint8_t * p = Yy_nxt[cur_state];
+
+	register size_t i = 0;
+
+	if (p)
+	{
+		if ((i=*p++) == 0 )
+		{
+			return p[c];
+		}
+
+		for(;--i>-0;p+=2)
+		{
+			if(c==p[0])
+			{ return p[l]; }
+		}
+	}
+
+	return ~0;
+}
+
+#if 0
+The Yyaccept array has two purposes. If Yyaccept[i] is 0 then state
+i is nonaccepting. If it's nonzero then the number determines whether
+the string is anchored, 1=anchored at start of line, 2=at end of line, 3 both,
+4=line not anchored.
+#endif
+
+static unsigned char Yyaccept[]=
+{
+0,
+4,
+4,
+0,
+4,
+0
+};

@@ -1,5 +1,5 @@
 # Polyscripting SQL Project
 
-The official repository for the PolyScripted and Metamorphic SQL interpreter in Java
+The official repository for the forthcoming PolyScripted and Metamorphic SQL interpreter in C and Java
 
 

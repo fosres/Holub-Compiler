@@ -197,7 +197,7 @@ static char *save(char *str)
 }
 
 /*-----------------------------------------------------
- * MACRO SUPPORT
+ * macro SUPPORT
  */
 #define MAC_NAME_MAX 34 /* Maximum name length */
 #define MAC_TEXT_MAX 80 /* Maximum amount of expansion text */
@@ -206,28 +206,11 @@ typedef struct
 {
 	char name[MAC_NAME_MAX];
 	char text[MAC_TEXT_MAX];
-}MACRO;
+}macro;
 
-static HASH_TAB *Macros; /* Symbol table for macro definitions */
+static HASH_TAB *macros; /* Symbol table for macro definitions */
 
 /*----------------------------------------------------*/
-
-void new_macro(char*def)
-{
-	unsigned hash_add();
-
-	char*name;
-	char*text;
-	char*edef;
-	MACRO*p;
-	static int first_time=1;
-
-	if (first_time)
-	{
-		first_time=0;
-		Macros=maketab(31,hash_add,strcmp);
-	}
-}
 
 typedef struct bucket
 {
@@ -250,7 +233,7 @@ hash_tab *maketab(unsigned maxsym,unsigned (*hash_function), int (*cmp_function)
 {
 	/* Make a hash table of the indicated size. */
 
-	HASH_TAB * p;
+	hash_tab * p;
 
 	if (!maxsym )
 	{ maxsym = 127; }
@@ -274,3 +257,114 @@ hash_tab *maketab(unsigned maxsym,unsigned (*hash_function), int (*cmp_function)
 
 	return p;
 }
+
+void *newsym(size_t size)
+{
+	/* Allocate space for a new symbol; return a pointer to the user space. */
+
+	bucket * sym = 0;	
+
+	if ( (sym = (bucket*)calloc(size+sizeof(bucket),1)) )
+	{
+		fprintf(stderr,"Can't get memory for BUCKET\n");
+
+		raise(SIGABRT);
+		return 0;
+	}
+
+	return (void *)(sym+1);
+}
+
+/*-------------------------------------------------------------------------*/
+
+void freesym(void*sym)
+{
+	free((bucket*)sym-1);
+}
+
+void new_macro(char*def)
+{
+	unsigned hash_add();
+
+	char*name;
+	char*text;
+	char*edef;
+	macro*p;
+	static int first_time=1;
+
+	if (first_time)
+	{
+		first_time=0;
+		macros=maketab(31,hash_add,strcmp);
+	}
+
+	for (name = def; *def && !isspace(*def);def++)
+		;
+	if(*def){*def++=0;}
+
+	/*Isolate the definition text. This process is complicated because
+	 * you need to discard any trailing whitespace on the line. The first
+	 * while loop skips the preceding whitespace. The for loop is looking
+	 * for end of string. If you find the white character (and the \n at
+	 * the end of string is white), remember the position as a potential
+	 * end of string.
+	 */
+
+	while (isspace(*def)){++def;} /* skip up to macro body */
+	
+	text = def;
+
+	edef = 0;
+
+	while(*def){if (!isspace(*def)){++def;}else{for(edef=def++;isspace(*def);++def);}}
+	if (edef){*edef=0;} /*Add the macro to the symbol table*/
+	
+	p = (macro*)newsym(sizeof(macro));
+
+	strncpy(p->name,name,MAC_NAME_MAX);
+	strncpy(p->text,MAC_TEXT_MAX);
+	addsym(macros,p);
+}
+
+/*---------------------------------------------------------------*/
+
+static char *expand_macro(char**namep)
+{
+	/*Return a pointer to the contents of a macro having the
+	 * indicated name. Abort with a message if no macro
+	 * exists. The macro name includes the brackets, which
+	 * are destroyed by the expansion process. *namep is
+	 * modified to point past the close brace.
+	 */
+
+	char * p = 0; macro*mac = 0;
+
+	if (!(p=strchr(++(*namep),'}'))){parse_err(E_BADMAC);}
+	
+	else
+	{
+		*p++=0;
+
+		if(!(mac=(macro*)findsym(macros,*namep))){parse_err(E_NOMAC);}
+
+		*namep=p; // Update name pointer
+
+		return mac->text;
+	}
+
+	return "ERROR";
+}
+
+//Workhouse function needed by  ptab() call in
+
+static print_a_macro(macro*mac) 
+{
+	printf("%-16s--[%s]--\n",mac->name,mac->text);	
+}
+
+void printmacs()
+{
+	if(!macros){printf("\tThere are no macros\n");
+	else{printf("\nMACROS:\n");ptab(macros,print_a_macro,0,1);}
+}
+

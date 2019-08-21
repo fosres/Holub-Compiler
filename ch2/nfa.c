@@ -196,3 +196,81 @@ static char *save(char *str)
 	return startp;
 }
 
+/*-----------------------------------------------------
+ * MACRO SUPPORT
+ */
+#define MAC_NAME_MAX 34 /* Maximum name length */
+#define MAC_TEXT_MAX 80 /* Maximum amount of expansion text */
+
+typedef struct
+{
+	char name[MAC_NAME_MAX];
+	char text[MAC_TEXT_MAX];
+}MACRO;
+
+static HASH_TAB *Macros; /* Symbol table for macro definitions */
+
+/*----------------------------------------------------*/
+
+void new_macro(char*def)
+{
+	unsigned hash_add();
+
+	char*name;
+	char*text;
+	char*edef;
+	MACRO*p;
+	static int first_time=1;
+
+	if (first_time)
+	{
+		first_time=0;
+		Macros=maketab(31,hash_add,strcmp);
+	}
+}
+
+typedef struct bucket
+{
+	struct bucket *next;
+	struct bucket **prev;
+
+}bucket;
+
+typedef struct hash_tab
+{
+	int size;/* Max number of elements in table */
+	int numsyms; /* number of elements currently in table */
+	unsigned (*hash)(); /*hash function */
+	int (*cmp)(); /* comparision function, cmp(name,bucket_p) */
+	bucket *table[1]; /*First element of actual hash table */
+
+}hash_tab;
+
+hash_tab *maketab(unsigned maxsym,unsigned (*hash_function), int (*cmp_function))
+{
+	/* Make a hash table of the indicated size. */
+
+	HASH_TAB * p;
+
+	if (!maxsym )
+	{ maxsym = 127; }
+
+	/* |<-------- space for table ------>|<- and header -->| */
+
+	if ( p = (hash_tab*)calloc(1,(maxsym*sizeof(BUCKET*))+sizeof(HASH_TAB)))
+	{
+		p->size = maxsym;
+		p->numsyms = 0;
+		p->hash = hash_function;
+		p->cmp = cmp_function;
+	}
+
+	else
+	{
+		fprintf(stderr,"Insufficient memory for symbol table\n");
+		raise(SIGABRT);
+		return NULL;
+	}
+
+	return p;
+}

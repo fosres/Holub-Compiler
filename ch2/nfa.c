@@ -60,7 +60,7 @@ static void parse_err(ERR_NUM type)
 	fprintf(stderr,"ERROR (line %d) %s\n%s\n",Actual_lineno,
 						Errmsgs[(int)type],S_input);
 	
-	while (++S_input <= Input ){putc('_',stderr);
+	while (++S_input <= Input ){putc('_',stderr);}
 
 	fprintf(stderr,"^\n");
 	exit(1);
@@ -364,7 +364,167 @@ static print_a_macro(macro*mac)
 
 void printmacs()
 {
-	if(!macros){printf("\tThere are no macros\n");
+	if(!macros){printf("\tThere are no macros\n");}
 	else{printf("\nMACROS:\n");ptab(macros,print_a_macro,0,1);}
 }
 
+typedef enum token
+{	EOS=1, /* end of string*/
+	ANY,	/*	.	*/
+	AT_BOL,	/*	^	*/
+	AT_EOL, /*	$	*/
+	CCL_END,/*	]	*/
+	CCL_START,/*	[	*/
+	CLOSE_CURLY,/*	}	*/
+	CLOSE_PAREN,/*	)	*/
+	CLOSURE,/*	*	*/
+	DASH,	/*	-	*/
+	END_OF_INPUT/*	EOF	*/
+	L,	/*	literal character	*/
+	OPEN_CURLY,/*	{	*/
+	OPEN_PAREN,/*	(	*/
+	OPTIONAL,/*	?	*/
+	OR,	/*	|	*/
+	PLUS_CLOSE/*	+	*/
+	
+}TOKEN;
+
+static TOKEN Tokmap[]=
+{
+	/*	^@ ^A ^B ^C ^D ^E ^F ^G ^H ^I ^J ^K ^L ^M ^N 	*/
+		L,  L, L, L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/*	^O ^P ^Q ^R ^S ^T ^U ^V ^W ^X ^Y ^Z ^[ ^\ ^]	*/
+		L,  L, L, L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/*	^^ ^_ SPACE ! \" #  $ 	    %  &  '			*/
+		L, L, L,    L,L  L, AT_EOL, L, L, L, 
+	
+	/*	(  	    ) 		* 	 + 	     ,  -     .   */
+		OPEN_PAREN, CLOSE_PAREN,CLOSURE, PLUS_CLOSE, L, DASH, ANY,
+
+	/*	/  0  1  2  3  4  5  6  7  8  9  :  ;  <  = */
+		L, L, L, L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/* > 		?					    */
+	   L,		OPTIONAL,
+
+	/* @  A  B  C  D  E  F  G  H  I  J  K  L  M  N */
+	   L, L, L, L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/* O  P  Q  R  S  T  U  V  W  X  Y  Z 		*/
+	   L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/* [	     \ 	 ] 	    ^			*/
+	   CCL_START L,  CCL_END,   AT_BOL,
+	
+	/* _   '  a  b  c  d  e  g  h  i  j  k  l  m	*/
+	   L,  L, L, L, L, L, L, L, L, L, L, L, L, L,
+	
+	/* n   o  p  q  r  s  t  u  v  w  x  y  z 	*/
+	   L,  L, L, L, L, L, L, L, L, L, L, L, L
+	
+	/*  {	 	|	}		DEL
+	    OPEN_CURLY	OR,	CLOSE_CURLY,    L
+	};
+
+	static uint8_t*(*Ifunct)(); /* Input function pointer */
+	static uint8_t*Input="";    /* Current position in input string */
+	static uint8_t*S_input;	    /* Beginning of input string */
+	static TOKEN Current_tok;   /* Current token */
+	static size_t Lexeme;	    /* Value associated with LITERAL */
+
+	#define MATCH(t) (Current_tok==(t))
+/*-----------------------------------------------------------------
+ * Lexical analyzer:
+ * 
+ * Lexical analysis is trivial because all lexemes are single-character values.
+ * The only complications are escape sequences and quoted strings, both of
+ * which are handled by advance(), below. This routine advances past the 
+ * current tokenk putting the new token into Current_tok and the equivalent
+ * lexeme into Lexeme. If the character was escaped, Lexeme holds the actual
+ * value. For example, if a "\s" is encountered, Lexeme will hold a space
+ * character. The MATCH(x) macro returns true
+
+static size_t advancea()
+{
+	static size_t inquote = 0;
+
+	size_t saw_esc;
+
+	static uint8_t *stack[SSIZE];	/* Input-source stack */
+
+		       **sp = 0;	/* and stack pointer */
+					
+		       			/* Initialize sp.  */
+	if (!sp)			
+	{
+		sp=stack-1; 		/* Necessary for large model */
+	}
+
+	if (Current_tok==EOS)		/* Get another line */	
+	{
+		if(inquote){parse_err(E_NEWLINE);}
+
+		do
+		{
+			if(!(Input=(*Ifunct)()))
+			{
+				Current_tok=END_OF_INPUT;
+				goto exit;
+			}
+			
+			while(isspace(*Input)){Input++;} /* Ignore leading */
+							
+							/*Remember start of line */	
+		}while(!*Input);
+
+		S_input = Input;		/*for eorror messages */	
+
+	}
+
+	while(*Input==0x0)
+	{
+		if(INBOUNDS(stack,sp) )
+		{
+			Input=*sp--;
+			continue;
+		}
+
+		Current_tok = EOS;
+
+		Lexeme = 0;
+
+		goto exit;
+	}
+
+	if(!inquote)
+	{
+		while(*Input=='{')
+		{
+			*++sp=Input;
+			Input=expand_macro(sp);
+
+			if(TOOHIGH(stack,sp))
+			{
+				parse_err(E_MACDEPTH); /* Stack overflow */
+			}
+		}
+	}
+
+	if (*Input=='\"')
+	{
+		inquote = ~inquote;
+
+		if(!*++Input)
+		{
+			Current_tok=EOS;
+			Lexeme=0;
+			goto exit;
+		}
+	}
+	
+
+
+
+}

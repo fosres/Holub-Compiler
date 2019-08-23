@@ -683,3 +683,113 @@ static NFA*rule(void)
 	LEAVE("rule");
 	return start;
 }
+
+static void expr(NFA**startp,NFA**endp)
+{
+	/*Because a recursive descent compiler cannot handle left
+	 *recursion, the productions:
+ 	 *
+	 * expr	-> 	expr OR cat_expr
+	 * 		| cat_expr
+	 * must be translated into:
+	 *
+	 * expr	->	cat_expr expr'
+	 * expr'->	OR cat_expr expr'
+	 * 		epsilon
+	 *
+	 * which can be implemented with this loop:
+	 *
+	 * cat_expr
+	 *
+	 * while(match(OR))
+	 * 	cat_expr
+	 * 	do this OR
+	 */
+
+	NFA*e2_start=0; /*expression to right of | */
+	NFA*e2_end=0;
+	NFA*p=0;
+
+	ENTER("expr");
+
+	cat_expr(startp,endp);
+
+	while(MATCH(OR))
+	{
+		advance();
+		cat_expr(&e2_start,&e2_end);
+		
+		p=new();
+		p->next2=e2_start;
+		p->next=*startp;
+		*startp=p;
+		
+		p=new();
+		(*endp)->next=p;
+		e2_end->next=p;
+		*endp=p;	
+	}
+
+	LEAVE("expr");
+}
+
+/*--------------------------------------------------------*/
+
+static void cat_expr(NFA**startp,NFA**endp)
+{
+	/* The same translations that were needed in the expr rules are needed
+	 * again here:
+	 *
+	 * cat_expr->cat_expr|factor
+	 * 			factor
+	 * is translated to:
+	 *
+	 * cat_expr -> factor cat_expr'
+	 * cat_expr'->|factor cat_expr'
+	 * 		epsilon
+	 */
+
+	NFA*e2_start,*e2_end;
+
+	ENTER("cat_expr");
+
+	if(first_in_cat(Current_tok)){factor(startp,endp);}
+
+	while(first_in_cat(Current_tok))
+	{
+		factor(&e2_start,&e2_end);
+		
+		memcpy(*endp,e2_start,sizeof(NFA));
+
+		discard(e2_start);	
+
+		*endp=e2_end;
+	}
+
+	LEAVE("cat_expr");
+}
+
+/*--------------------------------------------------------------*/
+
+static size_t first_in_cat(TOKEN tok)
+{
+	switch(tok)
+	{
+		case CLOSE_PAREN:
+		case AT_EOL:
+		case OR:
+		case EOS:
+		{
+			return 0;
+		}
+		case CLOSURE:
+		case PLUS_CLOSE:
+		case OPTIONAL:
+		{	parse_err(E_CLOSE); return 0; }
+		
+		case CCL_END:{parse_err(E_BRACKET);return 0;}
+		case AT_BOL:{parse_err(E_BOL);return 0;}
+	}
+
+	return 1;
+}

@@ -446,7 +446,7 @@ static TOKEN Tokmap[]=
  * value. For example, if a "\s" is encountered, Lexeme will hold a space
  * character. The MATCH(x) macro returns true
 
-static size_t advancea()
+static size_t advance()
 {
 	static size_t inquote = 0;
 
@@ -523,8 +523,163 @@ static size_t advancea()
 			goto exit;
 		}
 	}
+
+	saw_esc=(*Input=='\\');
+
+	if (!inquote)
+	{
+		if(isspace(*Input))
+		{
+			Current_tok=EOS;
+
+			Lexeme='\0';
+
+			goto exit;
+		}
+
+		Lexeme=esc(&Input);
+	}
+
+	else
+	{
+		if(saw_esc&&Input[1]=='"')
+		{
+			Input+=2;
+			Lexeme='"';
+		}	
+
+		else
+		{
+			Lexeme=*Input++;
+		}
+	}
+
+	Current_tok=(inquote||saw_esc)?L:Tokmap[Lexeme];
+
+	exit:
+		return Current_tok;
+
+}
+
+static size_t advance(void);
+
+static void cat_expr(NFA**,NFA**);
+
+static void discard(NFA*);
+
+static void dodash(SET*);
+
+static void expr(NFA**,NFA**);
+
+static void factor(NFA**,NFA**);
+
+static size_t first_in_cat(TOKEN);
+
+static NFA *machine(void);
+
+static NFA *new(void);
+
+static void parse_err(ERR_NUM);
+
+static NFA *rule(void);
+
+static char*save(char*);
+
+static void term(NFA**,NFA**);
+
+/*------------------------------------------
+ * The Parser:
+ * A simple recursive descent parser that
+ * creates a Thompson NFA for a regular
+ * expression. The access routine [thompson()]
+ * is at the bottom. The NFA is created a
+ * directed graph, with each node containing
+ * pointer's to the next node. Since the
+ * structures are allocated from an array,
+ * the machine can also be considered as an
+ * array where the state number is the array
+ * index.
+ */
+
+static NFA *machine(void)
+{
+	NFA*start;
+	NFA*p;
+
+	ENTER("machine");
+
+	p=start=new();
+
+	p->next=rule();
+
+	while(!MATCH(END_OF_INPUT))
+	{
+		p->next2=new();
+		p=p->next2;
+		p->next=rule();
+
+	}
+
+	LEAVE("machine");
+	return start;
+}
+
+/*-------------------------------------------*/
+static NFA*rule(void)
+{
+	/* rule --> expr EOS action
+	 * 	 	^expr EOS action
+	 * 	 	expr$ EOS action
+	 * action --> <tabs> <string of characters>
+	 * 		epsilon
+	 */
+
+	NFA*p;
+
+	NFA*start=0;
+	NFA*end=0;
+	size_t anchor=NONE;
+
+	ENTER("rule");	
+
+	if(MATCH(AT_BOL))
+	{
+		start=new();
+		start->edge='\n';
+		anchor|=START;
+		advance();
+		expr(&start->next,&end);
+	}
 	
+	else{expr(&start,&end);
 
+	if(MATCH(AT_EOL))
+	{
+		/*pattern followed by a carriage-return or linefeed (use a
+		 *character class).
+		 */
+		
+		advance();
+		end->next=new();
+		end->edge=CCL;
 
+		if(!(end->bitset=newset()))
+		{	parse_err(E_MEM);	}
 
+		ADD(end->bitset,0xa);
+
+		if(!Unix){ADD(end->bitset,'\r');}
+
+		end=end->next;
+
+		anchor|=END;
+	}
+
+	while(isspace(*Input)){Input++;}
+
+	end->accept=save(Input);
+	end->anchor=anchor;
+	advance(); /* skip past EOS */
+	LEAVE("rule");
+	return start;
 }

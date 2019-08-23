@@ -5,16 +5,6 @@
 
 //typedef unsigned short     _SETTYPE ;		   /* one cell in bit map   */
 
-typedef struct _set_
-{
-    unsigned short defmap[8];	/* The map itself		  */
-    unsigned short *map   ;		/* Pointer to the map		  */
-    unsigned	  nbits  ;		/* Number of bits in map	  */
-    unsigned char nwords ;		/* Number of words in map	  */
-    unsigned char compl	 ;		/* is a negative true set if true */
-
-} SET;
-
 typedef struct nfa
 {
 	SET *bitset; /*Set to store character classes. */

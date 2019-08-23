@@ -852,4 +852,85 @@ static void term(NFA**startp,NFA**endp)
 		if(MATCH(CLOSE_PAREN)){advance();}
 		else{parse_err(E_PAREN);}
 	}
+
+	else
+	{
+		*startp=start;
+		*endp=start->next=new();
+
+		if(!(MATCH(ANY)||MATCH(CCL_START) ) )
+		{
+			start->edge=Lexeme;
+			
+			advance();
+		}
+
+		else
+		{
+			start->edge=CCL;
+
+			if(!(start->bitset=newset())){parse_err(E_MEM);}
+
+			if(MATCH(ANY) )
+			{
+				ADD(start->bitset,0xa);
+				if(!Unix){ADD(start->bitset,'\r');}
+				
+				COMPLEMENT(start->bitset);
+			}
+
+			else
+			{
+				advance();
+
+				if(MATCH(AT_BOL))
+				{
+					advance();
+
+					ADD(start->bitset,0xa); /* Don't include \n in class */
+					if(!Unix){ADD(start->bitset,'\r');}
+
+					COMPLEMENT(start->bitset);
+				}
+
+				if(!MATCH(CCL_END)){dodash(start->bitset);}
+
+				else
+				{
+					for(c=0;c<=' ';c++){ADD(start->bitset,c);}
+				}
+			}
+
+			advance();
+		}
+
+	}
+		LEAVE("term");
+}
+
+/*-------------------------------------------------*/
+
+static void dodash(SET*set) /*Pointer to ccl character set */
+{
+	register int first;
+
+	for(;!MATCH(EOS)&&!MATCH(CCL_END);advance())
+	{
+		if(!MATCH(DASH))
+		{
+			first=Lexeme;
+
+			ADD(set,Lexeme);
+		}
+
+		else
+		{
+			advance();
+
+			for(;first<=Lexeme;first++)
+			{
+				ADD(set,first);
+			}
+		}
+	}
 }

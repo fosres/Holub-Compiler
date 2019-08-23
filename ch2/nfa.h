@@ -1,3 +1,6 @@
+#ifndef __NFA_H__
+#define __NFA_H__
+#include "set.h"
 #define	START	1
 /*----------------------------------
  * Nfa state;
@@ -33,4 +36,4 @@ void new_macro(char*definition);
 void printmacs(void);
 NFA *thompson(char*(*input_funct)(),int*max_state,NFA**start_state);
 void print_nfa(NFA*nfa,int len,NFA*start);
-
+#endif //__NFA_H__

@@ -6,7 +6,7 @@
 #include <string.h>
 #include "nfa.h" /* defines for NFA, EPSILON, CCL */
 #include "globals.h" /* externs for Verbose, etc. */
-
+#include "set.h"
 #ifdef DEBUG
 	int Lev = 0;
 #define ENTER(f) (printf("%*senter %s [%c] [%1.10s] \n",Lev++ *4,"",f,Lexeme,Input))

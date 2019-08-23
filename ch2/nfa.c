@@ -793,3 +793,63 @@ static size_t first_in_cat(TOKEN tok)
 
 	return 1;
 }
+
+static void factor(NFA**startp,NFA**endp)
+{
+	/*factor	-->	term* | term+ | term?
+	 */
+
+	NFA*start=0,*end=0;
+
+	ENTER("factor");
+
+	term(startp,endp);
+
+	if(MATCH(CLOSURE)||MATCH(PLUS_CLOSE)||MATCH(OPTIONAL))
+	{
+		start=new();
+		end=new();
+		start->next=*startp;
+		(*endp)->next=end;
+		
+		if(MATCH(CLOSURE)||MATCH(OPTIONAL))
+		{
+			start->next2=end;
+		}
+
+		if(MATCH(CLOSURE)||MATCH(PLUS_CLOSE))
+		{
+			(*endp)->next2=*startp;
+		}
+
+		*startp=start;
+		*endp=end;
+		advance();
+	}
+
+	LEAVE("factor");
+}
+
+static void term(NFA**startp,NFA**endp)
+{
+	/*Process the term productions:
+	 *
+	 * term --> [...] | [^...]| [] | [^] | . | (expr) | <character>
+	 *
+	 * The [] is nonstandard. It matches a space, tab, formfeed, or newline,
+	 * but not a carriage return (\r). All of these are single nodes in the
+	 * NFA.
+	 */
+
+	NFA*start=0;size_t c=0;
+
+	ENTER("term");
+
+	if(MATCH(OPEN_PAREN))
+	{
+		advance();
+		expr(startp,endp);
+		if(MATCH(CLOSE_PAREN)){advance();}
+		else{parse_err(E_PAREN);}
+	}
+}

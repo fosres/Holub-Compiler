@@ -197,6 +197,17 @@ static void printbuf(void)
 
 /*----------------------------------------------------------*/
 
+void	delset( set )
+SET	*set;
+{
+    /* Delete a set created with a previous newset() call. */
+
+    if( set->map != set->defmap )
+	free( set->map );
+    free( set );
+}
+
+
 int main(int argc,char**argv)
 {
 	int sstate=0; /* Starting NFA state */
@@ -217,6 +228,61 @@ int main(int argc,char**argv)
 
 	else
 	{
+		fprintf(stderr,"usage: terp pattern <input\n");
 
+		exit(1);
+	}
+
+	/*
+	 * 1: Complete the NFA; initialize move() & e_closure().
+	 * 2: Create the initial state, the set of all NFA states
+	 *    that can be reached by making epsilon transitions
+	 *    from the NFA start state.
+	 * 3. Initialize the current state to the start state.
+	 */
+
+	Expr=argv[1]; /*1*/
+	sstate=nfa(getline);
+
+	next=newset();
+
+	ADD(next,sstate);
+
+	if(!(start_dfastate=e_closure(next,&accept,&anchor)))
+	{
+		fprintf(stderr,"Internal error: State machine is empty\n");
+
+		exit(1);
+	}
+
+	current=newset();
+
+	assign(current,start_dfastate);
+
+	/*Now interpret the NFA: The next state is the set of all NFA
+	 *states that can be reached after we've made a transition on
+	 *the current input character from any of the NFA states in the
+	 *current state. The current input line is printed every time
+	 *an accept state is encountered. The machine is reset to the
+	 *initial state when a failure transition is encountered.
+	 */
+
+	while(c=nextchar())
+	{
+		if(next=e_closure(move(current,c),&accept,&anchor))
+		{
+			if(accept){printbuf();}
+			
+			else
+			{
+				delset(current);
+				current=next;
+				continue;
+			}	
+		}
+
+		delset(next);
+
+		assign(current,start_dfastate);
 	}
 }

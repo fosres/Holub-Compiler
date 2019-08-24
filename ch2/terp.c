@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "nfa.h"
 #include "set.h"
+#include "globals.h"
 /*---------------------------------------------
  * Prototypes for subroutines in this site.
  *
@@ -125,4 +126,97 @@ SET*e_closure(SET*input,uint8_t**accept,size_t*anchor)
 	return input;
 }
 
+/*Return a set that contains all NFA states that can be reached by making
+ *transitions on "c" from any NFA state in "inp_set". Returns NULL if
+ *there are no such transactions. The inp_set is not modified.
+ */
+
 SET*move(SET*inp_set,size_t c)
+{
+	size_t i = 0;
+
+	NFA*p=0;
+
+	SET*outset=0;
+
+	for(i=Nfa_states;--i>=0;)
+	{
+		if(MEMBER(inp_set,i))
+		{
+			p=&Nfa[i];
+
+			if(p->edge==c||(p->edge==CCL&&TEST(p->bitset,c)))
+			{
+				if(!outset){outset=newset();}
+
+				ADD(outset,p->next-Nfa);
+			}
+					
+		}
+	}
+
+	return outset;
+	
+}
+
+#define BSIZE 256
+
+static char Buf[BSIZE]; /* input buffer*/
+
+static char *Pbuf=Buf; /* current position in input buffer */
+
+static char *Expr; /*regular expression from command line*/
+
+int nextchar(void)
+{
+	if(!*Pbuf)
+	{
+		if(!fgets(Buf,BSIZE,stdin))
+		{
+			return 0;
+		}
+
+		Pbuf=Buf;
+	}
+
+	return *Pbuf++;
+}
+
+/*-----------------------------------------------------------*/
+
+static void printbuf(void)
+{
+	static size_t first_time_called=1;
+
+	if(!first_time_called){return 0;}
+	
+	first_time_called=0;
+
+	return Expr;
+}
+
+/*----------------------------------------------------------*/
+
+int main(int argc,char**argv)
+{
+	int sstate=0; /* Starting NFA state */
+
+	SET*start_dfastate=0; /*Set of starting nfa states*/
+
+	SET*current=0;/*current DFA state*/
+
+	SET*next=0;
+
+	size_t accept=0;
+
+	size_t c=0;
+
+	size_t anchor=0;
+
+	if(argc==2){fprintf(stderr,"expression is %s\n",argv[1]);}
+
+	else
+	{
+
+	}
+}

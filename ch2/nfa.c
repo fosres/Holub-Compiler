@@ -83,6 +83,7 @@ static NFA **Sp=&Sstack[-1]; /* Stack pointer */
 
 #define STACK_OK() (INBOUNDS(Sstack,Sp) )
 #define STACK_USED() ( (Sp-Stack)+1)/*slots used */
+#define CLEAR_STACK() ( Sp = Sstack - 1		)  /* reset the stack    */
 #define PUSH(x)	(*++Sp=(x)	) /* put X on stack */
 #define POP()	( *Sp--		) /* get X from stack */
 
@@ -933,4 +934,44 @@ static void dodash(SET*set) /*Pointer to ccl character set */
 			}
 		}
 	}
+}
+
+/*Access routine to this module. Return a pointer to a NFA transition
+ *table that represents the regular expression pointed to by expr or
+ *NULL if there's not enough memory. Modify *max_state to reflect the
+ *largest state number used. This number will probably be a larger
+ *number than the total number of states. Modify *start_state to point
+ *to the start state. This pointer is garbage if thompson() returned 0.
+ *The memory for the table is fetched from malloc();use free() to
+ *discard it
+ */
+
+NFA*thompson(uint8_t*(*input_function)(),int*max_state,NFA**start_state)
+{
+	CLEAR_STACK();	
+
+	Ifunct = input_function;
+
+	Current_tok=EOS; /* Load first token */
+
+	advance();
+
+	Nstates = 0;
+
+	Next_alloc = 0;
+
+	*start_state = machine(); /* Manufacture the NFA */
+
+	*max_state = Next_alloc; /* Max state # in NFA */
+
+	if(Verbose>1){print_nfa(Nfa_states,*max_state,*start_state);}
+
+	if(Verbose)
+	{
+		printf("%d%d NFA states used.\n",*max_state,NFA_MAX);
+
+		printf("%d%d bytes used for accept strings.\n\n",Savep-Strings,STR_MAX);
+	}
+
+	return Nfa_states;
 }

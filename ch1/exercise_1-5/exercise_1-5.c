@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "lex_exp.h"
-
+#include "uint.h"
 
 bool is_valid_expression = 0;
 

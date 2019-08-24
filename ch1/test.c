@@ -8,6 +8,6 @@ int main(void)
 
 	printf("%p %p\n",func_p,&main);	
 
-	static static int a;
+	static int a;
 	return 0;
 }

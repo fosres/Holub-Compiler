@@ -11,6 +11,10 @@ bool is_valid_expression = 0;
 
 uint16_t dec_specs = 0;
 
+bool has_ptr = 0;
+
+bool has_parameter_body= 0;
+
 #if 0
 
 	int * (*(*a[4])(int,int,int))(int,int);
@@ -343,6 +347,10 @@ in a declaration of any kind.
 void declaration_specifiers(void)
 {
 	dec_specs = 0;
+
+	has_ptr = 0;
+
+	has_parameter_body = 0;
 
 	while ( 
 		( Lookahead > ( 0b1 << 8 ) )
@@ -1501,6 +1509,8 @@ if ( match(ASTK) )
 {	
 	while ( match(ASTK) )
 	{
+
+		has_ptr = 1;
 	
 		while ( match(ASTK) )
 		{
@@ -1517,19 +1527,6 @@ if ( match(ASTK) )
 
 	}
 }
-
-else
-{
-	if ( ( dec_specs >> 14 ) & 0b1 )
-	{
-		error_msg("void used in declaration without a pointer\n",
-			
-			yylineno,yytext-&input[0]
-			);
-	}
-
-}
-
 
 
 }
@@ -1621,6 +1618,10 @@ void direct_declarator(void);
 
 void declarator(void)
 {
+	has_ptr = 0;
+
+	has_parameter_body = 0;
+
 	pointer(); direct_declarator();
 }
 
@@ -1628,6 +1629,7 @@ void parameter_type_list(void);
 
 void direct_declarator(void)
 {
+
 	if ( match(ID) )
 	{	advance();	}
 
@@ -1688,6 +1690,8 @@ void direct_declarator(void)
 
 	else if ( match(LP) ) //parameter_type_list
 	{
+		has_parameter_body = 1;
+
 		advance();
 
 		parameter_type_list();
@@ -1701,7 +1705,28 @@ void direct_declarator(void)
 		}
 
 		advance();
-	}	
+	}
+
+	if ( 
+			(( dec_specs >> 14 ) & 0b1 )
+
+			&&
+
+			!has_ptr
+
+			&&
+
+			!has_parameter_body
+			
+			
+	)
+	{
+		error_msg("void used in declaration without a pointer nor parameter body\n",
+			
+			yylineno,yytext-&input[0]
+			);
+	}
+		
 }
 
 void parameter_declaration(void);

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "set.h"
 #include "dfa.h"
 #include "globals.h"
 
@@ -138,4 +139,106 @@ static dfa_state*get_unmarked(void)
 	 * exists, return 0, Print an asterisk for each state to tell the user
 	 * that the program has not died while the table is being constructed
 	 */
+
+	for(;Last_marked<&Dstates[Nstates];++Last_marked)
+	{
+		if(!Last_marked->mark)
+		{
+			fputc('*',stderr);
+
+			fflush(stderr);
+
+			if(Verbose>1)
+			{
+				fputs("------------\n",stdout);
+
+				printf("working on DFA state %d = NFA states:",Last_marked-Dstates);
+				pset(Last_marked->set,fprintf,stdout);
+				
+				putchar(0xa);
+			}
+
+			return Last_marked;
+		}
+	}
+	
+	return 0;
 }
+
+static void free_sets(void)
+{
+	/* Free the memory used for the NFA sets in all Dstate entries. */
+
+	dfa_state*p=0;
+
+	for(p-&Dstates[Nstates];--p>=Dstates;){delset(p->set);}
+}
+
+static void make_dtran(size_t sstate)
+{
+	SET*nfa_set=0; 
+
+	dfa_state*current=0;
+
+	size_t nextstate=0;
+
+	uint8_t*isaccept=0;
+
+	size_t anchor=0;
+
+	size_t c=0;
+
+	/*Initially Dstates contain a single, unmarked, start_state
+	 *formed by taking the epsilon closure of the NFA start state.
+	 *So, Dstates[0] (and Dtran[0]) is the DFA start state.
+	*/
+
+	nfa_set=newset();
+
+	ADD(nfa_set,sstate);
+
+	Nstates=1;
+
+	Dstates[0].set=e_closure(nfa_set,&Dstates[0].accept,&Dstates[0].anchor);
+	
+	Dstates[0].mark=0;
+
+	while(current=get_unmarked())
+	{
+		current->mark=1;
+
+		for(c=MAX_CHARS;--c>=0;)
+		{
+			if(NFA_set=move(current->set,c))
+			{
+				nfa_set=e_closure(NFA_set,&isaccept,&anchor);
+			}
+
+			if(!nfa_set)
+			{
+				nextstate=F;
+			}
+
+			else if(nextstate=in_dstates(nfa_set)!=(~0))
+			{
+				delset(nfa_set);
+			}
+
+			else
+			{
+				nextstate=add_to_dstates(nfa_set,isaccept,anchor);
+			}
+
+			Dtran[current-Dstates][c]=nextstate;
+		}
+	}
+
+#if 0
+Terminate string of *'s printed in get_unmarked();
+#endif
+	putc(0xa,stderr);
+
+	free_sets();/*Free the memory used for the dfa_state sets*/
+}
+
+

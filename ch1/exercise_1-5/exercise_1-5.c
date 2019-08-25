@@ -1693,6 +1693,9 @@ void direct_declarator(void)
 
 		advance();
 
+		if(match(RP))
+		{advance();return;}
+
 		parameter_type_list();
 
 		if ( !match(RP) )

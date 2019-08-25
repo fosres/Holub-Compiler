@@ -1528,7 +1528,6 @@ if ( match(ASTK) )
 	}
 }
 
-
 }
 
 void declaration(void)
@@ -1794,7 +1793,17 @@ void parameter_declaration(void)
 	if ( match(COMMA) || match(RP) )
 	{
 		return;
+	}
+
+	if (match(ASTK) )
+	{
+		pointer();
 	}	
+
+	if ( match(COMMA) || match(RP) )
+	{
+		return;
+	}
 
 	declarator();
 }

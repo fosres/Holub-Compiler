@@ -29,6 +29,14 @@ typedef size_t ROW[MAX_CHARS];
 
 /*-----------------------------------------------*/
 
+typedef struct ACCEPT
+{
+    uint8_t*string;	/* Accepting string; NULL if nonaccepting.            */
+    int	  anchor;	/* Anchor point, if any. Values are defined in NFA.H. */
+
+} ACCEPT;
+
+
 typedef struct accept
 {
 	uint8_t*string;

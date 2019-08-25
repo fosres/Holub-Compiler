@@ -1,4 +1,4 @@
-/*GLOBALS.H: Gloal variables shared between modules */
+/*GLOBALS.H: Global variables shared between modules */
 #ifdef ALLOC
 #	define CLASS
 #	define I(x) (x)

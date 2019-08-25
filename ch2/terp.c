@@ -283,6 +283,6 @@ int main(int argc,char**argv)
 
 		delset(next);
 
-		assign(current,start_dfastate);
+		ASSIGN(current,start_dfastate);
 	}
 }

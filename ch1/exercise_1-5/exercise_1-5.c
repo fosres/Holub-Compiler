@@ -11,9 +11,6 @@ bool is_valid_expression = 0;
 
 uint16_t dec_specs = 0;
 
-bool has_ptr = 0;
-
-bool has_parameter_body= 0;
 
 #if 0
 
@@ -348,9 +345,6 @@ void declaration_specifiers(void)
 {
 	dec_specs = 0;
 
-	has_ptr = 0;
-
-	has_parameter_body = 0;
 
 	while ( 
 		( Lookahead > ( 0b1 << 8 ) )
@@ -1510,8 +1504,6 @@ if ( match(ASTK) )
 	while ( match(ASTK) )
 	{
 
-		has_ptr = 1;
-	
 		while ( match(ASTK) )
 		{
 			advance();
@@ -1617,9 +1609,6 @@ void direct_declarator(void);
 
 void declarator(void)
 {
-	has_ptr = 0;
-
-	has_parameter_body = 0;
 
 	pointer(); direct_declarator();
 }
@@ -1689,46 +1678,9 @@ void direct_declarator(void)
 
 	else if ( match(LP) ) //parameter_type_list
 	{
-		has_parameter_body = 1;
-
-		advance();
-#if 0
-		if (match(VOID))
-		{
 
 		advance();
 
-
-		if(!match(RP) && !match(ASTK) )
-		{	
-		
-			error_msg("Only void can be in parameter_type_list\n",
-			yylineno,yytext-&input[0]
-		       		);
-
-		}
-#if 0
-		if(match(RP))
-		{advance();return;}
-#endif		
-		if (match(ASTK))	
-		{
-			pointer();
-
-			if(!match(COMMA)&&!match(RP))
-			{
-				direct_declarator();	
-			}
-		
-		}
-		
-		}
-#endif
-
-#if 0
-	if(match(RP))
-	{advance();return;}
-#endif
 		parameter_type_list();
 
 		if ( !match(RP) )
@@ -1742,25 +1694,6 @@ void direct_declarator(void)
 		advance();
 	}
 
-	if ( 
-			(( dec_specs >> 14 ) & 0b1 )
-
-			&&
-
-			!has_ptr
-
-			&&
-
-			!has_parameter_body
-			
-			
-	)
-	{
-		error_msg("void used in declaration without a pointer nor direct_declarator body\n",
-			
-			yylineno,yytext-&input[0]
-			);
-	}
 		
 }
 
@@ -1770,39 +1703,8 @@ void parameter_type_list(void)
 {
 	if (match(RP)){return;}
 
-	if (match(VOID))
-	{
+	size_t param_dec_i=0;
 
-		advance();
-
-
-		if(!match(RP) && !match(ASTK) )
-		{	
-		
-			error_msg("Only void declaration-specifier can be in parameter_type_list by itself or a void pointer must be the first argument\n",
-			yylineno,yytext-&input[0]
-		       		);
-
-		}
-
-		if (match(RP)){return;}
-		
-		else if (match(ASTK))	
-		{
-			pointer();
-
-			if(!match(COMMA)&&!match(RP))
-			{
-				direct_declarator();	
-			}
-			
-
-			if(match(RP)){return;}
-
-			else{advance();}
-		
-		}
-	}
 
 	if ( 
 		!( Lookahead > ( 0b1 << 8 ) )
@@ -1831,6 +1733,71 @@ void parameter_type_list(void)
 		      )
 
 		{
+			if (match(VOID))
+			{
+
+				advance();
+
+				if(
+						!match(RP) 
+						
+						&& 
+						
+						!match(ASTK) 
+						
+						&& 
+						
+						!match(LP) 
+						
+						&& 
+						
+						( param_dec_i == 0 ) 
+						
+				)
+				{	
+				
+					error_msg("Only void declaration-specifier can be in parameter_type_list by itself or a void pointer must be the parameter argument\n",
+					yylineno,yytext-&input[0]
+						);
+
+				}
+
+				else if (match(RP)){return;}
+
+				else if (match(LP))
+				{
+					advance();
+
+					declarator();
+
+					if (!match(RP))
+					{
+						error_msg("Missing Right Parenthesis",
+					yylineno,yytext-&input[0]
+						);
+					}
+											
+				}
+				
+				else if (match(ASTK))	
+				{
+					pointer();
+
+					if(!match(COMMA)&&!match(RP))
+					{
+						direct_declarator();	
+					}
+					
+
+					if(match(RP)){return;}
+
+					else{advance();} //COMMA
+				
+				}
+
+				param_dec_i++;
+			}
+			
 			parameter_declaration();
 
 			if ( match(COMMA) )
@@ -1856,6 +1823,8 @@ void parameter_type_list(void)
 			}
 
 		}
+
+		param_dec_i = 0;
 
 }
 

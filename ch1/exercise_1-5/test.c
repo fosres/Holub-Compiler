@@ -11,4 +11,6 @@ int main(void)
 	void func4(int func());
 
 	void func5(int),func6(double);
+
+	void func7(void (*func_2));
 }

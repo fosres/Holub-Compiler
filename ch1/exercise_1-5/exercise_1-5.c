@@ -1751,6 +1751,22 @@ void parameter_type_list(void)
 		       );
 
 	}
+	
+	if (match(VOID))
+	{
+		advance();
+
+		if(!match(RP) )
+		{	
+		
+			error_msg("Only void can be in parameter_type_list\n",
+			yylineno,yytext-&input[0]
+		       		);
+
+		}
+
+		return;
+	}
 		while (
 			( Lookahead > ( 0b1 << 8 ) )
 

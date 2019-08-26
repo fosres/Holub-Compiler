@@ -1797,11 +1797,20 @@ void parameter_type_list(void)
 				
 				else if (match(ID))
 				{
-					advance();
-					
-					direct_declarator();	
 
-					advance();
+					direct_declarator();	
+					
+					if(!match(RP)&&!match(COMMA))
+					{
+						error_msg("Missing right parenthesis or comma\n",
+					yylineno,yytext-&input[0]
+						);
+					}
+
+					if( match(RP)){return;}
+					
+
+					else{advance();} //COMMA
 				}
 				
 				else if (match(ASTK))	

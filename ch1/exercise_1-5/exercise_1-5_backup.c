@@ -5,12 +5,15 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "lex_exp.h"
-
+#include "uint.h"
 
 bool is_valid_expression = 0;
 
 uint16_t dec_specs = 0;
 
+size_t param_dec_i = 0;
+
+bool in_parameter_type_list = 0;
 #if 0
 
 	int * (*(*a[4])(int,int,int))(int,int);
@@ -343,6 +346,7 @@ in a declaration of any kind.
 void declaration_specifiers(void)
 {
 	dec_specs = 0;
+
 
 	while ( 
 		( Lookahead > ( 0b1 << 8 ) )
@@ -1501,7 +1505,7 @@ if ( match(ASTK) )
 {	
 	while ( match(ASTK) )
 	{
-	
+
 		while ( match(ASTK) )
 		{
 			advance();
@@ -1517,20 +1521,6 @@ if ( match(ASTK) )
 
 	}
 }
-
-else
-{
-	if ( ( dec_specs >> 14 ) & 0b1 )
-	{
-		error_msg("void used in declaration without a pointer\n",
-			
-			yylineno,yytext-&input[0]
-			);
-	}
-
-}
-
-
 
 }
 
@@ -1581,6 +1571,23 @@ void init_declarator_list(void)
 			error_msg("Missing comma or semicolon\n",
 				yylineno,yytext-&input[0]
 			       );
+
+			if ( match(LP) )
+			{
+			
+				error_msg("Declaration of array of functions\n",
+				yylineno,yytext-&input[0]
+			       		);
+
+			}
+
+			else if ( match(LB) )
+			{
+				error_msg("Declaration of function returning array\n",
+				yylineno,yytext-&input[0]
+			       		);
+
+			}
 		}
 		
 		if ( match(COMMA) )
@@ -1604,6 +1611,7 @@ void direct_declarator(void);
 
 void declarator(void)
 {
+
 	pointer(); direct_declarator();
 }
 
@@ -1611,6 +1619,7 @@ void parameter_type_list(void);
 
 void direct_declarator(void)
 {
+
 	if ( match(ID) )
 	{	advance();	}
 
@@ -1671,6 +1680,7 @@ void direct_declarator(void)
 
 	else if ( match(LP) ) //parameter_type_list
 	{
+
 		advance();
 
 		parameter_type_list();
@@ -1684,13 +1694,20 @@ void direct_declarator(void)
 		}
 
 		advance();
-	}	
+	}
+
+		
 }
 
 void parameter_declaration(void);
 
 void parameter_type_list(void)
 {
+	in_parameter_type_list=1;
+
+	if (match(RP)){return;}
+
+
 	if ( 
 		!( Lookahead > ( 0b1 << 8 ) )
 			
@@ -1707,6 +1724,8 @@ void parameter_type_list(void)
 		       );
 
 	}
+
+
 		while (
 			( Lookahead > ( 0b1 << 8 ) )
 
@@ -1717,6 +1736,109 @@ void parameter_type_list(void)
 		      )
 
 		{
+#if 0
+			if (match(VOID))
+			{
+
+				advance();
+
+				if(
+						!match(RP) 
+						
+						&& 
+						
+						!match(ASTK) 
+						
+						&& 
+						
+						!match(ID)
+
+						&&
+
+						!match(LP) 
+						
+						&& 
+						
+						( param_dec_i == 0 ) 
+						
+				)
+				
+				{	
+				
+					error_msg("Only void declaration-specifier can be in parameter_type_list by itself or a void pointer must be the parameter argument\n",
+					yylineno,yytext-&input[0]
+						);
+
+				}
+
+				else if (match(RP)&&(param_dec_i == 0) ){return;}
+				
+				else if (match(RP)&&(param_dec_i > 0) )
+				{
+					error_msg("After the first parameter argument, only void pointers or void pointers to functions allowed\n",
+					yylineno,yytext-&input[0]
+						);
+						
+					return;
+				
+				}
+
+				else if (match(LP))
+				{
+					advance();
+
+					declarator();
+
+					if (!match(RP))
+					{
+						error_msg("Missing Right Parenthesis",
+					yylineno,yytext-&input[0]
+						);
+					}
+											
+				}
+				
+				else if (match(ID))
+				{
+
+					direct_declarator();	
+					
+					if(!match(RP)&&!match(COMMA))
+					{
+						error_msg("Missing right parenthesis or comma\n",
+					yylineno,yytext-&input[0]
+						);
+					}
+
+					if( match(RP)){return;}
+					
+
+					else{advance();} //COMMA
+				}
+				
+				else if (match(ASTK))	
+				{
+					pointer();
+
+					if(!match(COMMA)&&!match(RP))
+					{
+						direct_declarator();	
+					}
+					
+
+					if( match(RP)){return;}
+					
+
+					else{advance();} //COMMA
+				
+				}
+				
+				param_dec_i++;
+
+				continue;
+			}
+#endif
+			
 			parameter_declaration();
 
 			if ( match(COMMA) )
@@ -1740,8 +1862,11 @@ void parameter_type_list(void)
 
 				}
 			}
-
+			
+			param_dec_i++;
 		}
+
+		param_dec_i = 0;
 
 }
 
@@ -1751,8 +1876,19 @@ void parameter_declaration(void)
 
 	if ( match(COMMA) || match(RP) )
 	{
+		if (match(RP) && dec_specs
 		return;
+	}
+
+	if (match(ASTK) )
+	{
+		pointer();
 	}	
+
+	if ( match(COMMA) || match(RP) )
+	{
+		return;
+	}
 
 	declarator();
 }

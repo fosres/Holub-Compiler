@@ -11,7 +11,9 @@ bool is_valid_expression = 0;
 
 uint16_t dec_specs = 0;
 
+size_t param_dec_i = 0;
 
+bool in_parameter_type_list = 0;
 #if 0
 
 	int * (*(*a[4])(int,int,int))(int,int);
@@ -1701,9 +1703,9 @@ void parameter_declaration(void);
 
 void parameter_type_list(void)
 {
-	if (match(RP)){return;}
+	in_parameter_type_list=1;
 
-	size_t param_dec_i=0;
+	if (match(RP)){return;}
 
 
 	if ( 
@@ -1734,6 +1736,7 @@ void parameter_type_list(void)
 		      )
 
 		{
+#if 0
 			if (match(VOID))
 			{
 
@@ -1834,6 +1837,7 @@ void parameter_type_list(void)
 
 				continue;
 			}
+#endif
 			
 			parameter_declaration();
 
@@ -1872,6 +1876,12 @@ void parameter_declaration(void)
 
 	if ( match(COMMA) || match(RP) )
 	{
+		if (match(RP) && ( ( dec_specs >> 14 ) & 0b1 ) && param_dec_i)
+		{		
+			error_msg("After first paramter argument, a void abstract parameter declaration is not allowed. Only a void pointer, or a pointer to function\n",
+			yylineno,yytext-&input[0]
+		       );
+		}
 		return;
 	}
 

@@ -1,0 +1,8 @@
+SOURCES = exercise_1-5_backup.c lex_exp.c lex_exp.h
+
+
+CC = gcc
+
+exercise_1-5_backup.o: $(SOURCES)
+	$(CC) $^ -o $@
+		

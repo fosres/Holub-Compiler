@@ -1876,7 +1876,12 @@ void parameter_declaration(void)
 
 	if ( match(COMMA) || match(RP) )
 	{
-		if (match(RP) && dec_specs
+		if (match(RP) && ( ( dec_specs >> 14 ) & 0b1 ) && param_dec_i)
+		{		
+			error_msg("After first paramter argument, a void abstract parameter declaration is not allowed. Only a void pointer, or a pointer to function\n",
+			yylineno,yytext-&input[0]
+		       );
+		}
 		return;
 	}
 

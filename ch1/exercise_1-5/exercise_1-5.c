@@ -1748,6 +1748,10 @@ void parameter_type_list(void)
 						
 						&& 
 						
+						!match(ID)
+
+						&&
+
 						!match(LP) 
 						
 						&& 
@@ -1789,6 +1793,15 @@ void parameter_type_list(void)
 						);
 					}
 											
+				}
+				
+				else if (match(ID))
+				{
+					advance();
+					
+					direct_declarator();	
+
+					advance();
 				}
 				
 				else if (match(ASTK))	

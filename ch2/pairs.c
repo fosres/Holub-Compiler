@@ -221,4 +221,8 @@ void pnext(FILE*fp,uint8_t*name)
 	fprintf(fp,"%s %s yy_next(cur_state,c)\n",D_SCLASS,TYPE);
 
 	printv(fp,toptext);	
+
+	fprintf(fp,"	%s	*p = %s[cur_state;\n",TYPE,name);
+
+	printv(fp,boptext);
 }

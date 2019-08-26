@@ -1723,6 +1723,7 @@ void parameter_type_list(void)
 
 	}
 
+
 		while (
 			( Lookahead > ( 0b1 << 8 ) )
 
@@ -1754,6 +1755,7 @@ void parameter_type_list(void)
 						( param_dec_i == 0 ) 
 						
 				)
+				
 				{	
 				
 					error_msg("Only void declaration-specifier can be in parameter_type_list by itself or a void pointer must be the parameter argument\n",
@@ -1762,7 +1764,17 @@ void parameter_type_list(void)
 
 				}
 
-				else if (match(RP)){return;}
+				else if (match(RP)&&(param_dec_i == 0) ){return;}
+				
+				else if (match(RP)&&(param_dec_i > 0) )
+				{
+					error_msg("After the first parameter argument, only void pointers or void pointers to functions allowed\n",
+					yylineno,yytext-&input[0]
+						);
+						
+					return;
+				
+				}
 
 				else if (match(LP))
 				{
@@ -1789,13 +1801,16 @@ void parameter_type_list(void)
 					}
 					
 
-					if(match(RP)){return;}
+					if( match(RP)){return;}
+					
 
 					else{advance();} //COMMA
 				
 				}
-
+				
 				param_dec_i++;
+
+				continue;
 			}
 			
 			parameter_declaration();
@@ -1821,7 +1836,8 @@ void parameter_type_list(void)
 
 				}
 			}
-
+			
+			param_dec_i++;
 		}
 
 		param_dec_i = 0;

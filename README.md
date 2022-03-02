@@ -1,5 +1,4 @@
-# Polyscripting SQL Project
+# Holub C Compiler
 
-The official repository for the forthcoming PolyScripted and Metamorphic SQL interpreter in C and Java
-
+My repository for a primitive recursive-descent parser for all intialisations and declarations of all primitive data types in the C programming language.
 
